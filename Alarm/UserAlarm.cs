@@ -17,6 +17,8 @@ namespace WingTechBot.Alarm
 
         public double SnoozeInterval { private get; init; } = 60;
 
+        public int SnoozeTolerance { private get; init; } = 25;
+
         private bool Ringing { get; set; } = false;
 
         private int count = 0;
@@ -84,7 +86,7 @@ namespace WingTechBot.Alarm
             {
                 Message("Good morning!");
 
-                if (SOTD && count <= 6)
+                if (SOTD && count <= SnoozeTolerance)
                 {
                     Message(Secrets.SOTD[Program.Random.Next(Secrets.SOTD.Length)]);
                 }
