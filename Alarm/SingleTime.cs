@@ -1,26 +1,24 @@
-﻿using System;
+﻿namespace WingTechBot.Alarm;
+using System;
 using System.Collections.Generic;
 
-namespace WingTechBot.Alarm
+public class SingleTime : TimeBase
 {
-    public class SingleTime : TimeBase
+    public bool Override { get; private init; }
+
+    public SingleTime(DateTime time, bool @override)
     {
-        public bool Override { get; private init; }
+        Time = time;
+        Override = @override;
+    }
 
-        public SingleTime(DateTime time, bool @override)
+    public bool EvaluateAndRemove(DateTime time, double timerInterval, List<SingleTime> singleTimes)
+    {
+        if (Evaluate(time, timerInterval))
         {
-            Time = time;
-            Override = @override;
+            singleTimes.Remove(this);
+            return true;
         }
-
-        public bool EvaluateAndRemove(DateTime time, double timerInterval, List<SingleTime> singleTimes)
-        {
-            if (Evaluate(time, timerInterval))
-            {
-                singleTimes.Remove(this);
-                return true;
-            }
-            else return false;
-        }
+        else return false;
     }
 }

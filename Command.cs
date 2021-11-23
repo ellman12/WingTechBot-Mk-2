@@ -1,83 +1,81 @@
-﻿using Discord;
-using Discord.WebSocket;
+﻿namespace WingTechBot;
 using System;
 using System.Linq;
+using Discord;
+using Discord.WebSocket;
 
-namespace WingTechBot
+public abstract class Command
 {
-    public abstract class Command
+    protected SocketMessage message;
+    protected string[] arguments;
+    protected ulong[] userRoles;
+    protected IUser requested;
+    protected IMessage replied;
+
+    public void Init(SocketMessage message, string[] arguments)
     {
-        protected SocketMessage message;
-        protected string[] arguments;
-        protected ulong[] userRoles;
-        protected IUser requested;
-        protected IMessage replied;
+        this.message = message;
+        this.arguments = arguments;
 
-        public void Init(SocketMessage message, string[] arguments)
+        if (message.Channel is SocketGuildChannel) userRoles = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(message.Author.Id).Result.RoleIds.ToArray();
+
+        if (GetRequested)
         {
-            this.message = message;
-            this.arguments = arguments;
-
-            if (message.Channel is SocketGuildChannel) userRoles = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(message.Author.Id).Result.RoleIds.ToArray();
-
-            if (GetRequested)
-            {
-                requested = Program.GetUserFromMention(message, arguments);
-                if (requested is null) throw new ArgumentException($"Command {Name} requires a user to be mentioned.");
-            }
-
-            if (GetReply)
-            {
-                try
-                {
-                    replied = message.Channel.GetMessageAsync(message.Reference.MessageId.Value).Result;
-                }
-                catch { }
-
-                if (replied is null) throw new ArgumentException($"Command {Name} must include a reply to another message");
-            }
-
-            if (RequiredRoles is not null)
-            {
-                if (message.Channel is SocketGuildChannel)
-                {
-                    if (message.Author.Id != Secrets.OWNER_USER_ID && !RequiredRoles.Any(x => userRoles.Contains(x)))
-                    {
-                        throw new Exception($"You do not have sufficient rank to call command {Name}.");
-                    }
-                }
-                else
-                {
-                    throw new Exception($"Command {Name} cannot be called in DMs.");
-                }
-            }
-
-            if (OwnerOnly && message.Author.Id != Secrets.OWNER_USER_ID) throw new Exception($"Only {Program.GetUser(Secrets.OWNER_USER_ID).Mention} can call command {Name}.");
+            requested = Program.GetUserFromMention(message, arguments);
+            if (requested is null) throw new ArgumentException($"Command {Name} requires a user to be mentioned.");
         }
 
-        public abstract void Execute();
-
-        public abstract string LogString { get; }
-
-        public virtual ulong[] RequiredRoles { get; } = null;
-
-        public virtual bool GetRequested { get; } = false;
-
-        public virtual bool GetReply { get; } = false;
-
-        public virtual bool Audit { get; } = false;
-
-        public virtual bool OwnerOnly { get; } = false;
-
-        public string Name
+        if (GetReply)
         {
-            get
+            try
             {
-                Type type = GetType();
-                return type.Name[..(type.Name.Length - "COMMAND".Length)];
+                replied = message.Channel.GetMessageAsync(message.Reference.MessageId.Value).Result;
+            }
+            catch { }
+
+            if (replied is null) throw new ArgumentException($"Command {Name} must include a reply to another message");
+        }
+
+        if (RequiredRoles is not null)
+        {
+            if (message.Channel is SocketGuildChannel)
+            {
+                if (message.Author.Id != Secrets.OWNER_USER_ID && !RequiredRoles.Any(x => userRoles.Contains(x)))
+                {
+                    throw new Exception($"You do not have sufficient rank to call command {Name}.");
+                }
+            }
+            else
+            {
+                throw new Exception($"Command {Name} cannot be called in DMs.");
             }
         }
 
-        public virtual string[] Aliases => new string[] { Name.ToLower() };
+        if (OwnerOnly && message.Author.Id != Secrets.OWNER_USER_ID) throw new Exception($"Only {Program.GetUser(Secrets.OWNER_USER_ID).Mention} can call command {Name}.");
     }
+
+    public abstract void Execute();
+
+    public abstract string LogString { get; }
+
+    public virtual ulong[] RequiredRoles { get; } = null;
+
+    public virtual bool GetRequested { get; } = false;
+
+    public virtual bool GetReply { get; } = false;
+
+    public virtual bool Audit { get; } = false;
+
+    public virtual bool OwnerOnly { get; } = false;
+
+    public string Name
+    {
+        get
+        {
+            Type type = GetType();
+            return type.Name[..(type.Name.Length - "COMMAND".Length)];
+        }
+    }
+
+    public virtual string[] Aliases => new string[] { Name.ToLower() };
 }

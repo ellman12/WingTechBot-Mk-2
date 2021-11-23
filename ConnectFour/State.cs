@@ -1,15 +1,14 @@
-namespace ConnectFour
+namespace ConnectFour;
+
+public enum State
 {
-    public enum State
-    {
-        Empty,
-        Circle,
-        Cross,
-        Ampersand,
-        At,
-        Pound,
-        Plus,
-        Dollar,
-        Question,
-    } // make sure to extend Board.GetColor & Board.GetGlyph
-}
+    Empty,
+    Circle,
+    Cross,
+    Ampersand,
+    At,
+    Pound,
+    Plus,
+    Dollar,
+    Question,
+} // make sure to extend Board.GetColor & Board.GetGlyph

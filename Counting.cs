@@ -1,57 +1,55 @@
-﻿using System.Diagnostics;
+﻿namespace WingTechBot;
+using System.Diagnostics;
 
-namespace WingTechBot
+public class Counting : Game
 {
-    public class Counting : Game
+    private int _countBy;
+    private bool _turnOrder;
+    private int _currentPlayerIndex = 0;
+
+    protected override bool Debug => false;
+
+    protected override void Start()
     {
-        private int _countBy;
-        private bool _turnOrder;
-        private int _currentPlayerIndex = 0;
+        _countBy = Prompt<int>(GamemasterID, AllowedChannels, true, "What are we gonna count by?");
+        _turnOrder = Prompt<bool>(GamemasterID, AllowedChannels, true, "Is turn order required? (true/false)");
+    }
 
-        protected override bool Debug => false;
-
-        protected override void Start()
+    public override void RunGame()
+    {
+        if (PlayerIDs.Count == 0)
         {
-            _countBy = Prompt<int>(GamemasterID, AllowedChannels, true, "What are we gonna count by?");
-            _turnOrder = Prompt<bool>(GamemasterID, AllowedChannels, true, "Is turn order required? (true/false)");
+            WriteLine("You can't count with zero players!");
+            return;
         }
 
-        public override void RunGame()
+        Stopwatch timer = new();
+        int score = 0;
+
+        WriteLine($"Alright, start counting by {_countBy}'s!");
+        timer.Start();
+
+        while (true)
         {
-            if (PlayerIDs.Count == 0)
+            (ulong id, int guess) = PromptAny<int>(PromptMode.Any, true);
+
+            if ((!_turnOrder || PlayerIDs[_currentPlayerIndex] == id) && guess == ++score * _countBy)
             {
-                WriteLine("You can't count with zero players!");
-                return;
+                Advance();
             }
-
-            Stopwatch timer = new();
-            int score = 0;
-
-            WriteLine($"Alright, start counting by {_countBy}'s!");
-            timer.Start();
-
-            while (true)
+            else
             {
-                (ulong id, int guess) = PromptAny<int>(PromptMode.Any, true);
-
-                if ((!_turnOrder || PlayerIDs[_currentPlayerIndex] == id) && guess == ++score * _countBy)
-                {
-                    Advance();
-                }
-                else
-                {
-                    timer.Stop();
-                    break;
-                }
+                timer.Stop();
+                break;
             }
-
-            WriteLine($"Gameover! Score: {score - 1}; Time: {timer.Elapsed} seconds");
         }
 
-        private void Advance()
-        {
-            _currentPlayerIndex++;
-            if (_currentPlayerIndex >= PlayerIDs.Count) _currentPlayerIndex = 0;
-        }
+        WriteLine($"Gameover! Score: {score - 1}; Time: {timer.Elapsed} seconds");
+    }
+
+    private void Advance()
+    {
+        _currentPlayerIndex++;
+        if (_currentPlayerIndex >= PlayerIDs.Count) _currentPlayerIndex = 0;
     }
 }
