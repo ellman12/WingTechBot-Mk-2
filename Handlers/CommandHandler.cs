@@ -51,6 +51,8 @@ namespace WingTechBot.Handlers
             arguments = message.Content[1..].Split(' ');
             command = arguments[0].ToLower();
 
+            if (command[0] == '~') return Task.CompletedTask;
+
             if (!Commands.TryGetValue(command, out Type foundCommand))
             {
                 message.Channel.SendMessageAsync($"The command \"{command}\" could not be found.");
