@@ -20,7 +20,7 @@ public class Match
     public Match(Board board, Dictionary<State, AI> teams, int auth, Func<object, Discord.IMessage> writeLine, bool load = false, string loadString = null)
     {
         Board = board;
-        this._teams = teams;
+        _teams = teams;
         _auth = auth;
         _load = load;
         _loadString = loadString;
