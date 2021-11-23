@@ -182,7 +182,7 @@ namespace WingTechBot.Handlers
         {
             IMessage message = await cacheMessage.GetOrDownloadAsync();
 
-            if (message is null || DateTime.Now < new DateTimeOffset(new DateTime(2020, 11, 25))) return;
+            if (message is null || DateTime.Now < START_TIME) return;
             if (message.Id == 835170015757074493)
             {
                 RoleHandler.Handle(reaction, false);
