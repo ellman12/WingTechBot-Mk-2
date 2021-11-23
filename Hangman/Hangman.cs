@@ -48,7 +48,7 @@ namespace WingTechBot.Hangman
         private Dictionary<string, Action<IMessage, string[]>> _commands;
         private int _currentHostIndex = -1, _strikes = 0, _score = 0, _total = 0;
 
-        private bool _pvp;//, foreignAllowed;
+        private bool _pvp;
         private int _clues;
         private static int? _dictionaryCount = null;
 
@@ -63,8 +63,6 @@ namespace WingTechBot.Hangman
 
             _pvp = !PromptYN(GamemasterID, AllowedChannels, true, "Would you like to face a bot? (y/n)");
             _clues = Prompt(GamemasterID, AllowedChannels, (int x) => x >= 0, true, "How many clues would you like? (recommended: 0-2)");
-
-            //if (pvp) foreignAllowed = PromptYN(GamemasterID, AllowedChannels, true, "Are foreign characters allowed? (y/n)");
         }
 
         public override void RunGame()
