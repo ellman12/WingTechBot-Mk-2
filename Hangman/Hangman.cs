@@ -50,7 +50,7 @@ namespace WingTechBot.Hangman
 
         private bool _pvp;//, foreignAllowed;
         private int _clues;
-        private static int? dictionaryCount = null;
+        private static int? _dictionaryCount = null;
 
         protected override bool Debug => false;
 
@@ -322,9 +322,9 @@ namespace WingTechBot.Hangman
             {
                 var lines = File.ReadLines(DICTIONARY_PATH);
 
-                dictionaryCount ??= lines.Count();
+                _dictionaryCount ??= lines.Count();
 
-                word = lines.Skip(_random.Next((int)dictionaryCount - 1)).Take(1).First();
+                word = lines.Skip(_random.Next((int)_dictionaryCount - 1)).Take(1).First();
             }
             while (_banned.Contains(word) || word.Length <= 2 || !word.Any((char c) => "aeiouy".Contains(c)) || !word.IsAmericanized());
 
