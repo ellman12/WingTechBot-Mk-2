@@ -10,7 +10,7 @@ namespace ConnectFour
         public State PromptingTeam { get; private set; }
 
         public Board Board { get; private set; }
-        private readonly Dictionary<State, AI> teams = new();
+        private readonly Dictionary<State, AI> _teams = new();
         private readonly int _auth;
         private readonly bool _load;
         private readonly string _loadString;
@@ -21,7 +21,7 @@ namespace ConnectFour
         public Match(Board board, Dictionary<State, AI> teams, int auth, Func<object, Discord.IMessage> writeLine, bool load = false, string loadString = null)
         {
             Board = board;
-            this.teams = teams;
+            this._teams = teams;
             _auth = auth;
             _load = load;
             _loadString = loadString;
@@ -57,17 +57,18 @@ namespace ConnectFour
                         _writeLine("Invalid Load String!");
                         _loadCounter = _loadString.Length;
                     }
+
                     _loadCounter++;
                 }
                 else
                 {
-                    if (teams[PromptingTeam] is IHuman) Board.Draw(Round);
+                    if (_teams[PromptingTeam] is IHuman) Board.Draw(Round);
 
                     do
                     {
                         try
                         {
-                            input = teams[Board.CurrentTeam].Prompt(Board, Round);
+                            input = _teams[Board.CurrentTeam].Prompt(Board, Round);
                         }
                         catch (Exception e)
                         {
@@ -82,7 +83,7 @@ namespace ConnectFour
 
             Board.DisableCreation(_auth);
 
-            foreach (AI ai in teams.Values)
+            foreach (AI ai in _teams.Values)
             {
                 try
                 {

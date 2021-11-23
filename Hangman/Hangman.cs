@@ -8,20 +8,20 @@ namespace WingTechBot.Hangman
 {
     public class Hangman : Game
     {
-        private string word = string.Empty, check = string.Empty;
-        private readonly List<char> guesses = new();
-        private readonly List<string> wordGuesses = new();
+        private string _word = string.Empty, _check = string.Empty;
+        private readonly List<char> _guesses = new();
+        private readonly List<string> _wordGuesses = new();
 
-        private Dictionary<ulong, int> scores;
+        private Dictionary<ulong, int> _scores;
 
-        private static HashSet<string> banned;
+        private static HashSet<string> _banned;
 
         private const string DICTIONARY_PATH = @"Hangman\words.txt";
         private const string BANNED_PATH = @"Hangman\banned.txt";
 
-        private static readonly Random random = new();
+        private static readonly Random _random = new();
 
-        private static readonly string[] heads = new string[]
+        private static readonly string[] _heads = new string[]
         {
             "(O.O)",
             "(O.-)",
@@ -46,13 +46,11 @@ namespace WingTechBot.Hangman
         protected override Dictionary<string, Action<IMessage, string[]>> Commands => _commands;
 
         private Dictionary<string, Action<IMessage, string[]>> _commands;
+        private int _currentHostIndex = -1, _strikes = 0, _score = 0, _total = 0;
 
-        int currentHostIndex = -1, strikes = 0, score = 0, total = 0;
-
-        private bool pvp;//, foreignAllowed;
-        private int clues;
-
-        static int? dictionaryCount = null;
+        private bool _pvp;//, foreignAllowed;
+        private int _clues;
+        private static int? dictionaryCount = null;
 
         protected override bool Debug => false;
 
@@ -63,15 +61,15 @@ namespace WingTechBot.Hangman
                 { "CORRECT", CorrectSpelling }
             };
 
-            pvp = !PromptYN(GamemasterID, AllowedChannels, true, "Would you like to face a bot? (y/n)");
-            clues = Prompt(GamemasterID, AllowedChannels, (int x) => x >= 0, true, "How many clues would you like? (recommended: 0-2)");
+            _pvp = !PromptYN(GamemasterID, AllowedChannels, true, "Would you like to face a bot? (y/n)");
+            _clues = Prompt(GamemasterID, AllowedChannels, (int x) => x >= 0, true, "How many clues would you like? (recommended: 0-2)");
 
             //if (pvp) foreignAllowed = PromptYN(GamemasterID, AllowedChannels, true, "Are foreign characters allowed? (y/n)");
         }
 
         public override void RunGame()
         {
-            while (PlayerIDs.Count == 0 || (pvp && PlayerIDs.Count == 1))
+            while (PlayerIDs.Count == 0 || (_pvp && PlayerIDs.Count == 1))
             {
                 if (PlayerIDs.Count == 0)
                 {
@@ -79,7 +77,7 @@ namespace WingTechBot.Hangman
                     GetPlayers();
                 }
 
-                if (pvp)
+                if (_pvp)
                 {
                     if (PlayerIDs.Count == 1)
                     {
@@ -89,48 +87,48 @@ namespace WingTechBot.Hangman
                 }
             }
 
-            if (pvp)
+            if (_pvp)
             {
-                scores = new Dictionary<ulong, int>();
+                _scores = new Dictionary<ulong, int>();
 
-                foreach (ulong id in PlayerIDs) scores.Add(id, 0);
+                foreach (ulong id in PlayerIDs) _scores.Add(id, 0);
             }
             else InitializeDictionary();
 
             while (true)
             {
-                if (pvp)
+                if (_pvp)
                 {
                     AdvanceHost();
-                    WriteLine($"Prompting {GetPlayer(PlayerIDs[currentHostIndex]).Mention} for next word... Check your DMs");
-                    word = Prompt(PlayerIDs[currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, false, "What should the word be?", true).Trim().ToUpper();
+                    WriteLine($"Prompting {GetPlayer(PlayerIDs[_currentHostIndex]).Mention} for next word... Check your DMs");
+                    _word = Prompt(PlayerIDs[_currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, false, "What should the word be?", true).Trim().ToUpper();
                 }
-                else word = GetRandomWord().ToUpper(); // Get random word
-                check = word.RemoveDiacritics();
+                else _word = GetRandomWord().ToUpper(); // Get random word
+                _check = _word.RemoveDiacritics();
 
-                WriteLine($"===[NEW ROUND]===\n**{GetWord(check.Count(c => char.IsLetter(c) && c.IsAmericanized()))}** letters");
+                WriteLine($"===[NEW ROUND]===\n**{GetWord(_check.Count(c => char.IsLetter(c) && c.IsAmericanized()))}** letters");
 
-                total++;
+                _total++;
 
                 // get clues
                 List<char> letters = new();
-                int actualClues = clues;
+                int actualClues = _clues;
 
-                if (pvp)
+                if (_pvp)
                 {
-                    foreach (char c in check) if (!letters.Contains(c) && c.IsAmericanized() && (clues > 6 || "aeiouyAEIOUY".Contains(c))) letters.Add(c);
+                    foreach (char c in _check) if (!letters.Contains(c) && c.IsAmericanized() && (_clues > 6 || "aeiouyAEIOUY".Contains(c))) letters.Add(c);
                 }
                 else
                 {
-                    foreach (char c in check) if (!letters.Contains(c) && c.IsAmericanized()) letters.Add(c);
-                    actualClues = letters.Count - clues <= 2 ? letters.Count - 2 : clues;
+                    foreach (char c in _check) if (!letters.Contains(c) && c.IsAmericanized()) letters.Add(c);
+                    actualClues = letters.Count - _clues <= 2 ? letters.Count - 2 : _clues;
                 }
 
                 for (int i = 0; i < actualClues; i++)
                 {
-                    char c = letters[random.Next(letters.Count)];
+                    char c = letters[_random.Next(letters.Count)];
                     letters.Remove(c);
-                    guesses.Add(c);
+                    _guesses.Add(c);
 
                     if (letters.Count <= 0) break;
 
@@ -144,25 +142,25 @@ namespace WingTechBot.Hangman
                     DeleteSavedMessages();
                     string screen = GetScreen();
 
-                    if (strikes >= 6) // strike gameover
+                    if (_strikes >= 6) // strike gameover
                     {
-                        screen += $"Gameover! The word was: {word}";
+                        screen += $"Gameover! The word was: {_word}";
                         SaveWriteLine(screen);
                         break;
                     }
                     else // win gameover
                     {
                         bool done = true;
-                        foreach (char c in check)
+                        foreach (char c in _check)
                         {
-                            if (char.IsLetter(c) && c.IsAmericanized()) done &= guesses.Contains(c);
+                            if (char.IsLetter(c) && c.IsAmericanized()) done &= _guesses.Contains(c);
                         }
 
                         if (done)
                         {
                             screen += "Correct!";
-                            if (scores == null) score++;
-                            else scores[tuple.id]++;
+                            if (_scores is null) _score++;
+                            else _scores[tuple.id]++;
 
                             SaveWriteLine(screen);
                             break;
@@ -176,41 +174,41 @@ namespace WingTechBot.Hangman
 
                     do
                     {
-                        tuple = PromptAny(AllowedChannels, (string s) => s.Length == 1 || s.Length == word.Length, true, saveMessage: true);
+                        tuple = PromptAny(AllowedChannels, (string s) => s.Length == 1 || s.Length == _word.Length, true, saveMessage: true);
                     }
-                    while (currentHostIndex != -1 && PlayerIDs[currentHostIndex] == tuple.id);
+                    while (_currentHostIndex != -1 && PlayerIDs[_currentHostIndex] == tuple.id);
 
                     string guess = tuple.text.Trim().ToUpper().RemoveDiacritics();
 
-                    if (guess == check) // word guess success
+                    if (guess == _check) // word guess success
                     {
                         SaveWriteLine("Correct!");
 
-                        if (scores == null) score++;
-                        else scores[tuple.id]++;
+                        if (_scores is null) _score++;
+                        else _scores[tuple.id]++;
                         break;
                     }
                     else if (guess.Length == 1 && char.IsLetter(guess[0])) // letter guess
                     {
-                        if (!guesses.Contains(guess[0]))
+                        if (!_guesses.Contains(guess[0]))
                         {
-                            guesses.Add(guess[0]);
-                            if (!check.Contains(guess[0])) strikes++;
+                            _guesses.Add(guess[0]);
+                            if (!_check.Contains(guess[0])) _strikes++;
                         }
                     }
-                    else if (!wordGuesses.Contains(guess)) // word guess fail
+                    else if (!_wordGuesses.Contains(guess)) // word guess fail
                     {
                         SaveWriteLine($"{guess} is not the word.");
-                        wordGuesses.Add(guess);
-                        strikes++;
+                        _wordGuesses.Add(guess);
+                        _strikes++;
                     }
                 }
 
-                strikes = 0;
-                guesses.Clear();
+                _strikes = 0;
+                _guesses.Clear();
                 sentMessages.Clear();
                 receivedMessages.Clear();
-                wordGuesses.Clear();
+                _wordGuesses.Clear();
 
                 if (PromptEnd()) break;
             }
@@ -222,9 +220,9 @@ namespace WingTechBot.Hangman
 
         public override void Shutdown()
         {
-            if (pvp)
+            if (_pvp)
             {
-                var orderedScores = from kvp in scores orderby kvp.Value descending select kvp;
+                var orderedScores = from kvp in _scores orderby kvp.Value descending select kvp;
 
                 string gameOverText = $"Gameover! Scores:\n";
 
@@ -236,7 +234,7 @@ namespace WingTechBot.Hangman
 
                 WriteLine(gameOverText);
             }
-            else WriteLine($"Gameover! Got: {score}/{total}");
+            else WriteLine($"Gameover! Got: {_score}/{_total}");
         }
 
         private string GetScreen()
@@ -257,46 +255,46 @@ namespace WingTechBot.Hangman
             return screen;
         }
 
-        private string GetHead()
+        private string GetHead() => _strikes switch
         {
-            if (strikes == 1) return heads[0];
-            else if (strikes >= 2) return heads[random.Next(heads.Length)];
-            else return "     ";
-        }
+            1 => _heads[0],
+            >= 2 => _heads[_random.Next(_heads.Length)],
+            _ => "     "
+        };
 
-        private string GetBody()
+        private string GetBody() => _strikes switch
         {
-            if (strikes == 2) return "  8  ";
-            else if (strikes == 3) return "  8 -";
-            else if (strikes >= 4) return "- 8 -";
-            else return "     ";
-        }
+            2 => "  8  ",
+            3 => "  8 -",
+            >= 4 => "- 8 -",
+            _ => "     "
+        };
 
-        private string GetLegs()
+        private string GetLegs() => _strikes switch
         {
-            if (strikes == 5) return " /  ";
-            else if (strikes == 6) return @" / \";
-            else return "   ";
-        }
+            5 => " /  ",
+            6 => @" / \",
+            _ => "   "
+        };
 
         private string GetClue()
         {
             string clue = string.Empty;
 
-            for (int i = 0; i < word.Length; i++)
+            for (int i = 0; i < _word.Length; i++)
             {
-                if (guesses.Contains(check[i]) || !check[i].IsAmericanized()) clue += $"{word[i]} ";
+                if (_guesses.Contains(_check[i]) || !_check[i].IsAmericanized()) clue += $"{_word[i]} ";
                 else clue += $"_ ";
             }
 
             clue += "\n" + "wrong:";
 
-            foreach (char c in guesses)
+            foreach (char c in _guesses)
             {
-                if (!check.Contains(c)) clue += $" {c}";
+                if (!_check.Contains(c)) clue += $" {c}";
             }
 
-            foreach (string s in wordGuesses)
+            foreach (string s in _wordGuesses)
             {
                 clue += $"\n - {s}";
             }
@@ -306,13 +304,13 @@ namespace WingTechBot.Hangman
 
         private static void InitializeDictionary()
         {
-            if (banned == null)
+            if (_banned is null)
             {
-                banned = new HashSet<string>();
+                _banned = new HashSet<string>();
                 FileInfo fi = new(BANNED_PATH);
 
                 using StreamReader file = new(fi.Open(FileMode.Open));
-                while (!file.EndOfStream) banned.Add(file.ReadLine());
+                while (!file.EndOfStream) _banned.Add(file.ReadLine());
             }
         }
 
@@ -326,17 +324,17 @@ namespace WingTechBot.Hangman
 
                 dictionaryCount ??= lines.Count();
 
-                word = lines.Skip(random.Next((int)dictionaryCount - 1)).Take(1).First();
+                word = lines.Skip(_random.Next((int)dictionaryCount - 1)).Take(1).First();
             }
-            while (banned.Contains(word) || word.Length <= 2 || !word.Any((char c) => "aeiouy".Contains(c)) || !word.IsAmericanized());
+            while (_banned.Contains(word) || word.Length <= 2 || !word.Any((char c) => "aeiouy".Contains(c)) || !word.IsAmericanized());
 
             return word;
         }
 
         private void AdvanceHost()
         {
-            currentHostIndex++;
-            if (currentHostIndex >= PlayerIDs.Count) currentHostIndex = 0;
+            _currentHostIndex++;
+            if (_currentHostIndex >= PlayerIDs.Count) _currentHostIndex = 0;
         }
 
         private static string GetWord(int x)
@@ -346,7 +344,7 @@ namespace WingTechBot.Hangman
 
             if (x == 0) return "zero";
 
-            if (10 <= x && x <= 19)
+            if (x is >= 10 and <= 19)
             {
                 return x switch
                 {
@@ -404,14 +402,14 @@ namespace WingTechBot.Hangman
 
         private void CorrectSpelling(IMessage message, string[] args)
         {
-            if (pvp && message.Author.Id == PlayerIDs[currentHostIndex])
+            if (_pvp && message.Author.Id == PlayerIDs[_currentHostIndex])
             {
-                guesses.Clear();
-                wordGuesses.Clear();
-                strikes = 0;
+                _guesses.Clear();
+                _wordGuesses.Clear();
+                _strikes = 0;
 
-                word = Prompt(PlayerIDs[currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, false, "What should the word be?", true).Trim().ToUpper();
-                check = word.RemoveDiacritics();
+                _word = Prompt(PlayerIDs[_currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, false, "What should the word be?", true).Trim().ToUpper();
+                _check = _word.RemoveDiacritics();
             }
         }
     }

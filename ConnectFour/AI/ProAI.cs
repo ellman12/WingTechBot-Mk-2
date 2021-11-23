@@ -8,7 +8,7 @@ namespace ConnectFour
         public override void Init(Func<object, Discord.IMessage> saveWriteLine)
         {
             base.Init(saveWriteLine);
-            if (!(this is AssistAI)) Say("Good luck, have fun.");
+            if (this is not AssistAI) Say("Good luck, have fun.");
         }
 
         public override int Prompt(Board board, int round) // Here is where he thinks.
@@ -83,6 +83,7 @@ namespace ConnectFour
                                     found = true;
                                 }
                             }
+
                             if (!found)
                             {
                                 value += 1000;
@@ -140,9 +141,6 @@ namespace ConnectFour
             else Say("Good game, well played.");
         }
 
-        public override void GameEnd() // This is called at the end of a series of games.
-        {
-            Say("Thanks for playing!");
-        }
+        public override void GameEnd() => Say("Thanks for playing!"); // This is called at the end of a series of games.
     }
 }

@@ -61,7 +61,7 @@ namespace WingTechBot.Handlers
             return Task.CompletedTask;
         }
 
-        public bool PlayerAvailable(ulong playerId) => ActiveGames.FirstOrDefault((Game g) => g.PlayerIDs.Contains(playerId)) == null;
+        public bool PlayerAvailable(ulong playerId) => ActiveGames.FirstOrDefault((Game g) => g.PlayerIDs.Contains(playerId)) is null;
 
         public void EndGame(Game game) => ActiveGames.Remove(game);
     }

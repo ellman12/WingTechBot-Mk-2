@@ -21,10 +21,10 @@ namespace WingTechBot.Alarm
 
         private bool Ringing { get; set; } = false;
 
-        private int count = 0;
-        private int wordCount = 0;
+        private int _count = 0;
+        private int _wordCount = 0;
 
-        private Timer snoozeTimer;
+        private Timer _snoozeTimer;
 
         private ulong ChannelID { get; set; }
 
@@ -32,7 +32,7 @@ namespace WingTechBot.Alarm
 
         private List<SingleTime> SingleTimes { get; init; }
 
-        private readonly string alarmMessage = "Your alarm is ringing. DM me any message to stop.", snoozeMessage = "Your alarm is ringing. DM me any message to stop.";
+        private readonly string _alarmMessage = "Your alarm is ringing. DM me any message to stop.", _snoozeMessage = "Your alarm is ringing. DM me any message to stop.";
 
         public Func<string> GetAlarmMessage { private get; init; }
         public Func<string> GetSnoozeMessage { private get; init; }
@@ -46,8 +46,8 @@ namespace WingTechBot.Alarm
             UserID = userID;
             RepeatingTimes = times;
             SingleTimes = singleTimes ?? new();
-            GetAlarmMessage = () => alarmMessage;
-            GetSnoozeMessage = () => snoozeMessage;
+            GetAlarmMessage = () => _alarmMessage;
+            GetSnoozeMessage = () => _snoozeMessage;
         }
 
         public void Init()
@@ -77,21 +77,21 @@ namespace WingTechBot.Alarm
             if (message.Channel.Id != ChannelID) return Task.CompletedTask;
             if (!Ringing) return Task.CompletedTask;
 
-            wordCount += message.Content.Split().Length;
-            if (wordCount < WordCountRequirement)
+            _wordCount += message.Content.Split().Length;
+            if (_wordCount < WordCountRequirement)
             {
-                Message($"Not enough written! {wordCount}/{WordCountRequirement} words.");
+                Message($"Not enough written! {_wordCount}/{WordCountRequirement} words.");
             }
             else
             {
                 Message("Good morning!");
 
-                if (SOTD && count <= SnoozeTolerance)
+                if (SOTD && _count <= SnoozeTolerance)
                 {
                     Message(Secrets.SOTD[Program.Random.Next(Secrets.SOTD.Length)]);
                 }
 
-                wordCount = 0;
+                _wordCount = 0;
                 Ringing = false;
             }
 
@@ -103,14 +103,14 @@ namespace WingTechBot.Alarm
             if (RepeatingTimes.Any(x => x.EvaluateAndIncrement(e.SignalTime, TimerInterval, SingleTimes)) ||
                 SingleTimes.Any(x => x.EvaluateAndRemove(e.SignalTime, TimerInterval, SingleTimes)))
             {
-                count = 1;
+                _count = 1;
                 Ringing = true;
                 Message($"{GetAlarmMessage()}");
 
-                snoozeTimer = new(SnoozeInterval * 1000);
-                snoozeTimer.Elapsed += OnSnooze;
-                snoozeTimer.AutoReset = true;
-                snoozeTimer.Enabled = true;
+                _snoozeTimer = new(SnoozeInterval * 1000);
+                _snoozeTimer.Elapsed += OnSnooze;
+                _snoozeTimer.AutoReset = true;
+                _snoozeTimer.Enabled = true;
             }
         }
 
@@ -118,12 +118,12 @@ namespace WingTechBot.Alarm
         {
             if (Ringing)
             {
-                Message($"{GetSnoozeMessage()} ({count++})");
+                Message($"{GetSnoozeMessage()} ({_count++})");
             }
             else
             {
-                snoozeTimer.Enabled = false;
-                snoozeTimer = null;
+                _snoozeTimer.Enabled = false;
+                _snoozeTimer = null;
             }
         }
 

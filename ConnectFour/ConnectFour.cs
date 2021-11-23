@@ -7,10 +7,10 @@ namespace ConnectFour
 {
     public class ConnectFour : Game
     {
-        private static bool auto = false;
+        private static bool _auto = false;
         protected override bool Debug => false;
 
-        public  override void RunGame()
+        public override void RunGame()
         {
             int columns, rows, connect, teamCount;
             bool noMiddleStart, load;
@@ -28,22 +28,18 @@ namespace ConnectFour
             else
             {
                 columns = IntQuery("How many columns should the board have?");
-                while (columns < 3 || columns > 16) columns = IntQuery("Columns must be between 3 and 16.");
+                while (columns is < 3 or > 16) columns = IntQuery("Columns must be between 3 and 16.");
 
                 rows = IntQuery("How many rows should the board have?");
-                while (rows < 3 || rows > 16) rows = IntQuery("Rows must be between 3 and 16.");
+                while (rows is < 3 or > 16) rows = IntQuery("Rows must be between 3 and 16.");
 
                 connect = IntQuery("How many dots should the player have to connect?");
                 while (connect < 3 || (connect > columns && connect > rows)) connect = IntQuery("Connect must be greater than 2 and less than or equal to either columns or rows.");
 
                 teamCount = IntQuery("How many teams are playing?");
-                while (teamCount < 2 || teamCount > 8) teamCount = IntQuery("Teams must be between 2 and 8.");
+                while (teamCount is < 2 or > 8) teamCount = IntQuery("Teams must be between 2 and 8.");
 
-                if (columns % 2 != 0)
-                {
-                    noMiddleStart = BoolQuery("Should the first player be forbidden from starting in the center? (y/n)");
-                }
-                else noMiddleStart = false;
+                noMiddleStart = columns % 2 != 0 && BoolQuery("Should the first player be forbidden from starting in the center? (y/n)");
 
                 load = BoolQuery("Load Game? (y/n)");
                 if (load)
@@ -76,7 +72,7 @@ namespace ConnectFour
             {
                 WriteLine($"Which AI should be Player {i + 1}?");
                 Type foundAI = null;
-                while (foundAI == null)
+                while (foundAI is null)
                 {
                     input = Prompt(GamemasterID, PromptMode.Any, true).Content.Trim().ToLower();
 
@@ -114,8 +110,8 @@ namespace ConnectFour
 
             if (!humanPresent)
             {
-                if (BoolQuery("Should the game repeat without player input? (y/n)")) auto = true; // $$$ RE-ENABLE AUTO
-                else auto = false;
+                if (BoolQuery("Should the game repeat without player input? (y/n)")) _auto = true; // $$$ RE-ENABLE AUTO
+                else _auto = false;
             }
 
             State currentTeam = State.Circle;
@@ -136,13 +132,13 @@ namespace ConnectFour
                 }
                 else draws++;
 
-                if (!auto)
+                if (!_auto)
                 {
-                    input = PromptAny(AllowedChannels, (string x) => x.Trim().ToLower() == "next" || x.Trim().ToLower() == "end", true, "Type \"next\" to continue or \"end\" to stop playing.").Item2.Trim().ToLower();
+                    input = PromptAny(AllowedChannels, (string x) => x.Trim().ToLower() is "next" or "end", true, "Type \"next\" to continue or \"end\" to stop playing.").Item2.Trim().ToLower();
 
                     if (input == "end") break;
                 }
-                else if (Console.KeyAvailable) break; // $$$
+                else if (Console.KeyAvailable) break;
 
                 currentTeam = Next(currentTeam, teamCount);
             }
@@ -165,7 +161,7 @@ namespace ConnectFour
 
         private int IntQuery(string text) => Prompt<int>(GamemasterID, AllowedChannels, true, text);
 
-        private bool BoolQuery(string text) => Prompt(GamemasterID, AllowedChannels, (string x) => x.Trim().ToLower() == "y" || x.Trim().ToLower() == "n", message: text).Trim().ToLower() == "y";
+        private bool BoolQuery(string text) => Prompt(GamemasterID, AllowedChannels, (string x) => x.Trim().ToLower() is "y" or "n", message: text).Trim().ToLower() == "y";
 
         public static State Next(State state, int teamCount)
         {
@@ -183,9 +179,7 @@ namespace ConnectFour
             int numberInput = -1;
             string input = Prompt(id, AllowedChannels, (string s) => Library.TryDec(s, out numberInput) || s == "end", true, saveMessage: true);
 
-            if (input == "end") return null;
-            else return numberInput;
-
+            return input == "end" ? null : numberInput;
         }
     }
 }

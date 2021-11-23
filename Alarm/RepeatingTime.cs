@@ -6,9 +6,9 @@ namespace WingTechBot.Alarm
 {
     public class RepeatingTime : TimeBase
     {
-        double Interval { get; set; }
+        private double Interval { get; set; }
 
-        IntervalType IntervalType { get; set; }
+        private IntervalType IntervalType { get; set; }
 
         public RepeatingTime(DateTime start, double interval, IntervalType intervalType = IntervalType.Day)
         {

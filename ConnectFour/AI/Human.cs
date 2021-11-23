@@ -5,17 +5,17 @@ namespace ConnectFour
         public override string Name => "Human";
 
         public ulong ID { get; private set; }
-        private bool init = false;
+        private bool _init = false;
 
-        private ConnectFour game;
+        private ConnectFour _game;
 
         public void Init(ulong id, ConnectFour game)
         {
-            if (!init)
+            if (!_init)
             {
-                init = true;
+                _init = true;
                 ID = id;
-                this.game = game;
+                this._game = game;
             }
         }
 
@@ -23,9 +23,9 @@ namespace ConnectFour
         {
             Say($"Input move, {board.CurrentTeam} team.");
 
-            int? move = game.PromptMove(ID);
+            int? move = _game.PromptMove(ID);
 
-            if (move == null) board.Forfeit();
+            if (move is null) board.Forfeit();
 
             return move ?? 0;
         }

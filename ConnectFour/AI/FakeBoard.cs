@@ -99,17 +99,13 @@ namespace ConnectFour
             return true;
         }
 
-        public bool CheckVictor(int x, int y, State state)
-        {
-            if (state == State.Empty) return false;
-
-            if (CheckDirection(x, y, 1, 0, state) >= Connect) return true;
-            if (CheckDirection(x, y, 0, 1, state) >= Connect) return true;
-            if (CheckDirection(x, y, 1, 1, state) >= Connect) return true;
-            if (CheckDirection(x, y, 1, -1, state) >= Connect) return true;
-
-            return false;
-        }
+        public bool CheckVictor(int x, int y, State state) => state != State.Empty &&
+        (
+            CheckDirection(x, y, 1, 0, state) >= Connect ||
+            CheckDirection(x, y, 0, 1, state) >= Connect ||
+            CheckDirection(x, y, 1, 1, state) >= Connect ||
+            CheckDirection(x, y, 1, -1, state) >= Connect
+        );
 
         public bool CheckVictor((int x, int y) v, State state)
         => CheckVictor(v.x, v.y, state);
@@ -124,8 +120,8 @@ namespace ConnectFour
 
             for (int i = 1; i < Connect; i++)
             {
-                v = x + (a * i);
-                w = y + (b * i);
+                v = x + a * i;
+                w = y + b * i;
 
                 if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
                 else break;
@@ -133,8 +129,8 @@ namespace ConnectFour
 
             for (int i = 1; i < Connect; i++)
             {
-                v = x + (-a * i);
-                w = y + (-b * i);
+                v = x + -a * i;
+                w = y + -b * i;
 
                 if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
                 else break;
@@ -184,14 +180,11 @@ namespace ConnectFour
             return Rows - 1;
         }
 
-        public int CheckAllDirections(int x, int y, State state) // counts how many tokens a token placed here would connect to. Added by Ben.
-        {
-            return
-                CheckDirection(x, y, 1, 0, state) +
-                CheckDirection(x, y, 0, 1, state) +
-                CheckDirection(x, y, 1, 1, state) +
-                CheckDirection(x, y, 1, -1, state);
-        }
+        public int CheckAllDirections(int x, int y, State state) => 
+            CheckDirection(x, y, 1, 0, state) +
+            CheckDirection(x, y, 0, 1, state) +
+            CheckDirection(x, y, 1, 1, state) +
+            CheckDirection(x, y, 1, -1, state); // counts how many tokens a token placed here would connect to. Added by Ben.
 
         #endregion
 

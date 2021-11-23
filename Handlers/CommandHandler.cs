@@ -86,9 +86,7 @@ namespace WingTechBot.Handlers
                 if (user.RoleIds.Contains(Secrets.MOD_ROLE_ID) || user.Id == Secrets.OWNER_USER_ID) throw new Exception($"Role {roleName} cannot be applied to a mod.");
                 user.AddRoleAsync(server.GetRole(roleID));
 
-                int minutes;
-                if (arguments.Length < 2) minutes = -1;
-                else minutes = int.Parse(arguments[2]);
+                int minutes = arguments.Length < 2 ? -1 : int.Parse(arguments[2]);
                 string duration = minutes >= 1 ? $"for {minutes} minute(s)" : "permanently";
 
                 Program.AddToAuditLog(message.Author, $"added role {roleName} to {user.Username} {duration}");

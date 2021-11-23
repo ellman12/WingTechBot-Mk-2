@@ -10,9 +10,9 @@ namespace WingTechBot
     {
         public ulong GamemasterID { get; set; }
 
-        private static readonly List<ulong> list = new();
+        private static readonly List<ulong> _list = new();
 
-        public List<ulong> PlayerIDs { get; private set; } = list;
+        public List<ulong> PlayerIDs { get; private set; } = _list;
 
         protected IMessage LastMessage { get; private set; }
 
@@ -27,10 +27,10 @@ namespace WingTechBot
         protected virtual PromptMode AllowedChannels => PromptMode.Any;
         public virtual uint? MaxPlayers { get; protected set; } = null;
 
-        private readonly EventWaitHandle waitHandle = new(false, EventResetMode.ManualReset);
-        private readonly object messageLock = new();
+        private readonly EventWaitHandle _waitHandle = new(false, EventResetMode.ManualReset);
+        private readonly object _messageLock = new();
 
-        private bool init = false;
+        private bool _init = false;
 
         protected List<IMessage> sentMessages = new();
         protected List<IMessage> receivedMessages = new();
@@ -43,9 +43,9 @@ namespace WingTechBot
         {
             if (!ModeMatch(initMessage, AllowedChannels)) throw new Exception("This game cannot be started in this channel.");
 
-            if (!init)
+            if (!_init)
             {
-                init = true;
+                _init = true;
                 GamemasterID = initMessage.Author.Id;
                 GameChannel = initMessage.Channel as ISocketMessageChannel;
             }
@@ -54,7 +54,7 @@ namespace WingTechBot
 
         protected void GetPlayers()
         {
-            while (MaxPlayers == null || PlayerIDs.Count < MaxPlayers)
+            while (MaxPlayers is null || PlayerIDs.Count < MaxPlayers)
             {
                 IUser foundPlayer;
                 while (!Program.TryGetUser(PromptString(GamemasterID, AllowedChannels, message: $"Enter Player {PlayerIDs.Count + 1}, or type \"stop\" to stop adding players"), out foundPlayer))
@@ -99,7 +99,7 @@ namespace WingTechBot
 
         protected IMessage Prompt(ulong playerID, PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false)
         {
-            lock (messageLock)
+            lock (_messageLock)
             {
                 IUser player = GetPlayer(playerID);
                 if (playerID != GamemasterID && !PlayerIDs.Contains(playerID)) throw new Exception($"Error: {player.Username}#{player.Discriminator} cannot be prompted: not part of game.");
@@ -108,22 +108,20 @@ namespace WingTechBot
                 LastMessage = null;
             }
 
-            if (message != null)
+            if (message is not null)
             {
-                IMessage sent;
-                if (mode == PromptMode.DM)
-                {
-                    sent = DM(message, playerID);
-                }
-                else sent = WriteLine(message);
+                IMessage sent = 
+                    mode == PromptMode.DM 
+                    ? DM(message, playerID) 
+                    : WriteLine(message);
 
                 if (saveMessage) sentMessages.Add(sent);
             }
 
-            while (LastMessage == null || LastMessage.Author.Id != playerID || !ModeMatch(LastMessage, mode) || (channelMatch && LastMessage.Channel != GameChannel))
+            while (LastMessage is null || LastMessage.Author.Id != playerID || !ModeMatch(LastMessage, mode) || (channelMatch && LastMessage.Channel != GameChannel))
             {
-                waitHandle.Reset();
-                waitHandle.WaitOne();
+                _waitHandle.Reset();
+                _waitHandle.WaitOne();
             }
 
             return LastMessage;
@@ -131,21 +129,21 @@ namespace WingTechBot
 
         protected IMessage PromptAny(PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false)
         {
-            lock (messageLock)
+            lock (_messageLock)
             {
                 LastMessage = null;
             }
 
-            if (message != null)
+            if (message is not null)
             {
                 IMessage sent = WriteLine(message);
                 if (saveMessage) sentMessages.Add(sent);
             }
 
-            while (LastMessage == null || !PlayerIDs.Contains(LastMessage.Author.Id) || !ModeMatch(LastMessage, mode) || (channelMatch && LastMessage.Channel != GameChannel))
+            while (LastMessage is null || !PlayerIDs.Contains(LastMessage.Author.Id) || !ModeMatch(LastMessage, mode) || (channelMatch && LastMessage.Channel != GameChannel))
             {
-                waitHandle.Reset();
-                waitHandle.WaitOne();
+                _waitHandle.Reset();
+                _waitHandle.WaitOne();
             }
 
             return LastMessage;
@@ -179,7 +177,7 @@ namespace WingTechBot
                 }
             }
 
-            if (saveMessage && messageReceived != null) receivedMessages.Add(messageReceived);
+            if (saveMessage && messageReceived is not null) receivedMessages.Add(messageReceived);
 
             return foundValue;
         }
@@ -205,7 +203,7 @@ namespace WingTechBot
                 }
             }
 
-            if (saveMessage && messageReceived != null) receivedMessages.Add(messageReceived);
+            if (saveMessage && messageReceived is not null) receivedMessages.Add(messageReceived);
 
             return (foundID, foundValue);
         }
@@ -213,10 +211,10 @@ namespace WingTechBot
         protected T Prompt<T>(ulong playerID, PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => Prompt(playerID, mode, (T _) => true, channelMatch, message, saveMessage);
         protected (ulong, T) PromptAny<T>(PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => PromptAny(mode, (T _) => true, channelMatch, message, saveMessage);
 
-        protected bool PromptYN(ulong playerID, PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => Prompt(playerID, mode, (string x) => x.Trim().ToLower() == "y" || x.Trim().ToLower() == "n", channelMatch, message, saveMessage).Trim().ToLower() == "y";
-        protected bool PromptAnyYN(PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => PromptAny(mode, (string x) => x.Trim().ToLower() == "y" || x.Trim().ToLower() == "n", channelMatch, message, saveMessage).Item2.Trim().ToLower() == "y";
+        protected bool PromptYN(ulong playerID, PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => Prompt(playerID, mode, (string x) => x.Trim().ToLower() is "y" or "n", channelMatch, message, saveMessage).Trim().ToLower() == "y";
+        protected bool PromptAnyYN(PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => PromptAny(mode, (string x) => x.Trim().ToLower() is "y" or "n", channelMatch, message, saveMessage).Item2.Trim().ToLower() == "y";
 
-        protected bool PromptEnd() => PromptAny(AllowedChannels, (string x) => x.Trim().ToLower() == "next" || x.Trim().ToLower() == "end", true, "Type \"next\" to continue or \"end\" to stop playing.", true).Item2.Trim().ToLower() == "end";
+        protected bool PromptEnd() => PromptAny(AllowedChannels, (string x) => x.Trim().ToLower() is "next" or "end", true, "Type \"next\" to continue or \"end\" to stop playing.", true).Item2.Trim().ToLower() == "end";
 
 
         public void ReceiveMessage(IMessage message)
@@ -226,12 +224,12 @@ namespace WingTechBot
                 LastMessage = message;
             }
 
-            waitHandle.Set();
+            _waitHandle.Set();
         }
 
         public void ReceiveCommand(IMessage message)
         {
-            if (Commands != null)
+            if (Commands is not null)
             {
                 string command;
                 string[] arguments;
@@ -244,17 +242,14 @@ namespace WingTechBot
             }
         }
 
-        private static bool ModeMatch(IMessage message, PromptMode mode)
+        private static bool ModeMatch(IMessage message, PromptMode mode) => mode switch
         {
-            return mode switch
-            {
-                PromptMode.DM => message.Channel is IDMChannel,
-                PromptMode.Public => message.Channel is IGuildChannel,
-                PromptMode.Group => message.Channel is IGroupChannel,
-                PromptMode.GroupOrPublic => message.Channel is IGroupChannel || message.Channel is IGuildChannel,
-                _ => true,
-            };
-        }
+            PromptMode.DM => message.Channel is IDMChannel,
+            PromptMode.Public => message.Channel is IGuildChannel,
+            PromptMode.Group => message.Channel is IGroupChannel,
+            PromptMode.GroupOrPublic => message.Channel is IGroupChannel or IGuildChannel,
+            _ => true,
+        };
 
         protected IMessage DM(object x, ulong id)
         {

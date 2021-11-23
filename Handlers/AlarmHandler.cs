@@ -10,7 +10,7 @@ namespace WingTechBot
     {
         public List<UserAlarm> Alarms { get; } = new();
 
-        private Timer minuteTimer;
+        private Timer _minuteTimer;
 
         public AlarmHandler(DiscordSocketClient client)
         {
@@ -28,12 +28,12 @@ namespace WingTechBot
 
             client.Connected += delegate
             {
-                if (minuteTimer == null)
+                if (_minuteTimer is null)
                 {
-                    minuteTimer = new Timer(UserAlarm.TimerInterval * 60_000);
-                    foreach (var x in Alarms) minuteTimer.Elapsed += x.OnTimedEvent;
-                    minuteTimer.AutoReset = true;
-                    minuteTimer.Enabled = true;
+                    _minuteTimer = new Timer(UserAlarm.TimerInterval * 60_000);
+                    foreach (var x in Alarms) _minuteTimer.Elapsed += x.OnTimedEvent;
+                    _minuteTimer.AutoReset = true;
+                    _minuteTimer.Enabled = true;
                 }
 
                 return Task.CompletedTask;

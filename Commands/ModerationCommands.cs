@@ -7,7 +7,7 @@ using WingTechBot.Handlers;
 
 namespace WingTechBot
 {
-    class DeleteCommand : Command
+    internal class DeleteCommand : Command
     {
         public override void Execute()
         {
@@ -49,7 +49,6 @@ namespace WingTechBot
             {
                 throw new Exception($"Failed to delete message.");
             }
-
         }
 
         public override string LogString => $"deleted a message from {replied.Author.Username} in {replied.Channel.Name}";
@@ -59,9 +58,9 @@ namespace WingTechBot
         public override bool GetReply => true;
     }
 
-    class PinCommand : Command
+    internal class PinCommand : Command
     {
-        string pin;
+        private string _pin;
 
         public override void Execute()
         {
@@ -72,23 +71,23 @@ namespace WingTechBot
                 if (replied.IsPinned) ((SocketUserMessage)replied).UnpinAsync();
                 else ((SocketUserMessage)replied).PinAsync();
 
-                pin = replied.IsPinned ? "Pin" : "Unpin";
-                message.Channel.SendMessageAsync($"{pin}ning message from {replied.Author.Mention}.");
+                _pin = replied.IsPinned ? "Pin" : "Unpin";
+                message.Channel.SendMessageAsync($"{_pin}ning message from {replied.Author.Mention}.");
             }
             catch
             {
-                throw new Exception($"Failed to {pin} message.");
+                throw new Exception($"Failed to {_pin} message.");
             }
         }
 
-        public override string LogString => $"{pin}ned a message in {replied.Channel.Name}";
+        public override string LogString => $"{_pin}ned a message in {replied.Channel.Name}";
         public override bool Audit => true;
         public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
         public override string[] Aliases => new string[] { "pin", "unpin", "p", "up" };
         public override bool GetReply => true;
     }
 
-    class ClearCommand : Command
+    internal class ClearCommand : Command
     {
         public override void Execute()
         {
@@ -121,7 +120,7 @@ namespace WingTechBot
         public override bool GetReply => true;
     }
 
-    class ToggleBotCommand : Command
+    internal class ToggleBotCommand : Command
     {
         public override void Execute()
         {

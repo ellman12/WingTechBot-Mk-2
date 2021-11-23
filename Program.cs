@@ -10,7 +10,7 @@ namespace WingTechBot
 {
     public static class Program
     {
-        private static DiscordSocketClient client;
+        private static DiscordSocketClient _client;
 
         public static SocketTextChannel BotChannel { get; private set; }
 
@@ -32,33 +32,33 @@ namespace WingTechBot
         public static void Main()
             => MainAsync().GetAwaiter().GetResult();
 
-        static void OnProcessExit(object sender, EventArgs e) => KarmaHandler.Save();
+        private static void OnProcessExit(object sender, EventArgs e) => KarmaHandler.Save();
 
         private static async Task MainAsync()
         {
             KarmaHandler.Load();
 
             var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
-            client = new DiscordSocketClient(config);
+            _client = new DiscordSocketClient(config);
 
-            client.MessageReceived += CommandHandler.CommandTask;
-            client.MessageReceived += GameHandler.GameTask;
-            client.Log += Log;
+            _client.MessageReceived += CommandHandler.CommandTask;
+            _client.MessageReceived += GameHandler.GameTask;
+            _client.Log += Log;
 
-            client.ReactionAdded += KarmaHandler.ReactionAdded;
-            client.ReactionRemoved += KarmaHandler.ReactionRemoved;
+            _client.ReactionAdded += KarmaHandler.ReactionAdded;
+            _client.ReactionRemoved += KarmaHandler.ReactionRemoved;
 
-            client.UserVoiceStateUpdated += VoiceLogger.LogVoice;
+            _client.UserVoiceStateUpdated += VoiceLogger.LogVoice;
 
-            client.Ready += Start;
+            _client.Ready += Start;
 
             AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-            await client.LoginAsync(TokenType.Bot, Secrets.LOGIN_TOKEN); // Secrets is only accessible on my local copy... Sorry, no stealing my log-in!
-            await client.SetGameAsync("cringe | ~help");
-            await client.StartAsync();
+            await _client.LoginAsync(TokenType.Bot, Secrets.LOGIN_TOKEN); // Secrets is only accessible on my local copy... Sorry, no stealing my log-in!
+            await _client.SetGameAsync("cringe | ~help");
+            await _client.StartAsync();
 
-            AlarmHandler = new(client);
+            AlarmHandler = new(_client);
 
             await AutoSave();
             await KarmaHandler.CheckRunningKarma();
@@ -69,10 +69,10 @@ namespace WingTechBot
 
         private static Task Start()
         {
-            BotChannel = client.GetChannel(Secrets.BOT_CHANNEL_ID) as SocketTextChannel;
-            foreach (SocketVoiceChannel vc in client.GetGroupChannelsAsync().Result)
+            BotChannel = _client.GetChannel(Secrets.BOT_CHANNEL_ID) as SocketTextChannel;
+            foreach (SocketVoiceChannel vc in _client.GetGroupChannelsAsync().Result)
             {
-                if (vc.Users.FirstOrDefault(x => x.Id == Secrets.OWNER_USER_ID) != null)
+                if (vc.Users.FirstOrDefault(x => x.Id == Secrets.OWNER_USER_ID) is not null)
                 {
                     VoiceLogger.OwnerInVoice = true;
                     break;
@@ -106,10 +106,10 @@ namespace WingTechBot
             if (arguments.Length > 1)
             {
                 parsed = MentionUtils.TryParseUser(arguments[index], out ulong id);
-                requested = client.GetUser(id);
+                requested = _client.GetUser(id);
             }
 
-            if (requested == null || !parsed)
+            if (requested is null || !parsed)
             {
                 message.Channel.SendMessageAsync("User not found.");
                 Console.WriteLine("User not found.");
@@ -130,7 +130,7 @@ namespace WingTechBot
             {
                 try
                 {
-                    user = client.GetUser(id);
+                    user = _client.GetUser(id);
                 }
                 catch { }
             }
@@ -145,8 +145,8 @@ namespace WingTechBot
             file.WriteLine($"{mod.Username} {action} at {DateTime.Now}");
         }
 
-        public static IUser GetUser(ulong id) => client.GetUser(id);
+        public static IUser GetUser(ulong id) => _client.GetUser(id);
 
-        public static IChannel GetChannel(ulong id) => client.GetChannel(id);
+        public static IChannel GetChannel(ulong id) => _client.GetChannel(id);
     }
 }

@@ -1,23 +1,20 @@
 ﻿namespace WingTechBot
 {
-    class SlurCommand : Command
+    internal class SlurCommand : Command
     {
-        public override void Execute()
-        {
-            message.Channel.SendMessageAsync($"Bad {message.Author.Mention}");
-        }
+        public override void Execute() => message.Channel.SendMessageAsync($"Bad {message.Author.Mention}");
 
         public override string LogString => $"scolded {message.Author}";
     }
 
-    class FisheCommand : Command
+    internal class FisheCommand : Command
     {
         public override void Execute() => message.Channel.SendFileAsync(@"Images/fishe.jpg");
 
         public override string LogString => "posted fishe";
     }
 
-    class NekoCommand : Command
+    internal class NekoCommand : Command
     {
         public override void Execute() => message.Channel.SendFileAsync($@"Images/neko{Program.Random.Next(5)}.png");
 

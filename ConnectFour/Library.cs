@@ -7,13 +7,13 @@ namespace ConnectFour
     {
         public static Random Random { get; private set; } = new(); // a random all set up and ready to use... Try Random.Next();
 
-        public static bool TryDec(string hex, out int dec) // this takes a string in hex form and changes it into decimal form. Added by Ben.
-        {
-            return int.TryParse(hex,
+        public static bool TryDec(string hex, out int dec) => int.TryParse
+        (
+            hex,
             System.Globalization.NumberStyles.HexNumber,
             System.Globalization.CultureInfo.DefaultThreadCurrentCulture,
-             out dec);
-        }
+            out dec
+        );
 
         public static int GetNextY(int x, Board board) // returns the y value of the next token placed in the specified column. Added by Ben.
         {

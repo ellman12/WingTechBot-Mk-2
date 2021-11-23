@@ -4,17 +4,16 @@ namespace WingTechBot
 {
     public class Counting : Game
     {
-        private int countBy;
-        private bool turnOrder;
-
-        int currentPlayerIndex = 0;
+        private int _countBy;
+        private bool _turnOrder;
+        private int _currentPlayerIndex = 0;
 
         protected override bool Debug => false;
 
         protected override void Start()
         {
-            countBy = Prompt<int>(GamemasterID, AllowedChannels, true, "What are we gonna count by?");
-            turnOrder = Prompt<bool>(GamemasterID, AllowedChannels, true, "Is turn order required? (true/false)");
+            _countBy = Prompt<int>(GamemasterID, AllowedChannels, true, "What are we gonna count by?");
+            _turnOrder = Prompt<bool>(GamemasterID, AllowedChannels, true, "Is turn order required? (true/false)");
         }
 
         public override void RunGame()
@@ -28,14 +27,14 @@ namespace WingTechBot
             Stopwatch timer = new();
             int score = 0;
 
-            WriteLine($"Alright, start counting by {countBy}'s!");
+            WriteLine($"Alright, start counting by {_countBy}'s!");
             timer.Start();
 
             while (true)
             {
-                (ulong id, int guess) response = PromptAny<int>(PromptMode.Any, true);
+                (ulong id, int guess) = PromptAny<int>(PromptMode.Any, true);
 
-                if ((!turnOrder || PlayerIDs[currentPlayerIndex] == response.id) && response.guess == ++score * countBy)
+                if ((!_turnOrder || PlayerIDs[_currentPlayerIndex] == id) && guess == ++score * _countBy)
                 {
                     Advance();
                 }
@@ -51,8 +50,8 @@ namespace WingTechBot
 
         private void Advance()
         {
-            currentPlayerIndex++;
-            if (currentPlayerIndex >= PlayerIDs.Count) currentPlayerIndex = 0;
+            _currentPlayerIndex++;
+            if (_currentPlayerIndex >= PlayerIDs.Count) _currentPlayerIndex = 0;
         }
     }
 }

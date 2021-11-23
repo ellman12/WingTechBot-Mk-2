@@ -1,6 +1,6 @@
 ﻿namespace ConnectFour
 {
-    interface IHuman
+    internal interface IHuman
     {
         void Init(ulong id, ConnectFour game);
     }

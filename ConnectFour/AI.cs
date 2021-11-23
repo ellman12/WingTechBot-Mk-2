@@ -22,21 +22,18 @@ namespace ConnectFour
 
         public virtual void GameEnd() { } // use this to make your AI respond to the game ending.
 
-        public virtual void Init(Func<object, Discord.IMessage> saveWriteLine) // what does your AI say when created?
-        {
-            _saveWriteLine = saveWriteLine;
-        }
+        public virtual void Init(Func<object, Discord.IMessage> saveWriteLine) => _saveWriteLine = saveWriteLine; // what does your AI say when created?
 
-        private bool setTeam = false;
+        private bool _setTeam = false;
         private State _team;
         public State Team // stores which team your AI is on. Can only be set once.
         {
             get => _team;
             set
             {
-                if (!setTeam)
+                if (!_setTeam)
                 {
-                    setTeam = true;
+                    _setTeam = true;
                     _team = value;
                 }
             }

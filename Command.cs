@@ -23,7 +23,7 @@ namespace WingTechBot
             if (GetRequested)
             {
                 requested = Program.GetUserFromMention(message, arguments);
-                if (requested == null) throw new ArgumentException($"Command {Name} requires a user to be mentioned.");
+                if (requested is null) throw new ArgumentException($"Command {Name} requires a user to be mentioned.");
             }
 
             if (GetReply)
@@ -33,10 +33,11 @@ namespace WingTechBot
                     replied = message.Channel.GetMessageAsync(message.Reference.MessageId.Value).Result;
                 }
                 catch { }
-                if (replied == null) throw new ArgumentException($"Command {Name} must include a reply to another message");
+
+                if (replied is null) throw new ArgumentException($"Command {Name} must include a reply to another message");
             }
 
-            if (RequiredRoles != null)
+            if (RequiredRoles is not null)
             {
                 if (message.Channel is SocketGuildChannel)
                 {
@@ -77,6 +78,6 @@ namespace WingTechBot
             }
         }
 
-        public virtual string[] Aliases { get => new string[] { Name.ToLower() }; }
+        public virtual string[] Aliases => new string[] { Name.ToLower() };
     }
 }

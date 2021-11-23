@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace WingTechBot
 {
-    class StopCommand : Command
+    internal class StopCommand : Command
     {
         public override void Execute()
         {
@@ -19,37 +19,39 @@ namespace WingTechBot
         public override bool OwnerOnly => true;
     }
 
-    class HelpCommand : Command
+    internal class HelpCommand : Command
     {
-        static string list = string.Empty;
+        private static string _list = string.Empty;
 
         public override void Execute()
         {
             if (Program.CommandHandler.Commands.Count > 0)
             {
-                if (list == string.Empty) // only run once
+                if (_list == string.Empty) // only run once
                 {
-                    list = "```Available Commands:\n";
+                    _list = "```Available Commands:\n";
                     foreach (var command in Program.CommandHandler.Commands)
                     {
                         if (command.Key == Program.CommandHandler.Commands.First((KeyValuePair<string, Type> kvp) => kvp.Value == Program.CommandHandler.Commands[command.Key]).Key)
                         {
                             Command c = Activator.CreateInstance(command.Value) as Command;
-                            list += $" - {c.Name}";
+                            _list += $" - {c.Name}";
                             if (c.Aliases.Length > 1)
                             {
                                 string a = " (aliases:";
                                 foreach (string s in c.Aliases) a += $" {s}";
-                                list += a + ")";
+                                _list += a + ")";
                             }
-                            list += "\n";
+
+                            _list += "\n";
                         }
                     }
-                    list += "```";
+
+                    _list += "```";
                 }
 
-                Console.WriteLine($"list: {list}");
-                message.Channel.SendMessageAsync(list);
+                Console.WriteLine($"list: {_list}");
+                message.Channel.SendMessageAsync(_list);
             }
             else
             {
@@ -60,20 +62,20 @@ namespace WingTechBot
         public override string LogString => "listed commands.";
     }
 
-    class DMCommand : Command
+    internal class DMCommand : Command
     {
-        string sendMessage = string.Empty;
+        private string _sendMessage = string.Empty;
 
         public override void Execute()
         {
             string[] messageWords = arguments[2..];
-            foreach (string s in messageWords) sendMessage += $"{s} ";
+            foreach (string s in messageWords) _sendMessage += $"{s} ";
 
-            requested.GetOrCreateDMChannelAsync().Result.SendMessageAsync(sendMessage);
+            requested.GetOrCreateDMChannelAsync().Result.SendMessageAsync(_sendMessage);
             message.Channel.SendMessageAsync("Sent.");
         }
 
-        public override string LogString => $"DM'd {requested.Username}#{requested.Discriminator}: {sendMessage}";
+        public override string LogString => $"DM'd {requested.Username}#{requested.Discriminator}: {_sendMessage}";
         public override bool GetRequested => true;
         public override bool OwnerOnly => true;
     }

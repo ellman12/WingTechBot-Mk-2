@@ -36,14 +36,14 @@ namespace ConnectFour
 
         private int _round;
         private readonly int _auth;
-        private bool authSent = false;
+        private bool _authSent = false;
         public int Auth
         {
             get
             {
-                if (!authSent)
+                if (!_authSent)
                 {
-                    authSent = true;
+                    _authSent = true;
                     return _auth;
                 }
                 else return -1;
@@ -134,17 +134,13 @@ namespace ConnectFour
             return true;
         }
 
-        public bool CheckVictor(int x, int y, State state)
-        {
-            if (state == State.Empty) return false;
-
-            if (CheckDirection(x, y, 1, 0, state) >= Connect) return true;
-            if (CheckDirection(x, y, 0, 1, state) >= Connect) return true;
-            if (CheckDirection(x, y, 1, 1, state) >= Connect) return true;
-            if (CheckDirection(x, y, 1, -1, state) >= Connect) return true;
-
-            return false;
-        }
+        public bool CheckVictor(int x, int y, State state) => state != State.Empty && 
+        (
+            CheckDirection(x, y, 1, 0, state) >= Connect ||
+            CheckDirection(x, y, 0, 1, state) >= Connect ||
+            CheckDirection(x, y, 1, 1, state) >= Connect || 
+            CheckDirection(x, y, 1, -1, state) >= Connect
+        );
 
         public bool CheckVictor((int x, int y) v, State state) => CheckVictor(v.x, v.y, state); // tuple version
 
@@ -158,8 +154,8 @@ namespace ConnectFour
 
             for (int i = 1; i < Connect; i++)
             {
-                v = x + (a * i);
-                w = y + (b * i);
+                v = x + a * i;
+                w = y + b * i;
 
                 if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
                 else break;
@@ -167,8 +163,8 @@ namespace ConnectFour
 
             for (int i = 1; i < Connect; i++)
             {
-                v = x + (-a * i);
-                w = y + (-b * i);
+                v = x + -a * i;
+                w = y + -b * i;
 
                 if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
                 else break;
@@ -186,6 +182,7 @@ namespace ConnectFour
                 _saveWriteLine("Wrong auth token.");
                 return false;
             }
+
             if (x < 0 || x >= Columns)
             {
                 _saveWriteLine($"Column {x} does not exist.");
@@ -227,8 +224,7 @@ namespace ConnectFour
 
         public void Forfeit()
         {
-            if (TeamCount > 2) Victor = State.Empty;
-            else Victor = ConnectFour.Next(CurrentTeam, TeamCount);
+            Victor = TeamCount > 2 ? State.Empty : ConnectFour.Next(CurrentTeam, TeamCount);
 
             EndGame();
         }
@@ -352,6 +348,7 @@ namespace ConnectFour
             {
                 screen += '=';
             }
+
             screen += '\n';
         }
 
@@ -363,6 +360,7 @@ namespace ConnectFour
             {
                 screen += $"[{i:X}]=";
             }
+
             screen += '\n';
         }
 

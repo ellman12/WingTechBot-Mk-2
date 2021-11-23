@@ -6,9 +6,9 @@ namespace ConnectFour
         public override string Name => "AssistAI";
 
         public ulong ID { get; private set; }
-        private bool init = false;
+        private bool _init = false;
 
-        private ConnectFour game;
+        private ConnectFour _game;
 
         public override void Init(Func<object, Discord.IMessage> saveWriteLine)
         {
@@ -19,11 +19,11 @@ namespace ConnectFour
 
         public void Init(ulong id, ConnectFour game)
         {
-            if (!init)
+            if (!_init)
             {
-                init = true;
+                _init = true;
                 ID = id;
-                this.game = game;
+                this._game = game;
             }
         }
 
@@ -37,9 +37,9 @@ namespace ConnectFour
             bool confirmed = false;
             while (!confirmed)
             {
-                int? move = game.PromptMove(ID);
+                int? move = _game.PromptMove(ID);
 
-                if (move == null) board.Forfeit();
+                if (move is null) board.Forfeit();
 
                 numberInput = move ?? 0;
 
@@ -72,9 +72,6 @@ namespace ConnectFour
 
         }
 
-        public override void GameEnd() // This is called at the end of a series of games.
-        {
-            Say("I hope I was helpful.");
-        }
+        public override void GameEnd() => Say("I hope I was helpful."); // This is called at the end of a series of games.
     }
 }

@@ -2,12 +2,12 @@
 
 namespace WingTechBot.Hangman
 {
-    static class Accented
+    internal static class Accented
     {
         // adapted from CodeIgniter and CIRCLE:
         // https://stackoverflow.com/a/34272324
 
-        static readonly Dictionary<string, string> foreign_characters = new()
+        private static readonly Dictionary<string, string> _foreign_characters = new()
         {
             { "ÀÁÂÃÄÅǺĀĂĄǍΑΆẢẠẦẪẨẬẰẮẴẲẶÄА", "A" },
             { "àáâãåǻāăąǎªαάảạầấẫẩậằắẵẳặаä", "a" },
@@ -67,7 +67,7 @@ namespace WingTechBot.Hangman
 
         public static char RemoveDiacritics(this char c)
         {
-            foreach (KeyValuePair<string, string> entry in foreign_characters)
+            foreach (KeyValuePair<string, string> entry in _foreign_characters)
             {
                 if (entry.Key.IndexOf(c) != -1)
                 {
@@ -86,7 +86,7 @@ namespace WingTechBot.Hangman
             {
                 int len = text.Length;
 
-                foreach (KeyValuePair<string, string> entry in foreign_characters)
+                foreach (KeyValuePair<string, string> entry in _foreign_characters)
                 {
                     if (entry.Key.IndexOf(c) != -1)
                     {

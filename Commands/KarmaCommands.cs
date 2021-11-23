@@ -7,7 +7,7 @@ using WingTechBot.Handlers;
 
 namespace WingTechBot
 {
-    class KarmaCommand : Command
+    internal class KarmaCommand : Command
     {
         public override void Execute()
         {
@@ -28,7 +28,7 @@ namespace WingTechBot
         public override string[] Aliases => new string[] { "karma", "k" };
     }
 
-    class AwardCommand : Command
+    internal class AwardCommand : Command
     {
         public override void Execute()
         {
@@ -49,7 +49,7 @@ namespace WingTechBot
         public override string[] Aliases => new string[] { "award", "awards", "a" };
     }
 
-    class RecordCommand : Command
+    internal class RecordCommand : Command
     {
         public override void Execute()
         {
@@ -70,7 +70,7 @@ namespace WingTechBot
         public override string[] Aliases => new string[] { "record", "records", "r" };
     }
 
-    class SaveCommand : Command
+    internal class SaveCommand : Command
     {
         public override void Execute()
         {
@@ -83,7 +83,7 @@ namespace WingTechBot
         public override bool OwnerOnly => true;
     }
 
-    class LogCommand : Command
+    internal class LogCommand : Command
     {
         public override void Execute()
         {
@@ -95,6 +95,7 @@ namespace WingTechBot
                 {
                     Console.Write($" {entry.Value[i]}");
                 }
+
                 Console.WriteLine();
             }
         }
@@ -103,15 +104,15 @@ namespace WingTechBot
         public override bool OwnerOnly => true;
     }
 
-    class ReverseCommand : Command
+    internal class ReverseCommand : Command
     {
-        int caseNumber;
+        private int _caseNumber;
 
         public override void Execute()
         {
             try
             {
-                caseNumber = int.Parse(arguments[1]);
+                _caseNumber = int.Parse(arguments[1]);
             }
             catch { throw new ArgumentException("Case number must be specified."); }
 
@@ -119,11 +120,11 @@ namespace WingTechBot
 
             try
             {
-                line = File.ReadLines(KarmaHandler.CASE_PATH).Skip(caseNumber).Take(1).First();
+                line = File.ReadLines(KarmaHandler.CASE_PATH).Skip(_caseNumber).Take(1).First();
             }
             catch
             {
-                throw new Exception($"{caseNumber} not found.");
+                throw new Exception($"{_caseNumber} not found.");
             }
 
             string[] values = line.Split(' ');
@@ -133,51 +134,51 @@ namespace WingTechBot
             int emoteID = int.Parse(values[2]);
             Program.KarmaHandler.KarmaDictionary[id][emoteID] += int.Parse(values[3]);
 
-            message.Channel.SendMessageAsync($"Karma and awards from case {caseNumber} has been returned to {Program.GetUser(id).Mention}...");
+            message.Channel.SendMessageAsync($"Karma and awards from case {_caseNumber} has been returned to {Program.GetUser(id).Mention}...");
 
             string[] arrLine = File.ReadAllLines(KarmaHandler.CASE_PATH);
-            arrLine[caseNumber] += " REVERSED";
+            arrLine[_caseNumber] += " REVERSED";
             File.WriteAllLines(KarmaHandler.CASE_PATH, arrLine);
 
         }
 
-        public override string LogString => $"reversed case #{caseNumber}.";
+        public override string LogString => $"reversed case #{_caseNumber}.";
         public override bool OwnerOnly => true;
         public override bool Audit => true;
     }
 
-    class ConfirmCommand : Command
+    internal class ConfirmCommand : Command
     {
-        int caseNumber;
+        private int _caseNumber;
 
         public override void Execute()
         {
             try
             {
-                caseNumber = int.Parse(arguments[1]);
+                _caseNumber = int.Parse(arguments[1]);
             }
             catch { throw new ArgumentException("Case number must be specified."); }
 
             string[] arrLine = File.ReadAllLines(KarmaHandler.CASE_PATH);
             try
             {
-                arrLine[caseNumber] += " CONFIRMED";
+                arrLine[_caseNumber] += " CONFIRMED";
             }
             catch
             {
-                message.Channel.SendMessageAsync($"{caseNumber} not found.");
+                message.Channel.SendMessageAsync($"{_caseNumber} not found.");
             }
 
             File.WriteAllLines(KarmaHandler.CASE_PATH, arrLine);
-            message.Channel.SendMessageAsync($"{caseNumber} confirmed.");
+            message.Channel.SendMessageAsync($"{_caseNumber} confirmed.");
         }
 
-        public override string LogString => $"confirmed case #{caseNumber}.";
+        public override string LogString => $"confirmed case #{_caseNumber}.";
         public override bool OwnerOnly => true;
         public override bool Audit => true;
     }
 
-    class RunningCommand : Command
+    internal class RunningCommand : Command
     {
         public override void Execute()
         {
@@ -198,7 +199,7 @@ namespace WingTechBot
         public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
     }
 
-    class SpamCommand : Command
+    internal class SpamCommand : Command
     {
         public override void Execute()
         {
@@ -211,7 +212,7 @@ namespace WingTechBot
         public override bool Audit => true;
     }
 
-    class TopCommand : Command
+    internal class TopCommand : Command
     {
         public override void Execute()
         {
@@ -229,8 +230,7 @@ namespace WingTechBot
                 }
                 else
                 {
-                    if (arguments[1].ToLower() == "all") numToReport = Program.KarmaHandler.KarmaDictionary.Count;
-                    else numToReport = 5;
+                    numToReport = arguments[1].ToLower() == "all" ? Program.KarmaHandler.KarmaDictionary.Count : 5;
                 }
             }
 

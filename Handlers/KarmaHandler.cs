@@ -18,7 +18,7 @@ namespace WingTechBot.Handlers
         public const string CASE_PATH = @"wingtech_bot_cases.txt";
         public const string SAVE_PATH = @"wingtech_bot_save.txt";
 
-        private static readonly string[] upvoteScolds = new string[]
+        private static readonly string[] _upvoteScolds = new string[]
         {
             "god imagine upvoting yourself",
             "eww, a self-upvote",
@@ -55,7 +55,7 @@ namespace WingTechBot.Handlers
             {
                 for (int i = 0; i < kvp.Value.Length; i++)
                 {
-                    if (kvp.Value[i] >= RUNNING_KARMA_LIMIT || kvp.Value[i] <= -5)
+                    if (kvp.Value[i] is >= RUNNING_KARMA_LIMIT or <= (-5))
                     {
                         CreateCase(kvp, i);
                         kvp.Value[i] = 0;
@@ -94,6 +94,7 @@ namespace WingTechBot.Handlers
                 {
                     file.Write($" {entry.Value[i]}");
                 }
+
                 file.Write(" "); // need to pad!
                 file.WriteLine();
             }
@@ -132,7 +133,7 @@ namespace WingTechBot.Handlers
         {
             IMessage message = await cacheMessage.GetOrDownloadAsync();
 
-            if (message == null || message.Timestamp < START_TIME) return;
+            if (message is null || message.Timestamp < START_TIME) return;
             if (message.Id == 835170015757074493)
             {
                 RoleHandler.Handle(reaction, true);
@@ -163,7 +164,7 @@ namespace WingTechBot.Handlers
                 {
                     if (reaction.Emote.Name == "upvote")
                     {
-                        if (!Program.BotOnly || channel.Id == Secrets.BOT_CHANNEL_ID) await message.Channel.SendMessageAsync($"{upvoteScolds[Program.Random.Next(upvoteScolds.Length)]} {message.Author.Mention}");
+                        if (!Program.BotOnly || channel.Id == Secrets.BOT_CHANNEL_ID) await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
                     }
 
                     Console.WriteLine($"{DateTime.Now}: ignored {message.Author} self-vote");
@@ -177,11 +178,11 @@ namespace WingTechBot.Handlers
             }
         }
 
-        public async Task ReactionRemoved(Cacheable<IUserMessage, ulong> cacheMessage, ISocketMessageChannel channel, SocketReaction reaction)
+        public async Task ReactionRemoved(Cacheable<IUserMessage, ulong> cacheMessage, ISocketMessageChannel _, SocketReaction reaction)
         {
             IMessage message = await cacheMessage.GetOrDownloadAsync();
 
-            if (message == null || DateTime.Now < new DateTimeOffset(new DateTime(2020, 11, 25))) return;
+            if (message is null || DateTime.Now < new DateTimeOffset(new DateTime(2020, 11, 25))) return;
             if (message.Id == 835170015757074493)
             {
                 RoleHandler.Handle(reaction, false);

@@ -12,7 +12,7 @@ namespace WingTechBot.Handlers
         {
             if (priorState.VoiceChannel != currentState.VoiceChannel)
             {
-                if (priorState.VoiceChannel == null) // CHANNEL ENTER
+                if (priorState.VoiceChannel is null) // CHANNEL ENTER
                 {
                     Console.WriteLine($"{DateTime.Now}: {user.Username}#{user.Discriminator} entered channel {currentState.VoiceChannel.Name}");
 
@@ -24,7 +24,7 @@ namespace WingTechBot.Handlers
 #endif
                     }
                 }
-                else if (currentState.VoiceChannel == null) // CHANNEL LEAVE
+                else if (currentState.VoiceChannel is null) // CHANNEL LEAVE
                 {
                     Console.WriteLine($"{DateTime.Now}: {user.Username}#{user.Discriminator} left channel {priorState.VoiceChannel.Name}");
 

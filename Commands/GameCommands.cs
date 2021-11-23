@@ -4,9 +4,9 @@ using System.Linq;
 
 namespace WingTechBot
 {
-    class GameCommand : Command
+    internal class GameCommand : Command
     {
-        Game createGame;
+        private Game _createGame;
 
         public override void Execute()
         {
@@ -22,25 +22,25 @@ namespace WingTechBot
 
             Type foundGame = Program.GameHandler.Games.FirstOrDefault((Type t) => t.Name.ToLower() == arguments[1].ToLower());
 
-            if (foundGame == null)
+            if (foundGame is null)
             {
                 throw new ArgumentException($"The game \"{arguments[1]}\" could not be found.");
             }
 
-            createGame = Activator.CreateInstance(foundGame) as Game;
+            _createGame = Activator.CreateInstance(foundGame) as Game;
 
-            createGame.Init(message);
+            _createGame.Init(message);
 
-            Program.GameHandler.ActiveGames.Add(createGame);
+            Program.GameHandler.ActiveGames.Add(_createGame);
 
-            new System.Threading.Thread(createGame.Run).Start();
+            new System.Threading.Thread(_createGame.Run).Start();
         }
 
-        public override string LogString => $"started game: {createGame.GetType().Name}";
+        public override string LogString => $"started game: {_createGame.GetType().Name}";
         public override string[] Aliases => new string[] { "game", "play", "playgame", "g" };
     }
 
-    class ListGamesCommand : Command
+    internal class ListGamesCommand : Command
     {
         public override void Execute()
         {
@@ -64,7 +64,7 @@ namespace WingTechBot
         public override string[] Aliases => new string[] { "listgames", "listgame", "lg", "list", "games" };
     }
 
-    class ActiveGamesCommand : Command
+    internal class ActiveGamesCommand : Command
     {
         public override void Execute()
         {
@@ -94,13 +94,13 @@ namespace WingTechBot
         public override string[] Aliases => new string[] { "activegames", "activegame", "active", "actives", "ag" };
     }
 
-    class ClearGamesCommand : Command
+    internal class ClearGamesCommand : Command
     {
-        int count;
+        private int _count;
 
         public override void Execute()
         {
-            count = Program.GameHandler.ActiveGames.Count;
+            _count = Program.GameHandler.ActiveGames.Count;
             while (Program.GameHandler.ActiveGames.Count > 0)
             {
                 Program.GameHandler.ActiveGames[0].Shutdown();
@@ -108,7 +108,7 @@ namespace WingTechBot
             }
         }
 
-        public override string LogString => $"shutting down {count} active game(s).";
+        public override string LogString => $"shutting down {_count} active game(s).";
         public override string[] Aliases => new string[] { "cleargames", "cleargame", "cg" };
         public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
     }
