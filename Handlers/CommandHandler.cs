@@ -79,7 +79,6 @@ namespace WingTechBot.Handlers
         {
             try
             {
-                //IUser requested = GetUserFromMention(message, arguments);
                 SocketGuild server = (message.Channel as SocketGuildChannel).Guild;
                 IGuildUser user = ((IGuild)server).GetUserAsync(requested.Id).Result;
 
