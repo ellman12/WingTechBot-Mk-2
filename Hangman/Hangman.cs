@@ -226,7 +226,7 @@ namespace WingTechBot.Hangman
 
                 foreach (var kvp in orderedScores)
                 {
-                    Discord.IUser player = GetPlayer(kvp.Key);
+                    IUser player = GetPlayer(kvp.Key);
                     gameOverText += $"{kvp.Value} - {player.Username}#{player.Discriminator}\n";
                 }
 
