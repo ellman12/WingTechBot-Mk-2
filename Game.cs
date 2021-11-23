@@ -280,6 +280,7 @@ namespace WingTechBot
         {
             IMessage message = WriteLine(x);
             sentMessages.Add(message);
+
             return message;
         }
 
