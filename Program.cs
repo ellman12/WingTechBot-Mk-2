@@ -71,7 +71,6 @@ public static class Program
         await AutoSave();
         await KarmaHandler.CheckRunningKarma();
 
-
         // Block this task until the Program is closed.
         await Task.Delay(-1);
     }
