@@ -38,10 +38,6 @@ public static class Program
         KarmaHandler.Load();
         AlarmHandler = new();
 
-        var hooks = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(x => typeof(IHookable).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract);
-
-        foreach (var hook in hooks) ((IHookable)Activator.CreateInstance(hook)).Hook();
-
         var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
         _client = new DiscordSocketClient(config);
 
@@ -62,10 +58,15 @@ public static class Program
         await _client.SetGameAsync("cringe | ~help");
         await _client.StartAsync();
 
+        var hooks = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(x => typeof(IHookable).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract);
+
+        foreach (var hook in hooks) ((IHookable)Activator.CreateInstance(hook)).Hook();
+
         AlarmHandler.HookAlarms(_client);
 
         await AutoSave();
         await KarmaHandler.CheckRunningKarma();
+
 
         // Block this task until the Program is closed.
         await Task.Delay(-1);
