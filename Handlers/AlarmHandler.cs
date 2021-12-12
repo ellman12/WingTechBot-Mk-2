@@ -11,18 +11,8 @@ public class AlarmHandler
 
     private Timer _minuteTimer;
 
-    public AlarmHandler(DiscordSocketClient client)
+    public void HookAlarms(DiscordSocketClient client)
     {
-        UserAlarm.TimerInterval = 1;
-
-        UserAlarm kraberQueenAlarm = Secrets.GetKraberQueenAlarm();
-        kraberQueenAlarm.Log();
-        Alarms.Add(kraberQueenAlarm);
-
-        /*UserAlarm testAlarm = Secrets.GetTestAlarm();
-        testAlarm.Log();
-        Alarms.Add(testAlarm);*/
-
         foreach (var x in Alarms) client.MessageReceived += x.AlarmHandler;
 
         client.Connected += delegate
