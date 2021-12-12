@@ -138,8 +138,8 @@ public class KarmaHandler
 
         if (trackableEmotes.Contains(reaction.Emote.Name))
         {
-            if (!KarmaDictionary.Keys.Contains(message.Author.Id)) KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
-            if (!RunningKarma.Keys.Contains(message.Author.Id)) RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
+            if (!KarmaDictionary.ContainsKey(message.Author.Id)) KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
+            if (!RunningKarma.ContainsKey(message.Author.Id)) RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
 
             if (message.Author.Id != reaction.UserId)
             {
@@ -180,8 +180,8 @@ public class KarmaHandler
 
         if (trackableEmotes.Contains(reaction.Emote.Name))
         {
-            if (!KarmaDictionary.Keys.Contains(message.Author.Id)) KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
-            if (!RunningKarma.Keys.Contains(message.Author.Id)) RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
+            if (!KarmaDictionary.ContainsKey(message.Author.Id)) KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
+            if (!RunningKarma.ContainsKey(message.Author.Id)) RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
 
             if (message.Author.Id != reaction.UserId)
             {

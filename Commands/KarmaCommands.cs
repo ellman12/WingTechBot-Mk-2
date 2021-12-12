@@ -10,7 +10,7 @@ internal class KarmaCommand : Command
 {
     public override void Execute()
     {
-        if (Program.KarmaHandler.KarmaDictionary.Keys.Contains(requested.Id))
+        if (Program.KarmaHandler.KarmaDictionary.ContainsKey(requested.Id))
         {
             int[] counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
 
@@ -31,7 +31,7 @@ internal class AwardCommand : Command
 {
     public override void Execute()
     {
-        if (Program.KarmaHandler.KarmaDictionary.Keys.Contains(requested.Id))
+        if (Program.KarmaHandler.KarmaDictionary.ContainsKey(requested.Id))
         {
             int[] counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
 
@@ -52,7 +52,7 @@ internal class RecordCommand : Command
 {
     public override void Execute()
     {
-        if (Program.KarmaHandler.KarmaDictionary.Keys.Contains(requested.Id))
+        if (Program.KarmaHandler.KarmaDictionary.ContainsKey(requested.Id))
         {
             int[] counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
 
@@ -181,7 +181,7 @@ internal class RunningCommand : Command
 {
     public override void Execute()
     {
-        if (Program.KarmaHandler.RunningKarma.Keys.Contains(requested.Id))
+        if (Program.KarmaHandler.RunningKarma.ContainsKey(requested.Id))
         {
             int[] counts = Program.KarmaHandler.RunningKarma[requested.Id];
 
