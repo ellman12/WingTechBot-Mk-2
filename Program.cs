@@ -60,7 +60,11 @@ public static class Program
 
         var hooks = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(x => typeof(IHookable).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract);
 
-        foreach (var hook in hooks) ((IHookable)Activator.CreateInstance(hook)).Hook();
+        foreach (var hook in hooks)
+        {
+            Console.WriteLine($"Hooking {hook.Name}...");
+            ((IHookable)Activator.CreateInstance(hook)).Hook();
+        } 
 
         AlarmHandler.HookAlarms(Client);
 
