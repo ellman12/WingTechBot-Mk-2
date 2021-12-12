@@ -10,7 +10,7 @@ using WingTechBot.Handlers;
 
 public static class Program
 {
-    private static DiscordSocketClient _client;
+    public static DiscordSocketClient Client { get; private set; }
 
     public static SocketTextChannel BotChannel { get; private set; }
 
@@ -39,30 +39,30 @@ public static class Program
         AlarmHandler = new();
 
         var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
-        _client = new DiscordSocketClient(config);
+        Client = new DiscordSocketClient(config);
 
-        _client.MessageReceived += CommandHandler.CommandTask;
-        _client.MessageReceived += GameHandler.GameTask;
-        _client.Log += Log;
+        Client.MessageReceived += CommandHandler.CommandTask;
+        Client.MessageReceived += GameHandler.GameTask;
+        Client.Log += Log;
 
-        _client.ReactionAdded += KarmaHandler.ReactionAdded;
-        _client.ReactionRemoved += KarmaHandler.ReactionRemoved;
+        Client.ReactionAdded += KarmaHandler.ReactionAdded;
+        Client.ReactionRemoved += KarmaHandler.ReactionRemoved;
 
-        _client.UserVoiceStateUpdated += VoiceLogger.LogVoice;
+        Client.UserVoiceStateUpdated += VoiceLogger.LogVoice;
 
-        _client.Ready += Start;
+        Client.Ready += Start;
 
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-        await _client.LoginAsync(TokenType.Bot, Secrets.LOGIN_TOKEN); // Secrets is only accessible on my local copy... Sorry, no stealing my log-in!
-        await _client.SetGameAsync("cringe | ~help");
-        await _client.StartAsync();
+        await Client.LoginAsync(TokenType.Bot, Secrets.LOGIN_TOKEN); // Secrets is only accessible on my local copy... Sorry, no stealing my log-in!
+        await Client.SetGameAsync("cringe | ~help");
+        await Client.StartAsync();
 
         var hooks = AppDomain.CurrentDomain.GetAssemblies().SelectMany(x => x.GetTypes()).Where(x => typeof(IHookable).IsAssignableFrom(x) && !x.IsInterface && !x.IsAbstract);
 
         foreach (var hook in hooks) ((IHookable)Activator.CreateInstance(hook)).Hook();
 
-        AlarmHandler.HookAlarms(_client);
+        AlarmHandler.HookAlarms(Client);
 
         await AutoSave();
         await KarmaHandler.CheckRunningKarma();
@@ -74,8 +74,8 @@ public static class Program
 
     private static Task Start()
     {
-        BotChannel = _client.GetChannel(Secrets.BOT_CHANNEL_ID) as SocketTextChannel;
-        foreach (SocketVoiceChannel vc in _client.GetGroupChannelsAsync().Result)
+        BotChannel = Client.GetChannel(Secrets.BOT_CHANNEL_ID) as SocketTextChannel;
+        foreach (SocketVoiceChannel vc in Client.GetGroupChannelsAsync().Result)
         {
             if (vc.Users.FirstOrDefault(x => x.Id == Secrets.OWNER_USER_ID) is not null)
             {
@@ -111,7 +111,7 @@ public static class Program
         if (arguments.Length > 1)
         {
             parsed = MentionUtils.TryParseUser(arguments[index], out ulong id);
-            requested = _client.GetUser(id);
+            requested = Client.GetUser(id);
         }
 
         if (requested is null || !parsed)
@@ -134,7 +134,7 @@ public static class Program
         {
             try
             {
-                user = _client.GetUser(id);
+                user = Client.GetUser(id);
             }
             catch { }
         }
@@ -149,7 +149,7 @@ public static class Program
         file.WriteLine($"{mod.Username} {action} at {DateTime.Now}");
     }
 
-    public static IUser GetUser(ulong id) => _client.GetUser(id);
+    public static IUser GetUser(ulong id) => Client.GetUser(id);
 
-    public static IChannel GetChannel(ulong id) => _client.GetChannel(id);
+    public static IChannel GetChannel(ulong id) => Client.GetChannel(id);
 }
