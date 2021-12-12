@@ -9,14 +9,14 @@ using Discord.WebSocket;
 
 public class UserAlarm
 {
-    public static double TimerInterval { get; set; }
-    public ulong UserID { get; private set; }
+    public static double TimerInterval { get; set; } = 1;
+    public virtual ulong UserID { get; protected set; }
     private IUser User { get; set; }
     private IDMChannel Channel { get; set; }
 
-    public double SnoozeInterval { private get; init; } = 60;
+    public virtual double SnoozeInterval { protected get; init; } = 60;
 
-    public int SnoozeTolerance { private get; init; } = 25;
+    public virtual int SnoozeTolerance { protected get; init; } = 25;
 
     private bool Ringing { get; set; } = false;
 
@@ -27,18 +27,26 @@ public class UserAlarm
 
     private ulong ChannelID { get; set; }
 
-    private List<RepeatingTime> RepeatingTimes { get; init; }
+    protected List<RepeatingTime> RepeatingTimes { get; init; }
 
-    private List<SingleTime> SingleTimes { get; init; }
+    protected List<SingleTime> SingleTimes { get; init; }
 
     private readonly string _alarmMessage = "Your alarm is ringing. DM me any message to stop.", _snoozeMessage = "Your alarm is ringing. DM me any message to stop.";
 
-    public Func<string> GetAlarmMessage { private get; init; }
-    public Func<string> GetSnoozeMessage { private get; init; }
-    public bool DMOwner { private get; init; } = false;
-    public bool SOTD { private get; init; } = false;
-    public int WordCountRequirement { private get; init; } = 0;
-    public string Name { get; init; } = string.Empty;
+    public virtual Func<string> GetAlarmMessage { protected get; init; }
+    public virtual Func<string> GetSnoozeMessage { protected get; init; }
+    public virtual bool DMOwner { protected get; init; } = false;
+    public virtual bool SOTD { protected get; init; } = false;
+    public virtual int WordCountRequirement { protected get; init; } = 0;
+    public virtual string Name { get; init; } = string.Empty;
+
+    public UserAlarm()
+    {
+        if (Name == string.Empty)
+        {
+            throw new NotSupportedException("If you're inheriting UserAlarm and implementing IHookable, make sure you override Name too. This is just to prevent me accidentally calling this ctor elsewhere.");
+        }
+    }
 
     public UserAlarm(ulong userID, List<RepeatingTime> times, List<SingleTime> singleTimes = null)
     {
@@ -87,7 +95,7 @@ public class UserAlarm
 
             if (SOTD && _count <= SnoozeTolerance)
             {
-                Message(Secrets.SOTD[Program.Random.Next(Secrets.SOTD.Length)]);
+                Message(SongOfTheDay.GetSong());
             }
 
             _wordCount = 0;
