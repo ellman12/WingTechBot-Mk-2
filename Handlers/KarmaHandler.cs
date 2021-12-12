@@ -133,11 +133,6 @@ public class KarmaHandler
         IMessage message = await cacheMessage.GetOrDownloadAsync();
 
         if (message is null || message.Timestamp < START_TIME) return;
-        if (message.Id == 835170015757074493)
-        {
-            RoleHandler.Handle(reaction, true);
-            return;
-        }
 
         IGuildUser user = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(reaction.UserId).Result;
 
@@ -182,11 +177,6 @@ public class KarmaHandler
         IMessage message = await cacheMessage.GetOrDownloadAsync();
 
         if (message is null || DateTime.Now < START_TIME) return;
-        if (message.Id == 835170015757074493)
-        {
-            RoleHandler.Handle(reaction, false);
-            return;
-        }
 
         if (trackableEmotes.Contains(reaction.Emote.Name))
         {
