@@ -86,7 +86,7 @@ public static class Program
         BotChannel = Client.GetChannel(Config.BotChannelID ?? 0) as SocketTextChannel;
         foreach (SocketVoiceChannel vc in Client.GetGroupChannelsAsync().Result)
         {
-            if (vc.Users.FirstOrDefault(x => x.Id == Program.Config.OwnerID) is not null)
+            if (vc.Users.FirstOrDefault(x => x.Id == Config.OwnerID) is not null)
             {
                 VoiceLogger.OwnerInVoice = true;
                 break;
