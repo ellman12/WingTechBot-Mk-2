@@ -40,7 +40,7 @@ public abstract class Command
         {
             if (message.Channel is SocketGuildChannel)
             {
-                if (message.Author.Id != Secrets.OWNER_USER_ID && !RequiredRoles.Any(x => userRoles.Contains(x)))
+                if (message.Author.Id != Program.Config.OwnerID && !RequiredRoles.Any(x => userRoles.Contains(x)))
                 {
                     throw new Exception($"You do not have sufficient rank to call command {Name}.");
                 }
@@ -51,7 +51,7 @@ public abstract class Command
             }
         }
 
-        if (OwnerOnly && message.Author.Id != Secrets.OWNER_USER_ID) throw new Exception($"Only {Program.GetUser(Secrets.OWNER_USER_ID).Mention} can call command {Name}.");
+        if (OwnerOnly && message.Author.Id != Program.Config.OwnerID) throw new Exception($"Only {Program.GetUser(Program.Config.OwnerID).Mention} can call command {Name}.");
     }
 
     public abstract void Execute();

@@ -2,6 +2,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
@@ -32,8 +33,14 @@ public static class Program
 
     private static void OnProcessExit(object sender, EventArgs e) => KarmaHandler.Save();
 
+    public static ulong BotID { get; private set; }
+
+    public static Config Config { get; private set; }
+
     private static async Task MainAsync()
     {
+        Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(@"config.json"));
+
         KarmaHandler.Load();
         AlarmHandler = new();
 
@@ -53,7 +60,7 @@ public static class Program
 
         AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
 
-        await Client.LoginAsync(TokenType.Bot, Secrets.LOGIN_TOKEN); // Secrets is only accessible on my local copy... Sorry, no stealing my log-in!
+        await Client.LoginAsync(TokenType.Bot, Config.LoginToken); // Secrets is only accessible on my local copy... Sorry, no stealing my log-in!
         await Client.SetGameAsync("cringe | ~help");
         await Client.StartAsync();
 
@@ -76,15 +83,17 @@ public static class Program
 
     private static Task Start()
     {
-        BotChannel = Client.GetChannel(Secrets.BOT_CHANNEL_ID) as SocketTextChannel;
+        BotChannel = Client.GetChannel(Config.BotChannelID ?? 0) as SocketTextChannel;
         foreach (SocketVoiceChannel vc in Client.GetGroupChannelsAsync().Result)
         {
-            if (vc.Users.FirstOrDefault(x => x.Id == Secrets.OWNER_USER_ID) is not null)
+            if (vc.Users.FirstOrDefault(x => x.Id == Program.Config.OwnerID) is not null)
             {
                 VoiceLogger.OwnerInVoice = true;
                 break;
             }
         }
+
+        BotID = Client.CurrentUser.Id;
 
         return Task.CompletedTask;
     }

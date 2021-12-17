@@ -36,9 +36,9 @@ public class CommandHandler
     {
         if (!message.Content.StartsWith("~") || message.Author.IsBot || (message.Channel.Name != "bot" && Program.BotOnly))
         {
-            if (!message.Content.StartsWith("~") && !message.Author.IsBot && message.Author.Id != Secrets.OWNER_USER_ID && message.Channel is IDMChannel)
+            if (!message.Content.StartsWith("~") && !message.Author.IsBot && message.Author.Id != Program.Config.OwnerID && message.Channel is IDMChannel)
             {
-                Program.GetUser(Secrets.OWNER_USER_ID).GetOrCreateDMChannelAsync().Result.SendMessageAsync($"from {message.Author.Username}#{message.Author.Discriminator} with ID ({message.Author.Id}) @ {message.Timestamp.LocalDateTime}: {message.Content}");
+                Program.GetUser(Program.Config.OwnerID).GetOrCreateDMChannelAsync().Result.SendMessageAsync($"from {message.Author.Username}#{message.Author.Discriminator} with ID ({message.Author.Id}) @ {message.Timestamp.LocalDateTime}: {message.Content}");
             }
 
             return Task.CompletedTask;
@@ -76,15 +76,19 @@ public class CommandHandler
         return Task.CompletedTask;
     }
 
-    public static string TempAddRole(ulong roleID, string[] arguments, SocketMessage message, string roleName, IUser requested)
+    public static string TempAddRole(ulong? roleID, string[] arguments, SocketMessage message, string roleName, IUser requested)
     {
         try
         {
+            if (roleID is null) throw new Exception("Role does not exist.");
+            if (requested.Id == message.Author.Id) throw new Exception("You can't demote yourself! Did you specify someone to demote?");
+            if (arguments.Length < 3) throw new Exception("You must specify a time. (in minutes)");
+
             SocketGuild server = (message.Channel as SocketGuildChannel).Guild;
             IGuildUser user = ((IGuild)server).GetUserAsync(requested.Id).Result;
 
-            if (user.RoleIds.Contains(Secrets.MOD_ROLE_ID) || user.Id == Secrets.OWNER_USER_ID) throw new Exception($"Role {roleName} cannot be applied to a mod.");
-            user.AddRoleAsync(server.GetRole(roleID));
+            if (user.RoleIds.Contains(Program.Config.ModRoleID ?? 0) || user.Id == Program.Config.OwnerID) throw new Exception($"Role {roleName} cannot be applied to a mod.");
+            user.AddRoleAsync(server.GetRole(roleID.Value));
 
             int minutes = arguments.Length < 2 ? -1 : int.Parse(arguments[2]);
             string duration = minutes >= 1 ? $"for {minutes} minute(s)" : "permanently";
@@ -96,7 +100,7 @@ public class CommandHandler
                 Task t = new(async () =>
                 {
                     await Task.Delay(minutes * 60_000);
-                    await user.RemoveRoleAsync(server.GetRole(roleID));
+                    await user.RemoveRoleAsync(server.GetRole(roleID.Value));
                     Console.WriteLine($"{DateTime.Now}: removing {roleName} to {user.Username}");
                 });
 
@@ -110,7 +114,7 @@ public class CommandHandler
         }
         catch (Exception e)
         {
-            throw new Exception($"Failed to demote. {e.Message}");
+            throw new Exception($"Failed to demote. {e.Message}", e);
         }
     }
 }

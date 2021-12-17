@@ -71,7 +71,7 @@ public class UserAlarm
 
         if (DMOwner)
         {
-            Program.GetUser(Secrets.OWNER_USER_ID).GetOrCreateDMChannelAsync().Result.SendMessageAsync($"Alarm sent to {User.Username}#{User.Discriminator}: {s}");
+            Program.GetUser(Program.Config.OwnerID).GetOrCreateDMChannelAsync().Result.SendMessageAsync($"Alarm sent to {User.Username}#{User.Discriminator}: {s}");
         }
 
         Console.WriteLine($"Alarm DM'd {User.Username}#{User.Discriminator}: {s}");

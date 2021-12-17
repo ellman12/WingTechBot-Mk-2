@@ -74,7 +74,7 @@ public class KarmaHandler
 
         KarmaDictionary[kvp.Key][index] -= kvp.Value[index];
 
-        Program.BotChannel.SendMessageAsync($"Possible karma manipulation detected on user {Program.GetUser(kvp.Key).Mention}. {kvp.Value[index]} {trackableEmotes[index]} are being temporarily withheld. Case {caseNumber} opened. If this was an error, {Program.GetUser(Secrets.OWNER_USER_ID).Mention} will fix it shortly.");
+        Program.BotChannel.SendMessageAsync($"Possible karma manipulation detected on user {Program.GetUser(kvp.Key).Mention}. {kvp.Value[index]} {trackableEmotes[index]} are being temporarily withheld. Case {caseNumber} opened. If this was an error, {Program.GetUser(Program.Config.OwnerID).Mention} will fix it shortly.");
 
         using StreamWriter file = File.AppendText(CASE_PATH);
 
@@ -148,7 +148,7 @@ public class KarmaHandler
                 RunningKarma[message.Author.Id][id]++;
                 Console.WriteLine($"{DateTime.Now}: incremented {message.Author}'s {trackableEmotes[id]}s");
 
-                if (message.Author.Id == Secrets.BOT_ID && reaction.Emote.Name == "downvote") // downvote self
+                if (message.Author.Id == Program.BotID && reaction.Emote.Name == "downvote") // downvote self
                 {
                     await message.AddReactionAsync(Emote.Parse("<:downvote:672248822474211334>"));
                     Console.WriteLine($"{DateTime.Now}: Downvoted self.");
@@ -158,14 +158,14 @@ public class KarmaHandler
             {
                 if (reaction.Emote.Name == "upvote")
                 {
-                    if (!Program.BotOnly || channel.Id == Secrets.BOT_CHANNEL_ID) await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
+                    if (!Program.BotOnly || channel.Id == Program.Config.BotChannelID) await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
                 }
 
                 Console.WriteLine($"{DateTime.Now}: ignored {message.Author} self-vote");
             }
         }
 
-        if (user.RoleIds.Contains(Secrets.JESTER_ROLE_ID))
+        if (user.RoleIds.Contains(Program.Config.JesterRoleID ?? 0))
         {
             await cacheMessage.DownloadAsync().Result.RemoveReactionAsync(reaction.Emote, reaction.User.Value);
             return;

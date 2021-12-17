@@ -52,7 +52,7 @@ internal class DeleteCommand : Command
 
     public override string LogString => $"deleted a message from {replied.Author.Username} in {replied.Channel.Name}";
     public override bool Audit => true;
-    public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
+    public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
     public override string[] Aliases => new string[] { "delete", "d", "remove", "x", "erase" };
     public override bool GetReply => true;
 }
@@ -81,7 +81,7 @@ internal class PinCommand : Command
 
     public override string LogString => $"{_pin}ned a message in {replied.Channel.Name}";
     public override bool Audit => true;
-    public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
+    public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
     public override string[] Aliases => new string[] { "pin", "unpin", "p", "up" };
     public override bool GetReply => true;
 }
@@ -115,7 +115,7 @@ internal class ClearCommand : Command
 
     public override string LogString => $"cleared reactions on a message from {replied.Author.Username}";
     public override bool Audit => true;
-    public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
+    public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
     public override bool GetReply => true;
 }
 
@@ -128,6 +128,6 @@ internal class ToggleBotCommand : Command
     }
 
     public override string LogString => $"botOnly set to {Program.BotOnly}";
-    public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
+    public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
     public override string[] Aliases => new string[] { "togglebot", "tbot" };
 }

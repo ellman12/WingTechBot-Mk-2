@@ -15,7 +15,7 @@ public class VoiceLogger
             {
                 Console.WriteLine($"{DateTime.Now}: {user.Username}#{user.Discriminator} entered channel {currentState.VoiceChannel.Name}");
 
-                if (user.Id == Secrets.OWNER_USER_ID) OwnerInVoice = true;
+                if (user.Id == Program.Config.OwnerID) OwnerInVoice = true;
                 if (!OwnerInVoice)
                 {
 #if OS_WINDOWS
@@ -27,7 +27,7 @@ public class VoiceLogger
             {
                 Console.WriteLine($"{DateTime.Now}: {user.Username}#{user.Discriminator} left channel {priorState.VoiceChannel.Name}");
 
-                if (user.Id == Secrets.OWNER_USER_ID) OwnerInVoice = false;
+                if (user.Id == Program.Config.OwnerID) OwnerInVoice = false;
             }
             else // CHANNEL MOVE
             {

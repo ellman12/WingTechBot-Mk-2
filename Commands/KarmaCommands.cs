@@ -195,7 +195,7 @@ internal class RunningCommand : Command
 
     public override string LogString => $"reported {requested}'s running karma";
     public override bool GetRequested => true;
-    public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
+    public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
 }
 
 internal class SpamCommand : Command

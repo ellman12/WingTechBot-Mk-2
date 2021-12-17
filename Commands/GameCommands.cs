@@ -109,5 +109,5 @@ internal class ClearGamesCommand : Command
 
     public override string LogString => $"shutting down {_count} active game(s).";
     public override string[] Aliases => new string[] { "cleargames", "cleargame", "cg" };
-    public override ulong[] RequiredRoles => new ulong[] { Secrets.MOD_ROLE_ID };
+    public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
 }
