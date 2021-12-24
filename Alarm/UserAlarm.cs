@@ -64,12 +64,12 @@ public class UserAlarm
         ChannelID = Channel.Id;
     }
 
-    public void Message(string s)
+    public void Message(string s, bool isSnooze = false)
     {
         Init();
         Channel.SendMessageAsync(s);
 
-        if (DMOwner)
+        if (DMOwner || !isSnooze)
         {
             Program.GetUser(Program.Config.OwnerID).GetOrCreateDMChannelAsync().Result.SendMessageAsync($"Alarm sent to {User.Username}#{User.Discriminator}: {s}");
         }
@@ -125,7 +125,7 @@ public class UserAlarm
     {
         if (Ringing)
         {
-            Message($"{GetSnoozeMessage()} ({_count++})");
+            Message($"{GetSnoozeMessage()} ({_count++})", true);
         }
         else
         {
