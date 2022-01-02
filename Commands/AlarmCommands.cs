@@ -1,11 +1,10 @@
 ﻿namespace WingTechBot.Commands;
 using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
+using Discord;
 using Newtonsoft.Json;
 using WingTechBot.Alarm;
-using Discord;
-using System.Xml.Linq;
 
 internal class AlarmCommand : Command
 {
