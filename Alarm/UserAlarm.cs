@@ -138,4 +138,6 @@ public class UserAlarm
         foreach (var x in RepeatingTimes) Console.WriteLine(x.Time);
         foreach (var x in SingleTimes) Console.WriteLine(x.Time);
     }
+
+    public RepeatingTime NextTime() => RepeatingTimes.MinBy(x => x.Time);
 }
