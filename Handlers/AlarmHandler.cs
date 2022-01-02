@@ -37,4 +37,6 @@ public class AlarmHandler
             return Task.CompletedTask;
         };
     }
+
+    public UserAlarm GetAlarm(ulong id) => Alarms.Find(x => x.UserID == id);
 }
