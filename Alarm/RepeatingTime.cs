@@ -36,8 +36,6 @@ public class RepeatingTime : TimeBase
 
     public void Increment()
     {
-        Console.WriteLine($"Incrementing alarm at {Time} by {Interval} {IntervalType}(s)");
-
         Time = IntervalType switch
         {
             IntervalType.Millisecond => Time.AddMilliseconds(Interval),
