@@ -36,8 +36,6 @@ internal class AlarmCommand : Command
 	}
 
 	public override string LogString => _logString;
-
-	
 }
 
 internal static class AlarmSubCommands
