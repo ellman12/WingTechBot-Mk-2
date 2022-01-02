@@ -44,13 +44,11 @@ public static class Program
 
         KarmaHandler.Load();
 
-        if (File.Exists(AlarmHandler.ALARM_PATH))
-		{
-            AlarmHandler = Newtonsoft.Json.JsonConvert.DeserializeObject<AlarmHandler>(File.ReadAllText(AlarmHandler.ALARM_PATH));
-		}
-        else AlarmHandler = new();
+        AlarmHandler = File.Exists(AlarmHandler.ALARM_PATH)
+			? Newtonsoft.Json.JsonConvert.DeserializeObject<AlarmHandler>(File.ReadAllText(AlarmHandler.ALARM_PATH))
+			: new();
 
-        var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
+		var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
         Client = new DiscordSocketClient(config);
 
         Client.MessageReceived += CommandHandler.CommandTask;
