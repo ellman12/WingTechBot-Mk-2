@@ -16,6 +16,7 @@ public static class Program
 
     public const string DELETE_PATH = @"save\deleted_messages.txt";
     public const string AUDIT_PATH = @"save\audit_log.txt";
+    public const string CONFIG_PATH = @"save\config.json";
 
     public const string NOTIFY_SOUND_PATH = @"C:\Windows\Media\Windows Notify Messaging.wav";
 
@@ -39,7 +40,7 @@ public static class Program
 
     private static async Task MainAsync()
     {
-        Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(@"config.json"));
+        Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
 
         KarmaHandler.Load();
         AlarmHandler = new();
