@@ -34,22 +34,19 @@ public class RepeatingTime : TimeBase
         while (Interval != 0 && Time < DateTime.Now) Increment();
     }
 
-    public void Increment()
-    {
-        Time = IntervalType switch
-        {
-            IntervalType.Millisecond => Time.AddMilliseconds(Interval),
-            IntervalType.Second => Time.AddSeconds(Interval),
-            IntervalType.Minute => Time.AddMinutes(Interval),
-            IntervalType.Hour => Time.AddHours(Interval),
-            IntervalType.Day => Time.AddDays(Interval),
-            IntervalType.Month => Time.AddMonths((int)Interval),
-            IntervalType.Year => Time.AddYears((int)Interval),
-            _ => throw new ArgumentException("Invalid IntervalType")
-        };
-    }
+	public void Increment() => Time = IntervalType switch
+	{
+		IntervalType.Millisecond => Time.AddMilliseconds(Interval),
+		IntervalType.Second => Time.AddSeconds(Interval),
+		IntervalType.Minute => Time.AddMinutes(Interval),
+		IntervalType.Hour => Time.AddHours(Interval),
+		IntervalType.Day => Time.AddDays(Interval),
+		IntervalType.Month => Time.AddMonths((int)Interval),
+		IntervalType.Year => Time.AddYears((int)Interval),
+		_ => throw new ArgumentException("Invalid IntervalType")
+	};
 
-    public bool EvaluateAndIncrement(DateTime time, double timerInterval, List<SingleTime> singleTimes)
+	public bool EvaluateAndIncrement(DateTime time, double timerInterval, List<SingleTime> singleTimes)
     {
         if (Evaluate(time, timerInterval) && !singleTimes.Any(x => x.Time.Date == Time.Date && x.Override))
         {
