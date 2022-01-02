@@ -2,22 +2,23 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 
 public class UserAlarm
 {
     public static double TimerInterval { get; set; } = 1;
-    public virtual ulong UserID { get; protected set; }
+
+    public virtual ulong UserID { get; set; }
     private IUser User { get; set; }
     private IDMChannel Channel { get; set; }
 
-    public virtual double SnoozeInterval { protected get; init; } = 60;
+    public virtual double SnoozeInterval { get; set; } = 60;
 
-    public virtual int SnoozeTolerance { protected get; init; } = 25;
+    public virtual int SnoozeTolerance { get; set; } = 25;
 
     private bool Ringing { get; set; } = false;
 
@@ -28,26 +29,22 @@ public class UserAlarm
 
     private ulong ChannelID { get; set; }
 
-    protected List<RepeatingTime> RepeatingTimes { get; init; }
+    [JsonProperty] public List<RepeatingTime> RepeatingTimes { get; set; }
 
-    protected List<SingleTime> SingleTimes { get; init; }
+    [JsonProperty] public List<SingleTime> SingleTimes { get; set; }
+
+    [JsonProperty] public List<(List<RepeatingTime>, List<SingleTime>)> Presets { get; set; }
 
     private readonly string _alarmMessage = "Your alarm is ringing. DM me any message to stop.", _snoozeMessage = "Your alarm is ringing. DM me any message to stop.";
 
     public virtual Func<string> GetAlarmMessage { protected get; init; }
     public virtual Func<string> GetSnoozeMessage { protected get; init; }
-    public virtual bool DMOwner { protected get; init; } = false;
-    public virtual bool SOTD { protected get; init; } = false;
-    public virtual int WordCountRequirement { protected get; init; } = 0;
-    public virtual string Name { get; init; } = string.Empty;
+    public virtual bool DMOwner { get; set; } = false;
+    public virtual bool SOTD { get; set; } = false;
+    public virtual int WordCountRequirement { get; set; } = 0;
+    public virtual string Name { get; set; } = string.Empty;
 
-    public UserAlarm()
-    {
-        if (Name == string.Empty)
-        {
-            throw new NotSupportedException("If you're inheriting UserAlarm and implementing IHookable, make sure you override Name too. This is just to prevent me accidentally calling this ctor elsewhere.");
-        }
-    }
+    public UserAlarm() { }
 
     public UserAlarm(ulong userID, List<RepeatingTime> times, List<SingleTime> singleTimes = null)
     {
@@ -141,8 +138,4 @@ public class UserAlarm
         foreach (var x in RepeatingTimes) Console.WriteLine(x.Time);
         foreach (var x in SingleTimes) Console.WriteLine(x.Time);
     }
-
-    public string ToJson() => JsonSerializer.Serialize(this);
-
-    public static UserAlarm FromJson(string json) => JsonSerializer.Deserialize<UserAlarm>(json);
 }

@@ -43,7 +43,12 @@ public static class Program
         Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
 
         KarmaHandler.Load();
-        AlarmHandler = new();
+
+        if (File.Exists(AlarmHandler.ALARM_PATH))
+		{
+            AlarmHandler = Newtonsoft.Json.JsonConvert.DeserializeObject<AlarmHandler>(File.ReadAllText(AlarmHandler.ALARM_PATH));
+		}
+        else AlarmHandler = new();
 
         var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
         Client = new DiscordSocketClient(config);
@@ -74,6 +79,9 @@ public static class Program
         } 
 
         AlarmHandler.HookAlarms(Client);
+
+        Console.WriteLine($"ALARM COUNT: {AlarmHandler.Alarms.Count}");
+        foreach (var alarm in AlarmHandler.Alarms) Console.WriteLine($"FOUND: {Newtonsoft.Json.JsonConvert.SerializeObject(alarm)}");
 
         await AutoSave();
         await KarmaHandler.CheckRunningKarma();

@@ -2,12 +2,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Newtonsoft.Json;
 
 public class RepeatingTime : TimeBase
 {
-    private double Interval { get; set; }
+    [JsonProperty] private double Interval { get; set; }
 
-    private IntervalType IntervalType { get; set; }
+    [JsonProperty] private IntervalType IntervalType { get; set; }
+
+    [JsonConstructor] private RepeatingTime() { }
 
     public RepeatingTime(DateTime start, double interval, IntervalType intervalType = IntervalType.Day)
     {

@@ -1,15 +1,24 @@
 ﻿namespace WingTechBot;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord.WebSocket;
+using Newtonsoft.Json;
 using WingTechBot.Alarm;
 
 public class AlarmHandler
 {
+    public const string ALARM_PATH = @"save\alarms.json";
+
     public List<UserAlarm> Alarms { get; } = new();
 
     private Timer _minuteTimer;
+
+    public void SaveAlarms()
+	{
+        File.WriteAllText(ALARM_PATH, JsonConvert.SerializeObject(this));
+	}
 
     public void HookAlarms(DiscordSocketClient client)
     {

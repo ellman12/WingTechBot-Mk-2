@@ -1,10 +1,13 @@
 ﻿namespace WingTechBot.Alarm;
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 public class SingleTime : TimeBase
 {
-    public bool Override { get; private init; }
+    [JsonProperty] public bool Override { get; private init; }
+
+    [JsonConstructor] private SingleTime() { }
 
     public SingleTime(DateTime time, bool @override)
     {
