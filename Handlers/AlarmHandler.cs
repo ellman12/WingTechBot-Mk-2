@@ -15,12 +15,9 @@ public class AlarmHandler
 
     private Timer _minuteTimer;
 
-    public void SaveAlarms()
-	{
-        File.WriteAllText(ALARM_PATH, JsonConvert.SerializeObject(this));
-	}
+	public void SaveAlarms() => File.WriteAllText(ALARM_PATH, JsonConvert.SerializeObject(this));
 
-    public void HookAlarms(DiscordSocketClient client)
+	public void HookAlarms(DiscordSocketClient client)
     {
         foreach (var x in Alarms) client.MessageReceived += x.AlarmHandler;
 
