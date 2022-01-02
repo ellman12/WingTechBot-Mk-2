@@ -33,7 +33,7 @@ public class UserAlarm
 
     [JsonProperty] public List<SingleTime> SingleTimes { get; set; }
 
-    [JsonProperty] public List<(List<RepeatingTime>, List<SingleTime>)> Presets { get; set; }
+    [JsonProperty] public List<AlarmPreset> Presets { get; set; }
 
     private readonly string _alarmMessage = "Your alarm is ringing. DM me any message to stop.", _snoozeMessage = "Your alarm is ringing. DM me any message to stop.";
 
