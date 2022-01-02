@@ -15,6 +15,8 @@ public class SingleTime : TimeBase
         Override = @override;
     }
 
+    public override string ToString() => $"SingleTime at {Time} with Override = {Override}";
+
     public bool EvaluateAndRemove(DateTime time, double timerInterval, List<SingleTime> singleTimes)
     {
         if (Evaluate(time, timerInterval))

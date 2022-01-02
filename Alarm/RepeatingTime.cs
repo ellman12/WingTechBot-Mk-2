@@ -34,7 +34,9 @@ public class RepeatingTime : TimeBase
         while (Interval != 0 && Time < DateTime.Now) Increment();
     }
 
-	public void Increment() => Time = IntervalType switch
+	public override string ToString() => $"RepeatingTime at {Time} that repeats every {Interval} {IntervalType}(s)";
+
+    public void Increment() => Time = IntervalType switch
 	{
 		IntervalType.Millisecond => Time.AddMilliseconds(Interval),
 		IntervalType.Second => Time.AddSeconds(Interval),
