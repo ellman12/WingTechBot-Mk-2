@@ -78,9 +78,6 @@ public static class Program
 
         AlarmHandler.HookAlarms(Client);
 
-        Console.WriteLine($"ALARM COUNT: {AlarmHandler.Alarms.Count}");
-        foreach (var alarm in AlarmHandler.Alarms) Console.WriteLine($"FOUND: {Newtonsoft.Json.JsonConvert.SerializeObject(alarm)}");
-
         await AutoSave();
         await KarmaHandler.CheckRunningKarma();
 

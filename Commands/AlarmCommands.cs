@@ -1,7 +1,9 @@
 ﻿namespace WingTechBot.Commands;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using Discord;
 using Newtonsoft.Json;
 using WingTechBot.Alarm;
@@ -37,18 +39,30 @@ internal class AlarmCommand : Command
 	public override string LogString => _logString;
 }
 
+internal class LogAlarmsCommand : Command
+{
+	public override void Execute()
+	{
+		File.WriteAllText("alarm_dump.txt", JsonConvert.SerializeObject(Program.AlarmHandler, Formatting.Indented));
+		message.Channel.SendMessageAsync("dumped all alarms to alarm_dump.txt");
+	}
+
+	public override bool OwnerOnly => true;
+
+	public override string LogString => "logging all alarms";
+}
+
 internal static class AlarmSubCommands
 {
-	public static string Log(UserAlarm alarm, IMessage message, string[] _)
+	public static string Log(UserAlarm alarm, IMessage message, string[] _ = null)
 	{
 		if (alarm is null) throw new Exception("You do not have any alarms saved.");
-		else message.Channel.SendMessageAsync($"```json\n{JsonConvert.SerializeObject(alarm, Formatting.Indented)}\n```");
+		else message.Channel.SendFileAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(alarm, Formatting.Indented))), "alarm.json");
 		
-
 		return $"logged alarms for {message.Author.Username}";
 	}
 
-	public static string Skip(UserAlarm alarm, IMessage message, string[] _)
+	public static string Skip(UserAlarm alarm, IMessage message, string[] _ = null)
 	{
 		if (alarm?.RepeatingTimes is null) throw new Exception("You do not have any repeating alarms to skip.");
 		else
@@ -112,7 +126,7 @@ internal static class AlarmSubCommands
 		}
 	}
 
-	public static string Pause(UserAlarm alarm, IMessage message, string[] _)
+	public static string Pause(UserAlarm alarm, IMessage message, string[] _ = null)
 	{
 		if (alarm.Paused) throw new Exception("Your alarms are already paused.");
 		else alarm.Paused = true;
@@ -121,7 +135,7 @@ internal static class AlarmSubCommands
 		return $"paused alarms for {message.Author.Username}";
 	}
 
-	public static string Resume(UserAlarm alarm, IMessage message, string[] _)
+	public static string Resume(UserAlarm alarm, IMessage message, string[] _ = null)
 	{
 		if (alarm.Paused) alarm.Paused = false;
 		else throw new Exception("Your alarms are already resumed.");
