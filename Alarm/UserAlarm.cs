@@ -43,6 +43,7 @@ public class UserAlarm
     public virtual bool SOTD { get; set; } = false;
     public virtual int WordCountRequirement { get; set; } = 0;
     public virtual string Name { get; set; } = string.Empty;
+    public virtual bool Paused { get; set; } = false;
 
     public UserAlarm() { }
 
@@ -77,7 +78,7 @@ public class UserAlarm
 
     public Task AlarmHandler(SocketMessage message)
     {
-        Init();
+        Init(); // $$$ investigate
         if (message.Author.Id != UserID) return Task.CompletedTask;
         if (message.Channel.Id != ChannelID) return Task.CompletedTask;
         if (!Ringing) return Task.CompletedTask;
@@ -108,6 +109,8 @@ public class UserAlarm
         if (RepeatingTimes.Any(x => x.EvaluateAndIncrement(e.SignalTime, TimerInterval, SingleTimes)) ||
             SingleTimes.Any(x => x.EvaluateAndRemove(e.SignalTime, TimerInterval, SingleTimes)))
         {
+            if (Paused) return;
+
             _count = 1;
             Ringing = true;
             Message($"{GetAlarmMessage()}");
