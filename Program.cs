@@ -14,8 +14,8 @@ public static class Program
 
     public static SocketTextChannel BotChannel { get; private set; }
 
-    public const string DELETE_PATH = @"wingtech_bot_deleted_messages.txt";
-    public const string AUDIT_PATH = @"wingtech_bot_audit_log.txt";
+    public const string DELETE_PATH = @"save\deleted_messages.txt";
+    public const string AUDIT_PATH = @"save\audit_log.txt";
 
     public const string NOTIFY_SOUND_PATH = @"C:\Windows\Media\Windows Notify Messaging.wav";
 

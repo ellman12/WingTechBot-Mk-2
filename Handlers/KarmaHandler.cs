@@ -14,8 +14,8 @@ public class KarmaHandler
 
     public static readonly string[] trackableEmotes = new string[] { "upvote", "downvote", "silver", "gold", "platinum" };
 
-    public const string CASE_PATH = @"wingtech_bot_cases.txt";
-    public const string SAVE_PATH = @"wingtech_bot_save.txt";
+    public const string CASE_PATH = @"save\cases.txt";
+    public const string SAVE_PATH = @"save\karma.txt";
 
     private static readonly string[] _upvoteScolds = new string[]
     {
