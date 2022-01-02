@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Timers;
 using Discord;
@@ -140,4 +141,8 @@ public class UserAlarm
         foreach (var x in RepeatingTimes) Console.WriteLine(x.Time);
         foreach (var x in SingleTimes) Console.WriteLine(x.Time);
     }
+
+    public string ToJson() => JsonSerializer.Serialize(this);
+
+    public static UserAlarm FromJson(string json) => JsonSerializer.Deserialize<UserAlarm>(json);
 }
