@@ -8,5 +8,5 @@ public abstract class TimeBase
 
     protected static bool IsBetween(double s, double x, double e) => s <= x && x < e;
 
-    public bool Evaluate(DateTime time, double timerInterval) => IsBetween(0, (time - Time).TotalMinutes, timerInterval);
+    public bool Evaluate(DateTime time, double timerInterval) => IsBetween(0, (time.ToUniversalTime() - Time.ToUniversalTime()).TotalMinutes, timerInterval);
 }

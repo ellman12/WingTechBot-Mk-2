@@ -6,16 +6,27 @@ using System.Linq;
 using System.Text;
 using Discord;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using WingTechBot.Alarm;
 
 internal class AlarmCommand : Command
 {
-	private static readonly Dictionary<string, Func<UserAlarm, IMessage, string[], string>> _subCommands = new()
+	public static Dictionary<string, Func<UserAlarm, IMessage, string[], string>> SubCommands => new()
 	{
 		["log"] = AlarmSubCommands.Log,
+		["skip"] = AlarmSubCommands.Skip,
+		["preset"] = AlarmSubCommands.Preset,
+		["pause"] = AlarmSubCommands.Pause,
+		["resume"] = AlarmSubCommands.Resume,
+		["clear"] = AlarmSubCommands.Clear,
+		//["set"] = AlarmSubCommands.Set,
+		["template"] = AlarmSubCommands.Template,
+		["help"] = AlarmSubCommands.Help,
+		["add"] = AlarmSubCommands.Add,
+		["remove"] = AlarmSubCommands.Remove,
 	};
 
-	private static readonly string[] _allowNull = new string[] { "log" };
+	private static readonly string[] _allowNull = new string[] { "add", "set", "template", "help" };
 
 	private string _logString;
 	private UserAlarm _alarm;
@@ -25,11 +36,11 @@ internal class AlarmCommand : Command
 		_alarm = Program.AlarmHandler.GetAlarm(message.Author.Id);
 		string command = arguments[1].ToLower();
 
-		if (_subCommands.ContainsKey(command))
+		if (SubCommands.ContainsKey(command))
 		{
 			if (_alarm is not null || _allowNull.Contains(command))
 			{
-				_logString = _subCommands[command].Invoke(_alarm, message, arguments[2..]);
+				_logString = SubCommands[command].Invoke(_alarm, message, arguments[2..]);
 			}
 			else throw new Exception($"You do not have any alarms saved.");
 		}
@@ -56,8 +67,7 @@ internal static class AlarmSubCommands
 {
 	public static string Log(UserAlarm alarm, IMessage message, string[] _ = null)
 	{
-		if (alarm is null) throw new Exception("You do not have any alarms saved.");
-		else message.Channel.SendFileAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(alarm, Formatting.Indented))), "alarm.json");
+		message.Channel.SendFileAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(alarm, Formatting.Indented))), "alarm.json");
 		
 		return $"logged alarms for {message.Author.Username}";
 	}
@@ -73,6 +83,7 @@ internal static class AlarmSubCommands
 
 			found.Increment();
 
+			Program.AlarmHandler.SaveAlarms();
 			return $"incremented {message.Author.Username}'s next alarm to {found}";
 		}
 	}
@@ -92,6 +103,7 @@ internal static class AlarmSubCommands
 				else alarm.RepeatingTimes = found.RepeatingTimes;
 
 				message.Channel.SendMessageAsync($"Loaded preset {arguments[1]}.");
+				Program.AlarmHandler.SaveAlarms();
 				return $"loaded preset {name} for {message.Author.Username}";
 			}
 			case "save": // $$$ add override warning
@@ -100,6 +112,7 @@ internal static class AlarmSubCommands
 				alarm.Presets.Add(new(name, alarm.RepeatingTimes, alarm.SingleTimes));
 
 				message.Channel.SendMessageAsync($"Saved current times to preset {arguments[1]}.");
+				Program.AlarmHandler.SaveAlarms();
 				return $"saved current times to preset {name} for {message.Author.Username}";
 			}
 			case "delete":
@@ -108,6 +121,7 @@ internal static class AlarmSubCommands
 				else alarm.Presets.Remove(found);
 
 				message.Channel.SendMessageAsync($"Deleted preset {arguments[1]}.");
+				Program.AlarmHandler.SaveAlarms();
 				return $"deleted preset {name} for {message.Author.Username}";
 			}
 			case "rename":
@@ -117,6 +131,7 @@ internal static class AlarmSubCommands
 				else found.Name = arguments[2].ToLower();
 
 				message.Channel.SendMessageAsync($"Renamed preset {arguments[1]} to {arguments[2]}.");
+				Program.AlarmHandler.SaveAlarms();
 				return $"renamed preset {name} to {found.Name} for {message.Author.Username}";
 			}
 			default:
@@ -129,9 +144,14 @@ internal static class AlarmSubCommands
 	public static string Pause(UserAlarm alarm, IMessage message, string[] _ = null)
 	{
 		if (alarm.Paused) throw new Exception("Your alarms are already paused.");
-		else alarm.Paused = true;
+		else
+		{
+			alarm.Paused = true;
+			alarm.StopRinging();
+		}
 
 		message.Channel.SendMessageAsync("Alarms paused.");
+		Program.AlarmHandler.SaveAlarms();
 		return $"paused alarms for {message.Author.Username}";
 	}
 
@@ -141,6 +161,159 @@ internal static class AlarmSubCommands
 		else throw new Exception("Your alarms are already resumed.");
 
 		message.Channel.SendMessageAsync("Alarms resumed.");
+		Program.AlarmHandler.SaveAlarms();
 		return $"resumed alarms for {message.Author.Username}";
+	}
+
+	public static string Clear(UserAlarm alarm, IMessage message, string[] arguments)
+	{
+		bool clearRepeating = true, clearSingle = true;
+
+		if (arguments.Length != 0)
+		{
+			switch (arguments[0].ToLower())
+			{
+				case "r":
+				case "repeating":
+					clearSingle = false;
+					break;
+				case "s":
+				case "single":
+					clearRepeating = false;
+					break;
+				case "a":
+				case "all":
+					break;
+				default:
+					throw new Exception($"Criteria {arguments[0]} is not recognized.");
+			}
+		}
+
+		if (clearRepeating) alarm.RepeatingTimes.Clear();
+		if (clearSingle) alarm.SingleTimes.Clear();
+
+		message.Channel.SendMessageAsync("Alarms cleared.");
+		Program.AlarmHandler.SaveAlarms();
+		return $"cleared alarms for {message.Author.Username}";
+	}
+
+	public static string Set(UserAlarm alarm, IMessage message, string[] arguments)
+	{
+		StringBuilder sb = new();
+		foreach (string s in arguments) sb.Append($"{s} ");
+
+		//message.Attachments.First()
+
+		if (alarm is null)
+		{
+			alarm = JsonConvert.DeserializeObject<UserAlarm>(sb.ToString());
+
+			if (alarm.UserID != message.Author.Id) throw new Exception("UserID cannot be changed!");
+			
+			Program.Client.MessageReceived += alarm.AlarmHandler;
+			Program.AlarmHandler.Alarms.Add(alarm);
+		}
+		else
+		{
+			string carry = JsonConvert.SerializeObject(alarm);
+			JsonConvert.PopulateObject(sb.ToString(), alarm);
+
+			if (alarm.UserID != message.Author.Id)
+			{
+				JsonConvert.PopulateObject(carry, alarm);
+				throw new Exception("UserID cannot be changed!");
+			}
+		}
+
+		message.Channel.SendMessageAsync("Alarm profile set.");
+		Program.AlarmHandler.SaveAlarms();
+		return $"set alarm profile for {message.Author.Username} to {sb}";
+	}
+
+	public static string Template(UserAlarm alarm, IMessage message, string[] _ = null)
+	{
+		DateTime tempTime = DateTime.Now;
+		tempTime = tempTime.AddMinutes(1).AddTicks(-(tempTime.Ticks % TimeSpan.TicksPerSecond));
+
+		UserAlarm template = new(0, new() { new(tempTime, 1) }, new() { new(tempTime, false) })
+		{
+			UserID = message.Author.Id,
+			Name = "My Alarm Template",
+		};
+		Log(template, message);
+
+		return $"sent alarm template to {message.Author.Username}";
+	}
+
+	public static string Help(UserAlarm alarm, IMessage message, string[] _ = null)
+	{
+		StringBuilder text = new("```\nPossible Commands:");
+
+		foreach (string key in AlarmCommand.SubCommands.Keys) text.Append($"\n - {key}");
+
+		text.Append("\n\nPossible Intervals:");
+
+		foreach (var interval in Enum.GetValues(typeof(IntervalType))) text.Append($"\n[{(int)interval}] - {interval}");
+
+		text.Append("\n```");
+
+		message.Channel.SendMessageAsync(text.ToString());
+		return $"sent alarm subcommands help to {message.Author.Username}";
+	}
+
+	public static string Add(UserAlarm alarm, IMessage message, string[] arguments)
+	{
+		if (alarm is null)
+		{
+			alarm = new(message.Author.Id, new(), new());
+			Program.Client.MessageReceived += alarm.AlarmHandler;
+			Program.AlarmHandler.Alarms.Add(alarm);
+			Program.AlarmHandler.AddAlarmToTimer(alarm);
+		}
+
+		StringBuilder sb = new();
+		foreach (string s in arguments[1..]) sb.Append($"{s} ");
+
+		switch (arguments[0].ToLower())
+		{
+			case "r":
+			case "repeat":
+			case "repeating":
+			{
+				alarm.RepeatingTimes.Add(JsonConvert.DeserializeObject<RepeatingTime>(sb.ToString()));
+				message.Channel.SendMessageAsync($"Added repeating alarm.");
+				break;
+			}
+			case "s":
+			case "once":
+			case "single":
+			{
+				alarm.SingleTimes.Add(JsonConvert.DeserializeObject<SingleTime>(sb.ToString()));
+				message.Channel.SendMessageAsync($"Added single alarm.");
+				break;
+			}
+			default:
+			{
+				throw new ArgumentException($"{arguments[0]} is not recognized a recognized alarm type. Try types repeating or single.");
+			}
+		}
+
+		Program.AlarmHandler.SaveAlarms();
+
+		return $"added alarm for {message.Author.Username}";
+	}
+
+	public static string Remove(UserAlarm alarm, IMessage message, string[] arguments)
+	{
+		if (arguments.Length != 0) throw new ArgumentException("`~alarm remove` must be called with no arguments.");
+
+		alarm.Paused = true;
+		alarm.StopRinging();
+		Program.AlarmHandler.Alarms.Remove(alarm);
+		Program.AlarmHandler.SaveAlarms();
+
+		message.Channel.SendMessageAsync("Alarm profile deleted.");
+
+		return $"removed alarm profile for {message.Author.Username}";
 	}
 }

@@ -36,4 +36,6 @@ public class AlarmHandler
     }
 
     public UserAlarm GetAlarm(ulong id) => Alarms.Find(x => x.UserID == id);
+
+    public void AddAlarmToTimer(UserAlarm x) => _minuteTimer.Elapsed += x.OnTimedEvent;
 }

@@ -45,15 +45,17 @@ public class UserAlarm
     public virtual string Name { get; set; } = string.Empty;
     public virtual bool Paused { get; set; } = false;
 
-    public UserAlarm() { }
+    public UserAlarm()
+    {
+        GetAlarmMessage = () => _alarmMessage;
+        GetSnoozeMessage = () => _snoozeMessage;
+    }
 
-    public UserAlarm(ulong userID, List<RepeatingTime> times, List<SingleTime> singleTimes = null)
+    public UserAlarm(ulong userID, List<RepeatingTime> times, List<SingleTime> singleTimes = null) : base()
     {
         UserID = userID;
         RepeatingTimes = times;
         SingleTimes = singleTimes ?? new();
-        GetAlarmMessage = () => _alarmMessage;
-        GetSnoozeMessage = () => _snoozeMessage;
     }
 
     public void Init()
@@ -143,4 +145,6 @@ public class UserAlarm
     }
 
     public RepeatingTime NextTime() => RepeatingTimes.MinBy(x => x.Time);
+
+    public void StopRinging() => Ringing = false;
 }
