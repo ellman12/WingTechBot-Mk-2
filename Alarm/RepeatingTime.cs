@@ -18,14 +18,14 @@ public class RepeatingTime : TimeBase
         Interval = interval;
         IntervalType = intervalType;
 
-        while (Interval != 0 && Time < DateTime.Now) Increment();
+        Reset();
     }
 
     public RepeatingTime(int dayOfWeek, int hour, int minute, double interval, IntervalType intervalType = IntervalType.Day)
     {
         var now = DateTime.Now;
 
-        Time = new DateTime(now.Year, now.Month, now.Day, hour, minute, 0);
+        Time = new DateTime(now.Year, now.Month, now.Day, hour, minute, 0, DateTimeKind.Local);
         Time = Time.AddDays(dayOfWeek - (int)now.DayOfWeek);
 
         Interval = interval;
@@ -47,6 +47,11 @@ public class RepeatingTime : TimeBase
 		IntervalType.Year => Time.AddYears((int)Interval),
 		_ => throw new ArgumentException("Invalid IntervalType")
 	};
+
+    public void Reset()
+	{
+        while (Interval != 0 && Time < DateTime.Now) Increment();
+    }
 
 	public bool EvaluateAndIncrement(DateTime time, double timerInterval, List<SingleTime> singleTimes)
     {

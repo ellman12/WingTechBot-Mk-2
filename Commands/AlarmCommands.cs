@@ -102,6 +102,8 @@ internal static class AlarmSubCommands
 				if (found is null) throw new Exception($"Preset {arguments[1]} does not exist.");
 				else alarm.RepeatingTimes = found.RepeatingTimes;
 
+				foreach (var x in alarm.RepeatingTimes) x.Reset();
+
 				message.Channel.SendMessageAsync($"Loaded preset {arguments[1]}.");
 				Program.AlarmHandler.SaveAlarms();
 				return $"loaded preset {name} for {message.Author.Username}";
@@ -290,6 +292,17 @@ internal static class AlarmSubCommands
 			{
 				alarm.SingleTimes.Add(JsonConvert.DeserializeObject<SingleTime>(sb.ToString()));
 				message.Channel.SendMessageAsync($"Added single alarm.");
+				break;
+			}
+			case "w":
+			case "weekly":
+			{
+				DayOfWeek day = Enum.Parse<DayOfWeek>($"{char.ToUpper(arguments[1][0])}{arguments[1][1..].ToLower()}");
+				DateTime time = DateTime.Parse(arguments[2]);
+
+				alarm.RepeatingTimes.Add(new((int)day, time.Hour, time.Minute, 7));
+
+				message.Channel.SendMessageAsync($"Added weekly alarm.");
 				break;
 			}
 			default:
