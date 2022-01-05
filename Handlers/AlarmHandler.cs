@@ -19,7 +19,7 @@ public class AlarmHandler
 
 	public void HookAlarms(DiscordSocketClient client)
     {
-        foreach (var x in Alarms) client.MessageReceived += x.AlarmHandler;
+        foreach (var x in Alarms) client.MessageReceived += x.OnReceiveMessage;
 
         client.Connected += delegate
         {

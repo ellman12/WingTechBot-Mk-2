@@ -79,7 +79,7 @@ public class UserAlarm
         Console.WriteLine($"Alarm DM'd {User.Username}#{User.Discriminator}: {s}");
     }
 
-    public Task AlarmHandler(SocketMessage message)
+    public Task OnReceiveMessage(SocketMessage message)
     {
         Init(); // $$$ investigate
         if (message.Author.Id != UserID) return Task.CompletedTask;

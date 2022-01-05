@@ -212,7 +212,7 @@ internal static class AlarmSubCommands
 
 			if (alarm.UserID != message.Author.Id) throw new Exception("UserID cannot be changed!");
 			
-			Program.Client.MessageReceived += alarm.AlarmHandler;
+			Program.Client.MessageReceived += alarm.OnReceiveMessage;
 			Program.AlarmHandler.Alarms.Add(alarm);
 		}
 		else
@@ -268,7 +268,7 @@ internal static class AlarmSubCommands
 		if (alarm is null)
 		{
 			alarm = new(message.Author.Id, new(), new());
-			Program.Client.MessageReceived += alarm.AlarmHandler;
+			Program.Client.MessageReceived += alarm.OnReceiveMessage;
 			Program.AlarmHandler.Alarms.Add(alarm);
 			Program.AlarmHandler.AddAlarmToTimer(alarm);
 		}
