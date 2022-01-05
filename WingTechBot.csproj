@@ -3,7 +3,12 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
+    <ApplicationIcon>wingtech_logo.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="wingtech_logo.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.4.0" />
