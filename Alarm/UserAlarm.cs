@@ -37,8 +37,8 @@ public class UserAlarm
 
     private readonly string _alarmMessage = "Your alarm is ringing. DM me any message to stop.", _snoozeMessage = "Your alarm is ringing. DM me any message to stop.";
 
-    public virtual Func<string> GetAlarmMessage { protected get; init; }
-    public virtual Func<string> GetSnoozeMessage { protected get; init; }
+    protected virtual Func<string> GetAlarmMessage { get; set; }
+    protected virtual Func<string> GetSnoozeMessage { get; set; }
     public virtual bool DMOwner { get; set; } = false;
     public virtual bool SOTD { get; set; } = false;
     public virtual int WordCountRequirement { get; set; } = 0;
