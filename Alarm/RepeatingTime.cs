@@ -31,7 +31,7 @@ public class RepeatingTime : TimeBase
         Interval = interval;
         IntervalType = intervalType;
 
-        while (Interval != 0 && Time < DateTime.Now) Increment();
+        Reset();
     }
 
 	public override string ToString() => $"RepeatingTime at {Time} that repeats every {Interval} {IntervalType}(s)";
@@ -50,7 +50,7 @@ public class RepeatingTime : TimeBase
 
     public void Reset()
 	{
-        while (Interval != 0 && Time < DateTime.Now) Increment();
+        while (Interval != 0 && Time.ToUniversalTime() <= DateTime.UtcNow) Increment();
     }
 
 	public bool EvaluateAndIncrement(DateTime time, double timerInterval, List<SingleTime> singleTimes)
