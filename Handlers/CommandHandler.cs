@@ -80,7 +80,7 @@ public class CommandHandler
 	{
 		try
 		{
-			if (roleID is null) throw new Exception("Role does not exist.");
+			if (roleID is null or 0) throw new Exception("Role does not exist.");
 			if (requested.Id == message.Author.Id) throw new Exception("You can't demote yourself! Did you specify someone to demote?");
 			if (arguments.Length < 3) throw new Exception("You must specify a time. (in minutes)");
 

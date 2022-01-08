@@ -74,7 +74,10 @@ public class KarmaHandler
 
 		KarmaDictionary[kvp.Key][index] -= kvp.Value[index];
 
-		Program.BotChannel.SendMessageAsync($"Possible karma manipulation detected on user {Program.GetUser(kvp.Key).Mention}. {kvp.Value[index]} {trackableEmotes[index]} are being temporarily withheld. Case {caseNumber} opened. If this was an error, {Program.GetUser(Program.Config.OwnerID).Mention} will fix it shortly.");
+		string message = $"Possible karma manipulation detected on user {Program.GetUser(kvp.Key).Mention}. {kvp.Value[index]} {trackableEmotes[index]} are being temporarily withheld. Case {caseNumber} opened. If this was an error, {Program.GetUser(Program.Config.OwnerID).Mention} will fix it shortly.";
+
+		if (Program.BotChannel is null) Console.WriteLine(message);
+		else Program.BotChannel.SendMessageAsync(message);
 
 		using StreamWriter file = File.AppendText(CASE_PATH);
 

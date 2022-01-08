@@ -239,7 +239,7 @@ internal class TopCommand : Command
 		{
 			try
 			{
-				var user = ((IGuild)Program.BotChannel.Guild).GetUserAsync(sorted[i]).Result;
+				var user = ((IGuild)Program.Client.GetGuild(Program.Config.ServerID)).GetUserAsync(sorted[i]).Result;
 				text += $"[{i + 1}] = {Program.KarmaHandler.KarmaDictionary[sorted[i]][0] - Program.KarmaHandler.KarmaDictionary[sorted[i]][1]} karma - {user.Username}#{user.Discriminator}\n";
 			}
 			catch
