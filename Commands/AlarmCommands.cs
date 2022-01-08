@@ -290,8 +290,12 @@ internal static class AlarmSubCommands
 			case "once":
 			case "single":
 			{
-				alarm.SingleTimes.Add(JsonConvert.DeserializeObject<SingleTime>(sb.ToString()));
-				message.Channel.SendMessageAsync($"Added single alarm.");
+				DateTime date = DateTime.Parse(arguments[1]);
+				DateTime time = DateTime.Parse(arguments[2]);
+
+				alarm.SingleTimes.Add(new(new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Local), false));
+
+				message.Channel.SendMessageAsync($"Added single alarm");
 				break;
 			}
 			case "w":
@@ -305,6 +309,17 @@ internal static class AlarmSubCommands
 				message.Channel.SendMessageAsync($"Added weekly alarm.");
 				break;
 			}
+			case "override":
+			{
+				DateTime date = DateTime.Parse(arguments[1]);
+				DateTime time = DateTime.Parse(arguments[2]);
+
+				alarm.SingleTimes.Add(new(new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Local), true));
+
+				message.Channel.SendMessageAsync($"Added alarm override.");
+				break;
+			}
+
 			default:
 			{
 				throw new ArgumentException($"{arguments[0]} is not recognized a recognized alarm type. Try types repeating or single.");

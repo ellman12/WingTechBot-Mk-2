@@ -55,10 +55,10 @@ public class RepeatingTime : TimeBase
 
 	public bool EvaluateAndIncrement(DateTime time, double timerInterval, List<SingleTime> singleTimes)
     {
-        if (Evaluate(time, timerInterval) && !singleTimes.Any(x => x.Time.Date == Time.Date && x.Override))
+        if (Evaluate(time, timerInterval))
         {
             Increment();
-            return true;
+            return !singleTimes.Any(x => x.Time.Date == Time.Date && x.Override);
         }
         else return false;
     }
