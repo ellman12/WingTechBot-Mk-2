@@ -4,70 +4,70 @@ using System.Collections.Generic;
 
 public static class Library // feel free to add your own methods here!
 {
-    public static Random Random { get; private set; } = new(); // a random all set up and ready to use... Try Random.Next();
+	public static Random Random { get; private set; } = new(); // a random all set up and ready to use... Try Random.Next();
 
-    public static bool TryDec(string hex, out int dec) => int.TryParse
-    (
-        hex,
-        System.Globalization.NumberStyles.HexNumber,
-        System.Globalization.CultureInfo.DefaultThreadCurrentCulture,
-        out dec
-    );
+	public static bool TryDec(string hex, out int dec) => int.TryParse
+	(
+		hex,
+		System.Globalization.NumberStyles.HexNumber,
+		System.Globalization.CultureInfo.DefaultThreadCurrentCulture,
+		out dec
+	);
 
-    public static int GetNextY(int x, Board board) // returns the y value of the next token placed in the specified column. Added by Ben.
-    {
-        for (int y = 0; y < board.Rows; y++)
-        {
-            if (board[x, y] != State.Empty)
-            {
-                return y - 1;
-            }
-        }
+	public static int GetNextY(int x, Board board) // returns the y value of the next token placed in the specified column. Added by Ben.
+	{
+		for (int y = 0; y < board.Rows; y++)
+		{
+			if (board[x, y] != State.Empty)
+			{
+				return y - 1;
+			}
+		}
 
-        return board.Rows - 1;
-    }
+		return board.Rows - 1;
+	}
 
-    public static int CheckAllDirections(int x, int y, State state, Board board) => // counts how many tokens a token placed here would connect to. Added by Ben.
-        board.CheckDirection(x, y, 1, 0, state) +
-        board.CheckDirection(x, y, 0, 1, state) +
-        board.CheckDirection(x, y, 1, 1, state) +
-        board.CheckDirection(x, y, 1, -1, state);
+	public static int CheckAllDirections(int x, int y, State state, Board board) => // counts how many tokens a token placed here would connect to. Added by Ben.
+		board.CheckDirection(x, y, 1, 0, state) +
+		board.CheckDirection(x, y, 0, 1, state) +
+		board.CheckDirection(x, y, 1, 1, state) +
+		board.CheckDirection(x, y, 1, -1, state);
 
-    public static int Max(int[] array) // returns the index of the largest value in the given array. Added by Ben.
-    {
-        int maxIndex = 0;
-        for (int i = 1; i < array.Length; i++)
-        {
-            if (array[i] > array[maxIndex]) maxIndex = i;
-        }
+	public static int Max(int[] array) // returns the index of the largest value in the given array. Added by Ben.
+	{
+		int maxIndex = 0;
+		for (int i = 1; i < array.Length; i++)
+		{
+			if (array[i] > array[maxIndex]) maxIndex = i;
+		}
 
-        List<int> indexes = new();
-        for (int i = 0; i < array.Length; i++)
-        {
-            if (array[i] == array[maxIndex]) indexes.Add(i);
-        }
+		List<int> indexes = new();
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (array[i] == array[maxIndex]) indexes.Add(i);
+		}
 
-        return indexes[Random.Next(indexes.Count)];
-    }
+		return indexes[Random.Next(indexes.Count)];
+	}
 
-    public static int Max(double[] array) // returns the index of the largest value in the given array. Added by Ben.
-    {
-        int maxIndex = 0;
-        for (int i = 1; i < array.Length; i++)
-        {
-            if (array[i] > array[maxIndex]) maxIndex = i;
-        }
+	public static int Max(double[] array) // returns the index of the largest value in the given array. Added by Ben.
+	{
+		int maxIndex = 0;
+		for (int i = 1; i < array.Length; i++)
+		{
+			if (array[i] > array[maxIndex]) maxIndex = i;
+		}
 
-        List<int> indexes = new();
-        for (int i = 0; i < array.Length; i++)
-        {
-            if (array[i] == array[maxIndex]) indexes.Add(i);
-        }
+		List<int> indexes = new();
+		for (int i = 0; i < array.Length; i++)
+		{
+			if (array[i] == array[maxIndex]) indexes.Add(i);
+		}
 
-        return indexes[Random.Next(indexes.Count)];
-    }
+		return indexes[Random.Next(indexes.Count)];
+	}
 
-    /*
+	/*
     Other methods, properties, etc. you can use!
 
     // MainClass

@@ -6,22 +6,21 @@ using System.Linq;
 using System.Text;
 using Discord;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using WingTechBot.Alarm;
 
 internal class AlarmCommand : Command
 {
 	public static Dictionary<string, Func<UserAlarm, IMessage, string[], string>> SubCommands => new()
 	{
-		["log"] = AlarmSubCommands.Log,
-		["skip"] = AlarmSubCommands.Skip,
+		["log"] = (a, message, _) => AlarmSubCommands.Log(a, message),
+		["skip"] = (a, message, _) => AlarmSubCommands.Skip(a, message),
 		["preset"] = AlarmSubCommands.Preset,
-		["pause"] = AlarmSubCommands.Pause,
-		["resume"] = AlarmSubCommands.Resume,
+		["pause"] = (a, message, _) => AlarmSubCommands.Pause(a, message),
+		["resume"] = (a, message, _) => AlarmSubCommands.Resume(a, message),
 		["clear"] = AlarmSubCommands.Clear,
 		//["set"] = AlarmSubCommands.Set,
-		["template"] = AlarmSubCommands.Template,
-		["help"] = AlarmSubCommands.Help,
+		["template"] = (_, message, _) => AlarmSubCommands.Template(message),
+		["help"] = (a, message, _) => AlarmSubCommands.Help(a, message),
 		["add"] = AlarmSubCommands.Add,
 		["remove"] = AlarmSubCommands.Remove,
 	};
@@ -65,14 +64,14 @@ internal class LogAlarmsCommand : Command
 
 internal static class AlarmSubCommands
 {
-	public static string Log(UserAlarm alarm, IMessage message, string[] _ = null)
+	public static string Log(UserAlarm alarm, IMessage message)
 	{
 		message.Channel.SendFileAsync(new MemoryStream(Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(alarm, Formatting.Indented))), "alarm.json");
-		
+
 		return $"logged alarms for {message.Author.Username}";
 	}
 
-	public static string Skip(UserAlarm alarm, IMessage message, string[] _ = null)
+	public static string Skip(UserAlarm alarm, IMessage message)
 	{
 		if (alarm?.RepeatingTimes is null) throw new Exception("You do not have any repeating alarms to skip.");
 		else
@@ -143,7 +142,7 @@ internal static class AlarmSubCommands
 		}
 	}
 
-	public static string Pause(UserAlarm alarm, IMessage message, string[] _ = null)
+	public static string Pause(UserAlarm alarm, IMessage message)
 	{
 		if (alarm.Paused) throw new Exception("Your alarms are already paused.");
 		else
@@ -157,7 +156,7 @@ internal static class AlarmSubCommands
 		return $"paused alarms for {message.Author.Username}";
 	}
 
-	public static string Resume(UserAlarm alarm, IMessage message, string[] _ = null)
+	public static string Resume(UserAlarm alarm, IMessage message)
 	{
 		if (alarm.Paused) alarm.Paused = false;
 		else throw new Exception("Your alarms are already resumed.");
@@ -211,7 +210,7 @@ internal static class AlarmSubCommands
 			alarm = JsonConvert.DeserializeObject<UserAlarm>(sb.ToString());
 
 			if (alarm.UserID != message.Author.Id) throw new Exception("UserID cannot be changed!");
-			
+
 			Program.Client.MessageReceived += alarm.OnReceiveMessage;
 			Program.AlarmHandler.Alarms.Add(alarm);
 		}
@@ -232,7 +231,7 @@ internal static class AlarmSubCommands
 		return $"set alarm profile for {message.Author.Username} to {sb}";
 	}
 
-	public static string Template(UserAlarm alarm, IMessage message, string[] _ = null)
+	public static string Template(IMessage message)
 	{
 		DateTime tempTime = DateTime.Now;
 		tempTime = tempTime.AddMinutes(1).AddTicks(-(tempTime.Ticks % TimeSpan.TicksPerSecond));
@@ -247,7 +246,7 @@ internal static class AlarmSubCommands
 		return $"sent alarm template to {message.Author.Username}";
 	}
 
-	public static string Help(UserAlarm alarm, IMessage message, string[] _ = null)
+	public static string Help(UserAlarm alarm, IMessage message)
 	{
 		StringBuilder text = new("```\nPossible Commands:");
 

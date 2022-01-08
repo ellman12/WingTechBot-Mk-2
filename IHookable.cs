@@ -2,5 +2,5 @@
 
 internal interface IHookable
 {
-    void Hook();
+	void Hook();
 }
