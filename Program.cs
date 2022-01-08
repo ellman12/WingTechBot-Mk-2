@@ -18,8 +18,6 @@ public static class Program
 	public const string AUDIT_PATH = @"save\audit_log.txt";
 	public const string CONFIG_PATH = @"save\config.json";
 
-	public const string NOTIFY_SOUND_PATH = @"C:\Windows\Media\Windows Notify Messaging.wav";
-
 	public static bool BotOnly { get; set; }
 
 	public static Random Random { get; } = new();
@@ -27,7 +25,6 @@ public static class Program
 	public static CommandHandler CommandHandler { get; private set; } = new();
 	public static GameHandler GameHandler { get; private set; } = new();
 	public static KarmaHandler KarmaHandler { get; private set; } = new();
-	public static VoiceLogger VoiceLogger { get; private set; } = new();
 	public static AlarmHandler AlarmHandler { get; private set; }
 
 	public static void Main() => MainAsync().GetAwaiter().GetResult();
@@ -58,8 +55,6 @@ public static class Program
 		Client.ReactionAdded += KarmaHandler.ReactionAdded;
 		Client.ReactionRemoved += KarmaHandler.ReactionRemoved;
 
-		Client.UserVoiceStateUpdated += VoiceLogger.LogVoice;
-
 		Client.Ready += Start;
 
 		AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
@@ -88,14 +83,6 @@ public static class Program
 	private static Task Start()
 	{
 		BotChannel = Client.GetChannel(Config.BotChannelID ?? 0) as SocketTextChannel;
-		foreach (SocketVoiceChannel vc in Client.GetGroupChannelsAsync().Result)
-		{
-			if (vc.Users.FirstOrDefault(x => x.Id == Config.OwnerID) is not null)
-			{
-				VoiceLogger.OwnerInVoice = true;
-				break;
-			}
-		}
 
 		BotID = Client.CurrentUser.Id;
 
