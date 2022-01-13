@@ -37,6 +37,9 @@ public static class Program
 
 	private static async Task MainAsync()
 	{
+		if (!Directory.Exists("save")) Directory.CreateDirectory("save");
+		if (!File.Exists(CONFIG_PATH)) File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(new Config()));
+
 		Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
 
 		KarmaHandler.Load();
