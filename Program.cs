@@ -27,7 +27,19 @@ public static class Program
 	public static KarmaHandler KarmaHandler { get; private set; } = new();
 	public static AlarmHandler AlarmHandler { get; private set; }
 
-	public static void Main() => MainAsync().GetAwaiter().GetResult();
+	public static void Main()
+	{
+		try
+		{
+			MainAsync().GetAwaiter().GetResult();
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.Message);
+			Console.ReadLine();
+			throw;
+		}
+	}
 
 	private static void OnProcessExit(object sender, EventArgs e) => KarmaHandler.Save();
 
@@ -37,19 +49,10 @@ public static class Program
 
 	private static async Task MainAsync()
 	{
-		try
-		{
-			if (!Directory.Exists("save")) Directory.CreateDirectory("save");
-			if (!File.Exists(CONFIG_PATH)) File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(new Config()));
+		if (!Directory.Exists("save")) Directory.CreateDirectory("save");
+		if (!File.Exists(CONFIG_PATH)) File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(new Config()));
 
-			Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
-		}
-		catch (Exception e)
-		{
-			Console.WriteLine(e);
-			Console.ReadLine();
-			throw;
-		}
+		Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
 
 		KarmaHandler.Load();
 
