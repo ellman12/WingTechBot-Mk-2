@@ -86,7 +86,7 @@ public class KarmaHandler
 
 	public Task Save()
 	{
-		FileInfo fi = new(SAVE_PATH);
+		FileInfo fi = new($"{SAVE_PATH}_{DateTime.Now.Year}");
 		using StreamWriter file = new(fi.Open(FileMode.Create));
 
 		foreach (var entry in KarmaDictionary)
@@ -106,7 +106,7 @@ public class KarmaHandler
 
 	public void Load()
 	{
-		FileInfo fi = new(SAVE_PATH);
+		FileInfo fi = new($"{SAVE_PATH}_{DateTime.Now.Year}");
 		using StreamReader file = new(fi.Open(FileMode.OpenOrCreate));
 		while (!file.EndOfStream)
 		{
