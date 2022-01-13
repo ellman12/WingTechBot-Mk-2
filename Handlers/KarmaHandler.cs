@@ -15,7 +15,7 @@ public class KarmaHandler
 	public static readonly string[] trackableEmotes = new string[] { "upvote", "downvote", "silver", "gold", "platinum" };
 
 	public const string CASE_PATH = @"save\cases.txt";
-	public const string SAVE_PATH = @"save\karma.txt";
+	public const string SAVE_PATH = @"save\karma";
 
 	private static readonly string[] _upvoteScolds = new string[]
 	{
@@ -86,7 +86,7 @@ public class KarmaHandler
 
 	public Task Save()
 	{
-		FileInfo fi = new(SAVE_PATH);
+		FileInfo fi = new($"{SAVE_PATH}_{DateTime.Now.Year}.txt");
 		using StreamWriter file = new(fi.Open(FileMode.Create));
 
 		foreach (var entry in KarmaDictionary)
@@ -106,7 +106,7 @@ public class KarmaHandler
 
 	public void Load()
 	{
-		FileInfo fi = new(SAVE_PATH);
+		FileInfo fi = new($"{SAVE_PATH}_{DateTime.Now.Year}.txt");
 		using StreamReader file = new(fi.Open(FileMode.OpenOrCreate));
 		while (!file.EndOfStream)
 		{
