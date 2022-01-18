@@ -115,7 +115,10 @@ public abstract class Game
 			if (saveMessage) sentMessages.Add(sent);
 		}
 
-		while (LastMessage is null || LastMessage.Author.Id != playerID || !ModeMatch(LastMessage, mode) || (channelMatch && LastMessage.Channel != GameChannel))
+		while (LastMessage is null 
+			|| LastMessage.Author.Id != playerID 
+			|| !ModeMatch(LastMessage, mode) 
+			|| (channelMatch && LastMessage.Channel != GameChannel))
 		{
 			_waitHandle.Reset();
 			_waitHandle.WaitOne();
@@ -137,7 +140,10 @@ public abstract class Game
 			if (saveMessage) sentMessages.Add(sent);
 		}
 
-		while (LastMessage is null || !PlayerIDs.Contains(LastMessage.Author.Id) || !ModeMatch(LastMessage, mode) || (channelMatch && LastMessage.Channel != GameChannel))
+		while (LastMessage is null 
+			|| !PlayerIDs.Contains(LastMessage.Author.Id) 
+			|| !ModeMatch(LastMessage, mode) 
+			|| (channelMatch && LastMessage.Channel != GameChannel))
 		{
 			_waitHandle.Reset();
 			_waitHandle.WaitOne();
