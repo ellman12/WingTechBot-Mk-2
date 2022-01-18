@@ -32,6 +32,8 @@ public abstract class Game
 	protected List<IMessage> sentMessages = new();
 	protected List<IMessage> receivedMessages = new();
 
+	private bool _interrupted = false;
+
 	protected virtual Dictionary<string, Action<IMessage, string[]>> Commands { get; }
 
 	protected virtual void Start() { }
@@ -122,6 +124,12 @@ public abstract class Game
 		{
 			_waitHandle.Reset();
 			_waitHandle.WaitOne();
+
+			if (_interrupted)
+			{
+				_interrupted = false;
+				throw new ThreadInterruptedException();
+			}
 		}
 
 		return LastMessage;
@@ -147,6 +155,12 @@ public abstract class Game
 		{
 			_waitHandle.Reset();
 			_waitHandle.WaitOne();
+
+			if (_interrupted)
+			{
+				_interrupted = false;
+				throw new ThreadInterruptedException();
+			}
 		}
 
 		return LastMessage;
@@ -312,6 +326,8 @@ public abstract class Game
 		DeleteSavedSentMessages();
 		DeleteSavedReceivedMessages();
 	}
+
+	protected void Interrupt() => _interrupted = true;
 
 	protected static IUser GetPlayer(ulong id) => Program.GetUser(id);
 
