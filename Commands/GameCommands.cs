@@ -90,7 +90,7 @@ internal class ActiveGamesCommand : Command
 	}
 
 	public override string LogString => "listed current games";
-	public override string[] Aliases => new string[] { "activegames", "activegame", "active", "actives", "ag" };
+	public override string[] Aliases => new string[] { "activegames", "activegame", "active", "actives", "ag", "listactivegames" };
 }
 
 internal class ClearGamesCommand : Command
@@ -108,6 +108,6 @@ internal class ClearGamesCommand : Command
 	}
 
 	public override string LogString => $"shutting down {_count} active game(s).";
-	public override string[] Aliases => new string[] { "cleargames", "cleargame", "cg" };
+	public override string[] Aliases => new string[] { "cleargames", "endgames" };
 	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
 }
