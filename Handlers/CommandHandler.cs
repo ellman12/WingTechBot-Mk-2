@@ -36,11 +36,6 @@ public class CommandHandler
 	{
 		if (!message.Content.StartsWith("~") || message.Author.IsBot || (message.Channel.Name != "bot" && Program.BotOnly))
 		{
-			if (!message.Content.StartsWith("~") && !message.Author.IsBot && message.Author.Id != Program.Config.OwnerID && message.Channel is IDMChannel)
-			{
-				Program.GetUser(Program.Config.OwnerID).GetOrCreateDMChannelAsync().Result.SendMessageAsync($"from {message.Author.Username}#{message.Author.Discriminator} with ID ({message.Author.Id}) @ {message.Timestamp.LocalDateTime}: {message.Content}");
-			}
-
 			return Task.CompletedTask;
 		}
 

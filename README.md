@@ -27,7 +27,7 @@ Alternatively see the GitHub documentation on [creating a pull request](https://
 6. Generate an invite URL for your bot and use it to add the bot to your server.
 7. Fork, build, and run this repo. It should error, but create a file within "bin/save" called "config.json"
 8. Open "config.json"
-9. Replace the null value under "LoginToken" with the bot token you saved earlier.
+9. Replace the null value under "LoginToken" with the bot token you saved earlier. **Make sure you have quotes around your login token, but only for LoginToken.**
 10. Replace the null value under "OwnerID" with your Discord user ID (right-click yourself in Discord and choose "Copy ID", it should be one really big number)
 11. Replace the null value under "ServerID" with your Discord server ID (right-click your server icon on the left in Discord and choose "Copy ID", it should be one really big number)
 12. If you have a designated bot channel, replace the null value under "BotChannelID" with the ID of that channel.
