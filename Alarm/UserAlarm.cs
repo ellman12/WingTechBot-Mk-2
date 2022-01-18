@@ -21,14 +21,14 @@ public class UserAlarm
 
 	public virtual int SnoozeTolerance { get; set; } = 25;
 
-	private bool Ringing { get; set; } = false;
+	public bool Ringing { get; private set; } = false;
 
 	private int _count = 0;
 	private int _wordCount = 0;
 
 	private Timer _snoozeTimer;
 
-	private ulong ChannelID { get; set; }
+	protected ulong ChannelID { get; private set; }
 
 	[JsonProperty] public List<RepeatingTime> RepeatingTimes { get; set; }
 
@@ -59,14 +59,14 @@ public class UserAlarm
 		SingleTimes = singleTimes ?? new();
 	}
 
-	public void Init()
+	public virtual void Init()
 	{
 		User ??= Program.GetUser(UserID);
 		Channel ??= User.GetOrCreateDMChannelAsync().Result;
 		ChannelID = Channel.Id;
 	}
 
-	public void Message(string s, bool isSnooze = false)
+	public virtual void Message(string s, bool isSnooze = false)
 	{
 		Init();
 		Channel.SendMessageAsync(s);
@@ -79,7 +79,7 @@ public class UserAlarm
 		Console.WriteLine($"Alarm DM'd {User.Username}#{User.Discriminator}: {s}");
 	}
 
-	public Task OnReceiveMessage(SocketMessage message)
+	public virtual Task OnReceiveMessage(SocketMessage message)
 	{
 		Init(); // $$$ investigate
 		if (message.Author.Id != UserID) return Task.CompletedTask;
@@ -107,7 +107,7 @@ public class UserAlarm
 		return Task.CompletedTask;
 	}
 
-	public void OnTimedEvent(object source, ElapsedEventArgs e)
+	public virtual void OnTimedEvent(object source, ElapsedEventArgs e)
 	{
 		if (RepeatingTimes.Any(x => x.EvaluateAndIncrement(e.SignalTime, TimerInterval, SingleTimes)) ||
 			SingleTimes.Any(x => x.EvaluateAndRemove(e.SignalTime, TimerInterval, SingleTimes)))
@@ -125,7 +125,7 @@ public class UserAlarm
 		}
 	}
 
-	public void OnSnooze(object source, ElapsedEventArgs e)
+	public virtual void OnSnooze(object source, ElapsedEventArgs e)
 	{
 		if (Ringing)
 		{
@@ -148,7 +148,7 @@ public class UserAlarm
 	[OnDeserialized]
 	private void OnDeserialized(StreamingContext _) => Reset();
 
-	public void Reset()
+	public virtual void Reset()
 	{
 		foreach (var x in RepeatingTimes) x.Reset();
 	}
