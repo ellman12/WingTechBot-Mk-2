@@ -9,9 +9,7 @@ public abstract class Game
 {
 	public ulong GamemasterID { get; set; }
 
-	private static readonly List<ulong> _list = new();
-
-	public List<ulong> PlayerIDs { get; private set; } = _list;
+	public List<ulong> PlayerIDs { get; private set; } = new();
 
 	protected IMessage LastMessage { get; private set; }
 
