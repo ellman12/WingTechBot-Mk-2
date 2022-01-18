@@ -26,24 +26,24 @@ public class Hangman : Game
 
 	private static readonly string[] _heads = new string[]
 	{
-			"(O.O)",
-			"(O.-)",
-			"(-.-)",
-			"(O.o)",
-			"(>.<)",
-			"(>.>)",
-			"(X.X)",
-			"(@.@)",
-			"(o-o)",
-			"(-_-)",
-			"(OwO)",
-			"(=.=)",
-			"(OxO)",
-			"(o_o)",
-			"(._.)",
-			"(;_;)",
-			"(^.^)",
-			"(~.~)",
+		"(O.O)",
+		"(O.-)",
+		"(-.-)",
+		"(O.o)",
+		"(>.<)",
+		"(>.>)",
+		"(X.X)",
+		"(@.@)",
+		"(o-o)",
+		"(-_-)",
+		"(OwO)",
+		"(=.=)",
+		"(OxO)",
+		"(o_o)",
+		"(._.)",
+		"(;_;)",
+		"(^.^)",
+		"(~.~)",
 	};
 
 	protected override Dictionary<string, Action<IMessage, string[]>> Commands => _commands;
@@ -60,9 +60,9 @@ public class Hangman : Game
 	protected override void Start()
 	{
 		_commands = new Dictionary<string, Action<IMessage, string[]>>
-			{
-				{ "CORRECT", CorrectSpelling }
-			};
+		{
+			{ "CORRECT", CorrectSpelling }
+		};
 
 		_pvp = !PromptYN(GamemasterID, AllowedChannels, true, "Would you like to face a bot? (y/n)");
 		_clues = Prompt(GamemasterID, AllowedChannels, (int x) => x >= 0, true, "How many clues would you like? (recommended: 0-2)");
