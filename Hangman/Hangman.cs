@@ -132,7 +132,6 @@ public class Hangman : Game
 				_guesses.Add(c);
 
 				if (letters.Count <= 0) break;
-
 			}
 
 			(ulong id, string text) tuple = (0, null);
@@ -249,7 +248,7 @@ public class Hangman : Game
 					$"||\n" +
 					$"||\n" +
 					$"====[HANGMAN]====\n" +
-					$"{GetClue()}";
+					$"{GetClue()}\n";
 
 		screen += "```";
 
