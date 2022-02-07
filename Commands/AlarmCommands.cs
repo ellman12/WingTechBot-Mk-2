@@ -80,6 +80,7 @@ internal static class AlarmSubCommands
 			{
 				alarm.StopRinging();
 
+				message.Channel.SendMessageAsync("Skipping your currently ringing alarm.");
 				return $"skipped {message.Author.Username}'s currently ringing alarm.";
 			}
 			else
