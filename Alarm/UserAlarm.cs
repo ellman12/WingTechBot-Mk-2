@@ -155,5 +155,9 @@ public class UserAlarm
 
 	public RepeatingTime NextTime() => RepeatingTimes.MinBy(x => x.Time);
 
-	public void StopRinging() => Ringing = false;
+	public void StopRinging()
+	{
+		Ringing = false;
+		_wordCount = 0;
+	}
 }

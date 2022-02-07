@@ -164,7 +164,6 @@ public abstract class Game
 		}
 
 		return LastMessage;
-
 	}
 
 	protected string PromptString(ulong playerID, PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => Prompt(playerID, mode, channelMatch, message, saveMessage).Content;

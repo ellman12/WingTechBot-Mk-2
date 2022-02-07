@@ -76,14 +76,23 @@ internal static class AlarmSubCommands
 		if (alarm?.RepeatingTimes is null) throw new Exception("You do not have any repeating alarms to skip.");
 		else
 		{
-			RepeatingTime found = alarm.NextTime();
+			if (alarm.Ringing)
+			{
+				alarm.StopRinging();
 
-			message.Channel.SendMessageAsync($"Incrementing alarm {found}.");
+				return $"skipped {message.Author.Username}'s currently ringing alarm.";
+			}
+			else
+			{
+				RepeatingTime found = alarm.NextTime();
 
-			found.Increment();
+				message.Channel.SendMessageAsync($"Incrementing alarm {found}.");
 
-			Program.AlarmHandler.SaveAlarms();
-			return $"incremented {message.Author.Username}'s next alarm to {found}";
+				found.Increment();
+
+				Program.AlarmHandler.SaveAlarms();
+				return $"incremented {message.Author.Username}'s next alarm to {found}";
+			}
 		}
 	}
 
