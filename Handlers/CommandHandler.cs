@@ -34,7 +34,7 @@ public class CommandHandler
 
 	public Task CommandTask(SocketMessage message)
 	{
-		if (!message.Content.StartsWith("~") || message.Author.IsBot || (message.Channel.Name != "bot" && Program.BotOnly))
+		if (!message.Content.StartsWith("~") || message.Author.IsBot || (message.Channel.Name != "bot" && message.Channel is not SocketDMChannel && Program.BotOnly))
 		{
 			return Task.CompletedTask;
 		}
