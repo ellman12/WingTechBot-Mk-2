@@ -196,7 +196,7 @@ public class Hangman : Game
 						if (!_check.Contains(guess[0])) _strikes++;
 					}
 				}
-				else if (!_wordGuesses.Contains(guess)) // word guess fail
+				else if (!_wordGuesses.Contains(guess) && !guess.Any(x => _guesses.Contains(x) && !_check.Contains(x))) // word guess fail
 				{
 					SaveWriteLine($"{guess} is not the word.");
 					_wordGuesses.Add(guess);
