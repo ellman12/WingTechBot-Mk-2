@@ -64,7 +64,7 @@ public class GameHandler
 		return Task.CompletedTask;
 	}
 
-	public bool PlayerAvailable(ulong playerId) => ActiveGames.FirstOrDefault((Game g) => g.PlayerIDs.Contains(playerId)) is null;
+	public bool PlayerAvailable(ulong playerId) => playerId != Program.BotID && ActiveGames.FirstOrDefault((Game g) => g.PlayerIDs.Contains(playerId)) is null;
 
 	public void EndGame(Game game) => ActiveGames.Remove(game);
 }
