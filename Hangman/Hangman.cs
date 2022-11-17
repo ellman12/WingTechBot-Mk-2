@@ -24,7 +24,7 @@ public class Hangman : Game
 
 	private static readonly Random _random = new();
 
-	private static readonly string[] _heads = new string[]
+	private static readonly string[] _heads = new[]
 	{
 		"(O.O)",
 		"(O.-)",
@@ -64,8 +64,8 @@ public class Hangman : Game
 			{ "CORRECT", CorrectSpelling }
 		};
 
-		_pvp = !PromptYN(GamemasterID, AllowedChannels, true, "Would you like to face a bot? (y/n)");
-		_clues = Prompt(GamemasterID, AllowedChannels, (int x) => x >= 0, true, "How many clues would you like? (recommended: 0-2)");
+		_pvp = !PromptYN(GamemasterID, AllowedChannels, channelMatch: true, "Would you like to face a bot? (y/n)");
+		_clues = Prompt(GamemasterID, AllowedChannels, (int x) => x >= 0, channelMatch: true, "How many clues would you like? (recommended: 0-2)");
 	}
 
 	public override void RunGame()
@@ -90,11 +90,17 @@ public class Hangman : Game
 
 		if (_pvp)
 		{
-			_scores = new Dictionary<ulong, int>();
+			_scores = new();
 
-			foreach (ulong id in PlayerIDs) _scores.Add(id, 0);
+			foreach (var id in PlayerIDs)
+			{
+				_scores.Add(id, 0);
+			}
 		}
-		else InitializeDictionary();
+		else
+		{
+			InitializeDictionary();
+		}
 
 		while (true)
 		{
@@ -102,9 +108,13 @@ public class Hangman : Game
 			{
 				AdvanceHost();
 				WriteLine($"Prompting {GetPlayer(PlayerIDs[_currentHostIndex]).Mention} for next word... Check your DMs");
-				_word = Prompt(PlayerIDs[_currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, false, "What should the word be?", true).Trim().ToUpper();
+				_word = Prompt(PlayerIDs[_currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, channelMatch: false, "What should the word be?", true).Trim().ToUpper();
 			}
-			else _word = GetRandomWord().ToUpper(); // Get random word
+			else
+			{
+				_word = GetRandomWord().ToUpper(); // Get random word
+			}
+
 			_check = _word.RemoveDiacritics();
 
 			WriteLine($"===[NEW ROUND]===\n**{GetWord(_check.Count(c => char.IsLetter(c) && c.IsAmericanized()))}** letters");
@@ -113,25 +123,44 @@ public class Hangman : Game
 
 			// get clues
 			List<char> letters = new();
-			int actualClues = _clues;
+			var actualClues = _clues;
 
 			if (_pvp)
 			{
-				foreach (char c in _check) if (!letters.Contains(c) && c.IsAmericanized() && (_clues > 6 || "aeiouyAEIOUY".Contains(c))) letters.Add(c);
+				foreach (var c in _check)
+				{
+					if (!letters.Contains(c) && c.IsAmericanized() && (_clues > 6 || "aeiouyAEIOUY".Contains(c)))
+					{
+						letters.Add(c);
+					}
+				}
 			}
 			else
 			{
-				foreach (char c in _check) if (!letters.Contains(c) && c.IsAmericanized()) letters.Add(c);
-				actualClues = letters.Count - _clues <= 2 ? letters.Count - 2 : _clues;
+				foreach (var c in _check)
+				{
+					if (!letters.Contains(c) && c.IsAmericanized())
+					{
+						letters.Add(c);
+					}
+				}
+
+				actualClues = 
+					letters.Count - _clues <= 2 
+					? letters.Count - 2 
+					: _clues;
 			}
 
-			for (int i = 0; i < actualClues; i++)
+			for (var i = 0; i < actualClues; i++)
 			{
-				char c = letters[_random.Next(letters.Count)];
+				var c = letters[_random.Next(letters.Count)];
 				letters.Remove(c);
 				_guesses.Add(c);
 
-				if (letters.Count <= 0) break;
+				if (letters.Count <= 0)
+				{
+					break;
+				}
 			}
 
 			(ulong id, string text) tuple = (0, null);
@@ -140,7 +169,7 @@ public class Hangman : Game
 			while (true)
 			{
 				DeleteSavedMessages();
-				string screen = GetScreen();
+				var screen = GetScreen();
 
 				if (_strikes >= 6) // strike gameover
 				{
@@ -150,17 +179,26 @@ public class Hangman : Game
 				}
 				else // win gameover
 				{
-					bool done = true;
-					foreach (char c in _check)
+					var done = true;
+					foreach (var c in _check)
 					{
-						if (char.IsLetter(c) && c.IsAmericanized()) done &= _guesses.Contains(c);
+						if (char.IsLetter(c) && c.IsAmericanized())
+						{
+							done &= _guesses.Contains(c);
+						}
 					}
 
 					if (done)
 					{
 						screen += "Correct!";
-						if (_scores is null) _score++;
-						else _scores[tuple.id]++;
+						if (_scores is null)
+						{
+							_score++;
+						}
+						else
+						{
+							_scores[tuple.id]++;
+						}
 
 						SaveWriteLine(screen);
 						break;
@@ -174,18 +212,25 @@ public class Hangman : Game
 
 				do
 				{
-					tuple = PromptAny(AllowedChannels, (string s) => s.Length == 1 || s.Length == _word.Length, true, saveMessage: true);
+					tuple = PromptAny(AllowedChannels, (string s) => s.Length == 1 || s.Length == _word.Length, channelMatch: true, saveMessage: true);
 				}
 				while (_currentHostIndex != -1 && PlayerIDs[_currentHostIndex] == tuple.id);
 
-				string guess = tuple.text.Trim().ToUpper().RemoveDiacritics();
+				var guess = tuple.text.Trim().ToUpper().RemoveDiacritics();
 
 				if (guess == _check) // word guess success
 				{
 					SaveWriteLine("Correct!");
 
-					if (_scores is null) _score++;
-					else _scores[tuple.id]++;
+					if (_scores is null)
+					{
+						_score++;
+					}
+					else
+					{
+						_scores[tuple.id]++;
+					}
+
 					break;
 				}
 				else if (guess.Length == 1 && char.IsLetter(guess[0])) // letter guess
@@ -193,7 +238,10 @@ public class Hangman : Game
 					if (!_guesses.Contains(guess[0]))
 					{
 						_guesses.Add(guess[0]);
-						if (!_check.Contains(guess[0])) _strikes++;
+						if (!_check.Contains(guess[0]))
+						{
+							_strikes++;
+						}
 					}
 				}
 				else if (!_wordGuesses.Contains(guess) && !guess.Any(x => _guesses.Contains(x) && !_check.Contains(x))) // word guess fail
@@ -210,7 +258,10 @@ public class Hangman : Game
 			receivedMessages.Clear();
 			_wordGuesses.Clear();
 
-			if (PromptEnd()) break;
+			if (PromptEnd())
+			{
+				break;
+			}
 		}
 
 		DeleteSavedMessages();
@@ -222,24 +273,27 @@ public class Hangman : Game
 	{
 		if (_pvp)
 		{
-			var orderedScores = from kvp in _scores orderby kvp.Value descending select kvp;
+			var orderedScores = _scores.OrderByDescending(kvp => kvp.Value);
 
-			string gameOverText = $"Gameover! Scores:\n";
+			var gameOverText = $"Gameover! Scores:\n";
 
 			foreach (var kvp in orderedScores)
 			{
-				IUser player = GetPlayer(kvp.Key);
+				var player = GetPlayer(kvp.Key);
 				gameOverText += $"{kvp.Value} - {player.Username}#{player.Discriminator}\n";
 			}
 
 			WriteLine(gameOverText);
 		}
-		else WriteLine($"Gameover! Got: {_score}/{_total}");
+		else
+		{
+			WriteLine($"Gameover! Got: {_score}/{_total}");
+		}
 	}
 
 	private string GetScreen()
 	{
-		string screen = "```" +
+		var screen = "```" +
 					$"||-------\n" +
 					$"||      |\n" +
 					$"||    {GetHead()}\n" +
@@ -279,22 +333,31 @@ public class Hangman : Game
 
 	private string GetClue()
 	{
-		string clue = string.Empty;
+		var clue = string.Empty;
 
-		for (int i = 0; i < _word.Length; i++)
+		for (var i = 0; i < _word.Length; i++)
 		{
-			if (_guesses.Contains(_check[i]) || !_check[i].IsAmericanized()) clue += $"{_word[i]} ";
-			else clue += $"_ ";
+			if (_guesses.Contains(_check[i]) || !_check[i].IsAmericanized())
+			{
+				clue += $"{_word[i]} ";
+			}
+			else
+			{
+				clue += $"_ ";
+			}
 		}
 
 		clue += "\n" + "wrong:";
 
-		foreach (char c in _guesses)
+		foreach (var c in _guesses)
 		{
-			if (!_check.Contains(c)) clue += $" {c}";
+			if (!_check.Contains(c))
+			{
+				clue += $" {c}";
+			}
 		}
 
-		foreach (string s in _wordGuesses)
+		foreach (var s in _wordGuesses)
 		{
 			clue += $"\n - {s}";
 		}
@@ -306,11 +369,14 @@ public class Hangman : Game
 	{
 		if (_banned is null)
 		{
-			_banned = new HashSet<string>();
+			_banned = new();
 			FileInfo fi = new(BANNED_PATH);
 
 			using StreamReader file = new(fi.Open(FileMode.Open));
-			while (!file.EndOfStream) _banned.Add(file.ReadLine());
+			while (!file.EndOfStream)
+			{
+				_banned.Add(file.ReadLine());
+			}
 		}
 	}
 
@@ -326,7 +392,10 @@ public class Hangman : Game
 
 			word = lines.Skip(_random.Next((int)_dictionaryCount - 1)).Take(1).First();
 		}
-		while (_banned.Contains(word) || word.Length <= 2 || !word.Any((char c) => "aeiouy".Contains(c)) || !word.IsAmericanized());
+		while (_banned.Contains(word) 
+			|| word.Length <= 2 
+			|| !word.Any((char c) => "aeiouy".Contains(c)) 
+			|| !word.IsAmericanized());
 
 		return word;
 	}
@@ -334,15 +403,28 @@ public class Hangman : Game
 	private void AdvanceHost()
 	{
 		_currentHostIndex++;
-		if (_currentHostIndex >= PlayerIDs.Count) _currentHostIndex = 0;
+		if (_currentHostIndex >= PlayerIDs.Count)
+		{
+			_currentHostIndex = 0;
+		}
 	}
 
 	private static string GetWord(int x)
 	{
-		if (x >= 100) throw new ArgumentOutOfRangeException(nameof(x), "must be less than 100!");
-		if (x < 0) throw new ArgumentOutOfRangeException(nameof(x), "must be non-negative!");
+		if (x >= 100)
+		{
+			throw new ArgumentOutOfRangeException(nameof(x), "must be less than 100!");
+		}
 
-		if (x == 0) return "zero";
+		if (x < 0)
+		{
+			throw new ArgumentOutOfRangeException(nameof(x), "must be non-negative!");
+		}
+
+		if (x == 0)
+		{
+			return "zero";
+		}
 
 		if (x is >= 10 and <= 19)
 		{
@@ -363,7 +445,7 @@ public class Hangman : Game
 		}
 		else
 		{
-			string s = (x / 10) switch
+			var s = (x / 10) switch
 			{
 				2 => "twenty",
 				3 => "thirty",
@@ -374,12 +456,15 @@ public class Hangman : Game
 				8 => "eighty",
 				9 => "ninety",
 				0 => string.Empty,
-				_ => throw new Exception($"not possible {x} / 10"),
+				_ => throw new($"not possible {x} / 10"),
 			};
 
 			if (x % 10 != 0)
 			{
-				if (x > 10) s += "-";
+				if (x > 10)
+				{
+					s += "-";
+				}
 
 				s += (x % 10) switch
 				{
@@ -392,7 +477,7 @@ public class Hangman : Game
 					7 => "seven",
 					8 => "eight",
 					9 => "nine",
-					_ => throw new Exception($"not possible {x} % 10"),
+					_ => throw new($"not possible {x} % 10"),
 				};
 			}
 
@@ -408,7 +493,7 @@ public class Hangman : Game
 			_wordGuesses.Clear();
 			_strikes = 0;
 
-			_word = Prompt(PlayerIDs[_currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, false, "What should the word be?", true).Trim().ToUpper();
+			_word = Prompt(PlayerIDs[_currentHostIndex], PromptMode.DM, (string s) => s.Length < 100, channelMatch: false, "What should the word be?", saveMessage: true).Trim().ToUpper();
 			_check = _word.RemoveDiacritics();
 		}
 	}

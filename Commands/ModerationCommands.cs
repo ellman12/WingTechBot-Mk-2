@@ -14,7 +14,7 @@ internal class DeleteCommand : Command
 		{
 			message.Channel.SendMessageAsync($"Deleting message from {replied.Author.Mention}.");
 
-			using (StreamWriter file = File.AppendText(Program.DELETE_PATH))
+			using (var file = File.AppendText(Program.DELETE_PATH))
 			{
 				file.WriteLine($"Message from: {replied.Author}");
 				file.WriteLine($"Deleted by: {message.Author}");
@@ -24,7 +24,7 @@ internal class DeleteCommand : Command
 				if (replied.Attachments.Count > 0)
 				{
 					file.WriteLine($"Attachments:");
-					foreach (IAttachment attachment in replied.Attachments)
+					foreach (var attachment in replied.Attachments)
 					{
 						file.WriteLine($" - {attachment.Url}");
 					}
@@ -33,7 +33,7 @@ internal class DeleteCommand : Command
 				if (replied.Embeds.Count > 0)
 				{
 					file.WriteLine($"Embeds:");
-					foreach (Embed embed in replied.Embeds)
+					foreach (var embed in replied.Embeds.Cast<Embed>())
 					{
 						file.WriteLine($" - {embed.Url}");
 					}
@@ -46,14 +46,14 @@ internal class DeleteCommand : Command
 		}
 		catch
 		{
-			throw new Exception($"Failed to delete message.");
+			throw new($"Failed to delete message.");
 		}
 	}
 
 	public override string LogString => $"deleted a message from {replied.Author.Username} in {replied.Channel.Name}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
-	public override string[] Aliases => new string[] { "delete", "d", "remove", "x", "erase" };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
+	public override string[] Aliases => new[] { "delete", "d", "remove", "x", "erase" };
 	public override bool GetReply => true;
 }
 
@@ -67,22 +67,32 @@ internal class PinCommand : Command
 		{
 			replied = message.Channel.GetMessageAsync(message.Reference.MessageId.Value).Result;
 
-			if (replied.IsPinned) ((SocketUserMessage)replied).UnpinAsync();
-			else ((SocketUserMessage)replied).PinAsync();
+			if (replied.IsPinned)
+			{
+				((SocketUserMessage)replied).UnpinAsync();
+			}
+			else
+			{
+				((SocketUserMessage)replied).PinAsync();
+			}
 
-			_pin = replied.IsPinned ? "Pin" : "Unpin";
+			_pin = 
+				replied.IsPinned 
+				? "Pin" 
+				: "Unpin";
+
 			message.Channel.SendMessageAsync($"{_pin}ning message from {replied.Author.Mention}.");
 		}
 		catch
 		{
-			throw new Exception($"Failed to {_pin} message.");
+			throw new($"Failed to {_pin} message.");
 		}
 	}
 
 	public override string LogString => $"{_pin}ned a message in {replied.Channel.Name}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
-	public override string[] Aliases => new string[] { "pin", "unpin", "p", "up" };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
+	public override string[] Aliases => new[] { "pin", "unpin", "p", "up" };
 	public override bool GetReply => true;
 }
 
@@ -99,7 +109,7 @@ internal class ClearCommand : Command
 			{
 				if (KarmaHandler.trackableEmotes.Contains(v.Key.Name))
 				{
-					int index = Array.IndexOf(KarmaHandler.trackableEmotes, v.Key.Name);
+					var index = Array.IndexOf(KarmaHandler.trackableEmotes, v.Key.Name);
 					Program.KarmaHandler.KarmaDictionary[replied.Author.Id][index] -= v.Value.ReactionCount;
 					Console.WriteLine($"{DateTime.Now}: revoked {v.Value.ReactionCount} {v.Key.Name}(s) from {replied.Author.Mention}.");
 				}
@@ -109,13 +119,13 @@ internal class ClearCommand : Command
 		}
 		catch
 		{
-			throw new Exception($"Failed to clear message reactions.");
+			throw new($"Failed to clear message reactions.");
 		}
 	}
 
 	public override string LogString => $"cleared reactions on a message from {replied.Author.Username}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 	public override bool GetReply => true;
 }
 
@@ -128,6 +138,6 @@ internal class ToggleBotCommand : Command
 	}
 
 	public override string LogString => $"botOnly set to {Program.BotOnly}";
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
-	public override string[] Aliases => new string[] { "togglebot", "tbot" };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
+	public override string[] Aliases => new[] { "togglebot", "tbot" };
 }

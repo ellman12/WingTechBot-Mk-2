@@ -24,14 +24,14 @@ public class Counting : Game
 		}
 
 		Stopwatch timer = new();
-		int score = 0;
+		var score = 0;
 
 		WriteLine($"Alright, start counting by {_countBy}'s!");
 		timer.Start();
 
 		while (true)
 		{
-			(ulong id, int guess) = PromptAny<int>(PromptMode.Any, true);
+			(var id, var guess) = PromptAny<int>(PromptMode.Any, true);
 
 			if ((!_turnOrder || PlayerIDs[_currentPlayerIndex] == id) && guess == ++score * _countBy)
 			{
@@ -50,6 +50,9 @@ public class Counting : Game
 	private void Advance()
 	{
 		_currentPlayerIndex++;
-		if (_currentPlayerIndex >= PlayerIDs.Count) _currentPlayerIndex = 0;
+		if (_currentPlayerIndex >= PlayerIDs.Count)
+		{
+			_currentPlayerIndex = 0;
+		}
 	}
 }

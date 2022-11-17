@@ -25,7 +25,7 @@ internal class AlarmCommand : Command
 		["remove"] = AlarmSubCommands.Remove,
 	};
 
-	private static readonly string[] _allowNull = new string[] { "add", "set", "template", "help" };
+	private static readonly string[] _allowNull = new[] { "add", "set", "template", "help" };
 
 	private string _logString;
 	private UserAlarm _alarm;
@@ -33,7 +33,7 @@ internal class AlarmCommand : Command
 	public override void Execute()
 	{
 		_alarm = Program.AlarmHandler.GetAlarm(message.Author.Id);
-		string command = arguments[1].ToLower();
+		var command = arguments[1].ToLower();
 
 		if (SubCommands.ContainsKey(command))
 		{
@@ -41,9 +41,15 @@ internal class AlarmCommand : Command
 			{
 				_logString = SubCommands[command].Invoke(_alarm, message, arguments[2..]);
 			}
-			else throw new Exception($"You do not have any alarms saved.");
+			else
+			{
+				throw new($"You do not have any alarms saved.");
+			}
 		}
-		else throw new Exception($"Alarm subcommand {arguments[1]} does not exist.");
+		else
+		{
+			throw new($"Alarm subcommand {arguments[1]} does not exist.");
+		}
 	}
 
 	public override string LogString => _logString;
@@ -73,7 +79,10 @@ internal static class AlarmSubCommands
 
 	public static string Skip(UserAlarm alarm, IMessage message)
 	{
-		if (alarm?.RepeatingTimes is null) throw new Exception("You do not have any repeating alarms to skip.");
+		if (alarm?.RepeatingTimes is null)
+		{
+			throw new("You do not have any repeating alarms to skip.");
+		}
 		else
 		{
 			if (alarm.Ringing)
@@ -85,7 +94,7 @@ internal static class AlarmSubCommands
 			}
 			else
 			{
-				RepeatingTime found = alarm.NextTime();
+				var found = alarm.NextTime();
 
 				message.Channel.SendMessageAsync($"Incrementing alarm {found}.");
 
@@ -99,19 +108,31 @@ internal static class AlarmSubCommands
 
 	public static string Preset(UserAlarm alarm, IMessage message, string[] arguments)
 	{
-		if (arguments.Length < 2) throw new Exception("Invalid number of arguments! Preset expects 2 arguments.");
+		if (arguments.Length < 2)
+		{
+			throw new("Invalid number of arguments! Preset expects 2 arguments.");
+		}
 
-		string name = arguments[1].ToLower();
-		AlarmPreset found = alarm.Presets.FirstOrDefault(x => x.Name == name);
+		var name = arguments[1].ToLower();
+		var found = alarm.Presets.FirstOrDefault(x => x.Name == name);
 
 		switch (arguments[0].ToLower())
 		{
 			case "load":
 			{
-				if (found is null) throw new Exception($"Preset {arguments[1]} does not exist.");
-				else alarm.RepeatingTimes = found.RepeatingTimes;
+				if (found is null)
+				{
+					throw new($"Preset {arguments[1]} does not exist.");
+				}
+				else
+				{
+					alarm.RepeatingTimes = found.RepeatingTimes;
+				}
 
-				foreach (var x in alarm.RepeatingTimes) x.Reset();
+				foreach (var x in alarm.RepeatingTimes)
+				{
+					x.Reset();
+				}
 
 				message.Channel.SendMessageAsync($"Loaded preset {arguments[1]}.");
 				Program.AlarmHandler.SaveAlarms();
@@ -119,7 +140,11 @@ internal static class AlarmSubCommands
 			}
 			case "save": // $$$ add override warning
 			{
-				if (found is not null) alarm.Presets.Remove(found);
+				if (found is not null)
+				{
+					alarm.Presets.Remove(found);
+				}
+
 				alarm.Presets.Add(new(name, alarm.RepeatingTimes, alarm.SingleTimes));
 
 				message.Channel.SendMessageAsync($"Saved current times to preset {arguments[1]}.");
@@ -128,8 +153,14 @@ internal static class AlarmSubCommands
 			}
 			case "delete":
 			{
-				if (found is null) throw new Exception($"Preset {arguments[1]} does not exist.");
-				else alarm.Presets.Remove(found);
+				if (found is null)
+				{
+					throw new($"Preset {arguments[1]} does not exist.");
+				}
+				else
+				{
+					alarm.Presets.Remove(found);
+				}
 
 				message.Channel.SendMessageAsync($"Deleted preset {arguments[1]}.");
 				Program.AlarmHandler.SaveAlarms();
@@ -137,9 +168,18 @@ internal static class AlarmSubCommands
 			}
 			case "rename":
 			{
-				if (arguments.Length < 3) throw new Exception("You must specify a new name.");
-				else if (found is null) throw new Exception($"Preset {arguments[1]} does not exist.");
-				else found.Name = arguments[2].ToLower();
+				if (arguments.Length < 3)
+				{
+					throw new("You must specify a new name.");
+				}
+				else if (found is null)
+				{
+					throw new($"Preset {arguments[1]} does not exist.");
+				}
+				else
+				{
+					found.Name = arguments[2].ToLower();
+				}
 
 				message.Channel.SendMessageAsync($"Renamed preset {arguments[1]} to {arguments[2]}.");
 				Program.AlarmHandler.SaveAlarms();
@@ -154,7 +194,10 @@ internal static class AlarmSubCommands
 
 	public static string Pause(UserAlarm alarm, IMessage message)
 	{
-		if (alarm.Paused) throw new Exception("Your alarms are already paused.");
+		if (alarm.Paused)
+		{
+			throw new("Your alarms are already paused.");
+		}
 		else
 		{
 			alarm.Paused = true;
@@ -168,8 +211,14 @@ internal static class AlarmSubCommands
 
 	public static string Resume(UserAlarm alarm, IMessage message)
 	{
-		if (alarm.Paused) alarm.Paused = false;
-		else throw new Exception("Your alarms are already resumed.");
+		if (alarm.Paused)
+		{
+			alarm.Paused = false;
+		}
+		else
+		{
+			throw new("Your alarms are already resumed.");
+		}
 
 		message.Channel.SendMessageAsync("Alarms resumed.");
 		Program.AlarmHandler.SaveAlarms();
@@ -196,12 +245,19 @@ internal static class AlarmSubCommands
 				case "all":
 					break;
 				default:
-					throw new Exception($"Criteria {arguments[0]} is not recognized.");
+					throw new($"Criteria {arguments[0]} is not recognized.");
 			}
 		}
 
-		if (clearRepeating) alarm.RepeatingTimes.Clear();
-		if (clearSingle) alarm.SingleTimes.Clear();
+		if (clearRepeating)
+		{
+			alarm.RepeatingTimes.Clear();
+		}
+
+		if (clearSingle)
+		{
+			alarm.SingleTimes.Clear();
+		}
 
 		message.Channel.SendMessageAsync("Alarms cleared.");
 		Program.AlarmHandler.SaveAlarms();
@@ -211,7 +267,10 @@ internal static class AlarmSubCommands
 	public static string Set(UserAlarm alarm, IMessage message, string[] arguments)
 	{
 		StringBuilder sb = new();
-		foreach (string s in arguments) sb.Append($"{s} ");
+		foreach (var s in arguments)
+		{
+			sb.Append($"{s} ");
+		}
 
 		//message.Attachments.First()
 
@@ -219,20 +278,23 @@ internal static class AlarmSubCommands
 		{
 			alarm = JsonConvert.DeserializeObject<UserAlarm>(sb.ToString());
 
-			if (alarm.UserID != message.Author.Id) throw new Exception("UserID cannot be changed!");
+			if (alarm.UserID != message.Author.Id)
+			{
+				throw new("UserID cannot be changed!");
+			}
 
 			Program.Client.MessageReceived += alarm.OnReceiveMessage;
 			Program.AlarmHandler.Alarms.Add(alarm);
 		}
 		else
 		{
-			string carry = JsonConvert.SerializeObject(alarm);
+			var carry = JsonConvert.SerializeObject(alarm);
 			JsonConvert.PopulateObject(sb.ToString(), alarm);
 
 			if (alarm.UserID != message.Author.Id)
 			{
 				JsonConvert.PopulateObject(carry, alarm);
-				throw new Exception("UserID cannot be changed!");
+				throw new("UserID cannot be changed!");
 			}
 		}
 
@@ -243,7 +305,7 @@ internal static class AlarmSubCommands
 
 	public static string Template(IMessage message)
 	{
-		DateTime tempTime = DateTime.Now;
+		var tempTime = DateTime.Now;
 		tempTime = tempTime.AddMinutes(1).AddTicks(-(tempTime.Ticks % TimeSpan.TicksPerSecond));
 
 		UserAlarm template = new(0, new() { new(tempTime, 1) }, new() { new(tempTime, false) })
@@ -260,11 +322,17 @@ internal static class AlarmSubCommands
 	{
 		StringBuilder text = new("```\nPossible Commands:");
 
-		foreach (string key in AlarmCommand.SubCommands.Keys) text.Append($"\n - {key}");
+		foreach (var key in AlarmCommand.SubCommands.Keys)
+		{
+			text.Append($"\n - {key}");
+		}
 
 		text.Append("\n\nPossible Intervals:");
 
-		foreach (var interval in Enum.GetValues(typeof(IntervalType))) text.Append($"\n[{(int)interval}] - {interval}");
+		foreach (var interval in Enum.GetValues(typeof(IntervalType)))
+		{
+			text.Append($"\n[{(int)interval}] - {interval}");
+		}
 
 		text.Append("\n```");
 
@@ -283,7 +351,10 @@ internal static class AlarmSubCommands
 		}
 
 		StringBuilder sb = new();
-		foreach (string s in arguments[1..]) sb.Append($"{s} ");
+		foreach (var s in arguments[1..])
+		{
+			sb.Append($"{s} ");
+		}
 
 		switch (arguments[0].ToLower())
 		{
@@ -299,10 +370,10 @@ internal static class AlarmSubCommands
 			case "once":
 			case "single":
 			{
-				DateTime date = DateTime.Parse(arguments[1]);
-				DateTime time = DateTime.Parse(arguments[2]);
+				var date = DateTime.Parse(arguments[1]);
+				var time = DateTime.Parse(arguments[2]);
 
-				alarm.SingleTimes.Add(new(new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Local), false));
+				alarm.SingleTimes.Add(new(new(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Local), false));
 
 				message.Channel.SendMessageAsync($"Added single alarm");
 				break;
@@ -310,8 +381,8 @@ internal static class AlarmSubCommands
 			case "w":
 			case "weekly":
 			{
-				DayOfWeek day = Enum.Parse<DayOfWeek>($"{char.ToUpper(arguments[1][0])}{arguments[1][1..].ToLower()}");
-				DateTime time = DateTime.Parse(arguments[2]);
+				var day = Enum.Parse<DayOfWeek>($"{char.ToUpper(arguments[1][0])}{arguments[1][1..].ToLower()}");
+				var time = DateTime.Parse(arguments[2]);
 
 				alarm.RepeatingTimes.Add(new((int)day, time.Hour, time.Minute, 7));
 
@@ -320,10 +391,10 @@ internal static class AlarmSubCommands
 			}
 			case "override":
 			{
-				DateTime date = DateTime.Parse(arguments[1]);
-				DateTime time = DateTime.Parse(arguments[2]);
+				var date = DateTime.Parse(arguments[1]);
+				var time = DateTime.Parse(arguments[2]);
 
-				alarm.SingleTimes.Add(new(new DateTime(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Local), true));
+				alarm.SingleTimes.Add(new(new(date.Year, date.Month, date.Day, time.Hour, time.Minute, time.Second, DateTimeKind.Local), true));
 
 				message.Channel.SendMessageAsync($"Added alarm override.");
 				break;
@@ -342,7 +413,10 @@ internal static class AlarmSubCommands
 
 	public static string Remove(UserAlarm alarm, IMessage message, string[] arguments)
 	{
-		if (arguments.Length != 0) throw new ArgumentException("`~alarm remove` must be called with no arguments.");
+		if (arguments.Length != 0)
+		{
+			throw new ArgumentException("`~alarm remove` must be called with no arguments.");
+		}
 
 		alarm.Paused = true;
 		alarm.StopRinging();

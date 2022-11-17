@@ -41,9 +41,9 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 		_gameState = new State[Columns, Rows];
 
-		for (int x = 0; x < Columns; x++)
+		for (var x = 0; x < Columns; x++)
 		{
-			for (int y = 0; y < Rows; y++)
+			for (var y = 0; y < Rows; y++)
 			{
 				_gameState[x, y] = b[x, y];
 			}
@@ -62,9 +62,9 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 		_gameState = new State[Columns, Rows];
 
-		for (int x = 0; x < Columns; x++)
+		for (var x = 0; x < Columns; x++)
 		{
-			for (int y = 0; y < Rows; y++)
+			for (var y = 0; y < Rows; y++)
 			{
 				_gameState[x, y] = b[x, y];
 			}
@@ -75,10 +75,17 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 	private bool TryDrop(int x, State state)
 	{
-		if (state == State.Empty) return false;
-		if (_gameState[x, 0] != State.Empty) return false;
+		if (state == State.Empty)
+		{
+			return false;
+		}
 
-		int y = Rows - 1;
+		if (_gameState[x, 0] != State.Empty)
+		{
+			return false;
+		}
+
+		var y = Rows - 1;
 
 		while (_gameState[x, y] != State.Empty)
 		{
@@ -92,9 +99,16 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 	public bool CheckFull()
 	{
-		for (int x = 0; x < Columns; x++)
-			for (int y = 0; y < Rows; y++)
-				if (_gameState[x, y] == State.Empty) return false;
+		for (var x = 0; x < Columns; x++)
+		{
+			for (var y = 0; y < Rows; y++)
+			{
+				if (_gameState[x, y] == State.Empty)
+				{
+					return false;
+				}
+			}
+		}
 
 		return true;
 	}
@@ -112,28 +126,43 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 	public int CheckDirection(int x, int y, int a, int b, State state)
 	{
-		if (state == State.Empty) return 0;
+		if (state == State.Empty)
+		{
+			return 0;
+		}
 
-		int count = 1;
+		var count = 1;
 
 		int v, w;
 
-		for (int i = 1; i < Connect; i++)
+		for (var i = 1; i < Connect; i++)
 		{
 			v = x + a * i;
 			w = y + b * i;
 
-			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
-			else break;
+			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state)
+			{
+				count++;
+			}
+			else
+			{
+				break;
+			}
 		}
 
-		for (int i = 1; i < Connect; i++)
+		for (var i = 1; i < Connect; i++)
 		{
 			v = x + -a * i;
 			w = y + -b * i;
 
-			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
-			else break;
+			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state)
+			{
+				count++;
+			}
+			else
+			{
+				break;
+			}
 		}
 
 		return count;
@@ -169,7 +198,7 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 	public int GetNextY(int x) // returns the y value of the next token placed in the specified column. Added by Ben.
 	{
-		for (int y = 0; y < Rows; y++)
+		for (var y = 0; y < Rows; y++)
 		{
 			if (this[x, y] != State.Empty)
 			{
@@ -200,9 +229,9 @@ public class FakeBoard // you're welcome, thief -- Ben
 
 		//_gameState = new State[Columns, Rows];
 
-		for (int x = 0; x < Columns; x++)
+		for (var x = 0; x < Columns; x++)
 		{
-			for (int y = 0; y < Rows; y++)
+			for (var y = 0; y < Rows; y++)
 			{
 				_gameState[x, y] = b[x, y];
 			}

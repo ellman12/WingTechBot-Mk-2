@@ -33,12 +33,16 @@ internal class HelpCommand : Command
 				{
 					if (command.Key == Program.CommandHandler.Commands.First((KeyValuePair<string, Type> kvp) => kvp.Value == Program.CommandHandler.Commands[command.Key]).Key)
 					{
-						Command c = Activator.CreateInstance(command.Value) as Command;
+						var c = Activator.CreateInstance(command.Value) as Command;
 						_list += $" - {c.Name}";
 						if (c.Aliases.Length > 1)
 						{
-							string a = " (aliases:";
-							foreach (string s in c.Aliases) a += $" {s}";
+							var a = " (aliases:";
+							foreach (var s in c.Aliases)
+							{
+								a += $" {s}";
+							}
+
 							_list += a + ")";
 						}
 
@@ -67,8 +71,11 @@ internal class DMCommand : Command
 
 	public override void Execute()
 	{
-		string[] messageWords = arguments[2..];
-		foreach (string s in messageWords) _sendMessage += $"{s} ";
+		var messageWords = arguments[2..];
+		foreach (var s in messageWords)
+		{
+			_sendMessage += $"{s} ";
+		}
 
 		requested.GetOrCreateDMChannelAsync().Result.SendMessageAsync(_sendMessage);
 		message.Channel.SendMessageAsync("Sent.");

@@ -24,6 +24,9 @@ public class SingleTime : TimeBase
 			singleTimes.Remove(this);
 			return true;
 		}
-		else return false;
+		else
+		{
+			return false;
+		}
 	}
 }

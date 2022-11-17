@@ -40,7 +40,10 @@ public abstract class Game
 
 	public void Init(IMessage initMessage)
 	{
-		if (!ModeMatch(initMessage, AllowedChannels)) throw new Exception("This game cannot be started in this channel.");
+		if (!ModeMatch(initMessage, AllowedChannels))
+		{
+			throw new("This game cannot be started in this channel.");
+		}
 
 		if (!_init)
 		{
@@ -48,7 +51,10 @@ public abstract class Game
 			GamemasterID = initMessage.Author.Id;
 			GameChannel = initMessage.Channel as ISocketMessageChannel;
 		}
-		else throw new Exception("Game.Init can only be called once!");
+		else
+		{
+			throw new("Game.Init can only be called once!");
+		}
 	}
 
 	protected void GetPlayers()
@@ -59,17 +65,29 @@ public abstract class Game
 			while (!Program.TryGetUser(PromptString(GamemasterID, AllowedChannels, message: $"Enter Player {PlayerIDs.Count + 1}, or type \"stop\" to stop adding players"), out foundPlayer))
 			{
 
-				if (LastMessage.Content.Trim().ToLower() == "stop") return;
+				if (LastMessage.Content.Trim().ToLower() == "stop")
+				{
+					return;
+				}
 				else if (LastMessage.Content.Trim().ToLower() == "me")
 				{
 					foundPlayer = Program.GetUser(GamemasterID);
 					break;
 				}
-				else GameChannel.SendMessageAsync($"Player \"{LastMessage.Content}\" not found."); ;
+				else
+				{
+					GameChannel.SendMessageAsync($"Player \"{LastMessage.Content}\" not found.");
+				}
 			}
 
-			if (Program.GameHandler.PlayerAvailable(foundPlayer.Id)) PlayerIDs.Add(foundPlayer.Id);
-			else GameChannel.SendMessageAsync($"Player \"{foundPlayer.Username}#{foundPlayer.Discriminator}\" is already in a game.");
+			if (Program.GameHandler.PlayerAvailable(foundPlayer.Id))
+			{
+				PlayerIDs.Add(foundPlayer.Id);
+			}
+			else
+			{
+				GameChannel.SendMessageAsync($"Player \"{foundPlayer.Username}#{foundPlayer.Discriminator}\" is already in a game.");
+			}
 		}
 	}
 
@@ -84,7 +102,10 @@ public abstract class Game
 		catch (Exception e)
 		{
 			GameChannel.SendMessageAsync(e.Message);
-			if (Debug) GameChannel.SendMessageAsync(e.StackTrace);
+			if (Debug)
+			{
+				GameChannel.SendMessageAsync(e.StackTrace);
+			}
 		}
 		finally
 		{
@@ -100,26 +121,36 @@ public abstract class Game
 	{
 		lock (_messageLock)
 		{
-			IUser player = GetPlayer(playerID);
-			if (playerID != GamemasterID && !PlayerIDs.Contains(playerID)) throw new Exception($"Error: {player.Username}#{player.Discriminator} cannot be prompted: not part of game.");
-			if (player.IsBot || player.IsWebhook) throw new Exception($"Error: {player.Username}#{player.Discriminator} is a bot or webhook.");
+			var player = GetPlayer(playerID);
+			if (playerID != GamemasterID && !PlayerIDs.Contains(playerID))
+			{
+				throw new($"Error: {player.Username}#{player.Discriminator} cannot be prompted: not part of game.");
+			}
+
+			if (player.IsBot || player.IsWebhook)
+			{
+				throw new($"Error: {player.Username}#{player.Discriminator} is a bot or webhook.");
+			}
 
 			LastMessage = null;
 		}
 
 		if (message is not null)
 		{
-			IMessage sent =
+			var sent =
 				mode == PromptMode.DM
 				? DM(message, playerID)
 				: WriteLine(message);
 
-			if (saveMessage) sentMessages.Add(sent);
+			if (saveMessage)
+			{
+				sentMessages.Add(sent);
+			}
 		}
 
-		while (LastMessage is null 
-			|| LastMessage.Author.Id != playerID 
-			|| !ModeMatch(LastMessage, mode) 
+		while (LastMessage is null
+			|| LastMessage.Author.Id != playerID
+			|| !ModeMatch(LastMessage, mode)
 			|| (channelMatch && LastMessage.Channel != GameChannel))
 		{
 			_waitHandle.Reset();
@@ -144,13 +175,16 @@ public abstract class Game
 
 		if (message is not null)
 		{
-			IMessage sent = WriteLine(message);
-			if (saveMessage) sentMessages.Add(sent);
+			var sent = WriteLine(message);
+			if (saveMessage)
+			{
+				sentMessages.Add(sent);
+			}
 		}
 
-		while (LastMessage is null 
-			|| !PlayerIDs.Contains(LastMessage.Author.Id) 
-			|| !ModeMatch(LastMessage, mode) 
+		while (LastMessage is null
+			|| !PlayerIDs.Contains(LastMessage.Author.Id)
+			|| !ModeMatch(LastMessage, mode)
 			|| (channelMatch && LastMessage.Channel != GameChannel))
 		{
 			_waitHandle.Reset();
@@ -175,7 +209,7 @@ public abstract class Game
 
 	protected T Prompt<T>(ulong playerID, PromptMode mode, Predicate<T> condition, bool channelMatch = false, string message = null, bool saveMessage = false)
 	{
-		bool found = false;
+		var found = false;
 		T foundValue = default;
 		IMessage messageReceived = null;
 		while (!found)
@@ -193,14 +227,17 @@ public abstract class Game
 			}
 		}
 
-		if (saveMessage && messageReceived is not null) receivedMessages.Add(messageReceived);
+		if (saveMessage && messageReceived is not null)
+		{
+			receivedMessages.Add(messageReceived);
+		}
 
 		return foundValue;
 	}
 
 	protected (ulong, T) PromptAny<T>(PromptMode mode, Predicate<T> condition, bool channelMatch = false, string message = null, bool saveMessage = false)
 	{
-		bool found = false;
+		var found = false;
 		T foundValue = default;
 		ulong foundID = 0;
 		IMessage messageReceived = null;
@@ -219,7 +256,10 @@ public abstract class Game
 			}
 		}
 
-		if (saveMessage && messageReceived is not null) receivedMessages.Add(messageReceived);
+		if (saveMessage && messageReceived is not null)
+		{
+			receivedMessages.Add(messageReceived);
+		}
 
 		return (foundID, foundValue);
 	}
@@ -231,7 +271,6 @@ public abstract class Game
 	protected bool PromptAnyYN(PromptMode mode, bool channelMatch = false, string message = null, bool saveMessage = false) => PromptAny(mode, (string x) => x.Trim().ToLower() is "y" or "n", channelMatch, message, saveMessage).Item2.Trim().ToLower() == "y";
 
 	protected bool PromptEnd() => PromptAny(AllowedChannels, (string x) => x.Trim().ToLower() is "next" or "end", true, "Type \"next\" to continue or \"end\" to stop playing.", true).Item2.Trim().ToLower() == "end";
-
 
 	public void ReceiveMessage(IMessage message)
 	{
@@ -253,8 +292,14 @@ public abstract class Game
 			arguments = message.Content[2..].Split(' ');
 			command = arguments[0].ToUpper();
 
-			if (Commands.TryGetValue(command, out Action<IMessage, string[]> func)) func(message, arguments);
-			else Reply(message, $"Command {command} not recognized.");
+			if (Commands.TryGetValue(command, out var func))
+			{
+				func(message, arguments);
+			}
+			else
+			{
+				Reply(message, $"Command {command} not recognized.");
+			}
 		}
 	}
 
@@ -269,9 +314,12 @@ public abstract class Game
 
 	protected IMessage DM(object x, ulong id)
 	{
-		IUser user = GetPlayer(id);
+		var user = GetPlayer(id);
 		IMessage message = user.GetOrCreateDMChannelAsync().Result.SendMessageAsync(x.ToString()).Result;
-		if (Debug) Console.WriteLine($"DM'd: {x} to {user.Username}#{user.Discriminator}");
+		if (Debug)
+		{
+			Console.WriteLine($"DM'd: {x} to {user.Username}#{user.Discriminator}");
+		}
 
 		return message;
 	}
@@ -279,7 +327,10 @@ public abstract class Game
 	protected IMessage WriteLine(object x)
 	{
 		IMessage message = GameChannel.SendMessageAsync(x.ToString()).Result;
-		if (Debug) Console.WriteLine($"Sent: {x}");
+		if (Debug)
+		{
+			Console.WriteLine($"Sent: {x}");
+		}
 
 		return message;
 	}
@@ -287,14 +338,17 @@ public abstract class Game
 	protected IMessage WriteLine()
 	{
 		IMessage message = GameChannel.SendMessageAsync("_ _").Result;
-		if (Debug) Console.WriteLine();
+		if (Debug)
+		{
+			Console.WriteLine();
+		}
 
 		return message;
 	}
 
 	protected IMessage SaveWriteLine(object x)
 	{
-		IMessage message = WriteLine(x);
+		var message = WriteLine(x);
 		sentMessages.Add(message);
 
 		return message;
@@ -303,20 +357,31 @@ public abstract class Game
 	protected IMessage Reply(IMessage message, object x)
 	{
 		IMessage sent = message.Channel.SendMessageAsync(x.ToString()).Result;
-		if (Debug) Console.WriteLine($"Sent: {x}");
+		if (Debug)
+		{
+			Console.WriteLine($"Sent: {x}");
+		}
 
 		return sent;
 	}
 
 	protected void DeleteSavedSentMessages()
 	{
-		foreach (IMessage message in sentMessages) message.Channel.DeleteMessageAsync(message);
+		foreach (var message in sentMessages)
+		{
+			message.Channel.DeleteMessageAsync(message);
+		}
+
 		sentMessages.Clear();
 	}
 
 	protected void DeleteSavedReceivedMessages()
 	{
-		foreach (IMessage message in receivedMessages) message.Channel.DeleteMessageAsync(message);
+		foreach (var message in receivedMessages)
+		{
+			message.Channel.DeleteMessageAsync(message);
+		}
+
 		receivedMessages.Clear();
 	}
 

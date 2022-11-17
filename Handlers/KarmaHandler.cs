@@ -12,12 +12,12 @@ public class KarmaHandler
 	public Dictionary<ulong, int[]> KarmaDictionary { get; private set; } = new();
 	public Dictionary<ulong, int[]> RunningKarma { get; private set; } = new();
 
-	public static readonly string[] trackableEmotes = new string[] { "upvote", "downvote", "silver", "gold", "platinum" };
+	public static readonly string[] trackableEmotes = new[] { "upvote", "downvote", "silver", "gold", "platinum" };
 
 	public const string CASE_PATH = @"save\cases.txt";
 	public const string SAVE_PATH = @"save\karma";
 
-	private static readonly string[] _upvoteScolds = new string[]
+	private static readonly string[] _upvoteScolds = new[]
 	{
 			"god imagine upvoting yourself",
 			"eww, a self-upvote",
@@ -52,14 +52,17 @@ public class KarmaHandler
 	{
 		foreach (var kvp in RunningKarma)
 		{
-			for (int i = 0; i < kvp.Value.Length; i++)
+			for (var i = 0; i < kvp.Value.Length; i++)
 			{
-				if (kvp.Value[i] is >= RUNNING_KARMA_LIMIT or <= (-5))
+				if (kvp.Value[i] is >= RUNNING_KARMA_LIMIT or <= -5)
 				{
 					CreateCase(kvp, i);
 					kvp.Value[i] = 0;
 				}
-				else kvp.Value[i] /= 2;
+				else
+				{
+					kvp.Value[i] /= 2;
+				}
 			}
 		}
 
@@ -68,18 +71,24 @@ public class KarmaHandler
 
 	private void CreateCase(KeyValuePair<ulong, int[]> kvp, int index)
 	{
-		int caseNumber = File.ReadLines(CASE_PATH).Count();
-		string caseString = $"{caseNumber} {kvp.Key} {index} {kvp.Value[index]} ";
+		var caseNumber = File.ReadLines(CASE_PATH).Count();
+		var caseString = $"{caseNumber} {kvp.Key} {index} {kvp.Value[index]} ";
 		Console.WriteLine($"Started new case {caseString}");
 
 		KarmaDictionary[kvp.Key][index] -= kvp.Value[index];
 
-		string message = $"Possible karma manipulation detected on user {Program.GetUser(kvp.Key).Mention}. {kvp.Value[index]} {trackableEmotes[index]} are being temporarily withheld. Case {caseNumber} opened. If this was an error, {Program.GetUser(Program.Config.OwnerID).Mention} will fix it shortly.";
+		var message = $"Possible karma manipulation detected on user {Program.GetUser(kvp.Key).Mention}. {kvp.Value[index]} {trackableEmotes[index]} are being temporarily withheld. Case {caseNumber} opened. If this was an error, {Program.GetUser(Program.Config.OwnerID).Mention} will fix it shortly.";
 
-		if (Program.BotChannel is null) Console.WriteLine(message);
-		else Program.BotChannel.SendMessageAsync(message);
+		if (Program.BotChannel is null)
+		{
+			Console.WriteLine(message);
+		}
+		else
+		{
+			Program.BotChannel.SendMessageAsync(message);
+		}
 
-		using StreamWriter file = File.AppendText(CASE_PATH);
+		using var file = File.AppendText(CASE_PATH);
 
 		file.WriteLine(caseString);
 	}
@@ -92,7 +101,7 @@ public class KarmaHandler
 		foreach (var entry in KarmaDictionary)
 		{
 			file.Write(entry.Key);
-			for (int i = 0; i < entry.Value.Length; i++)
+			for (var i = 0; i < entry.Value.Length; i++)
 			{
 				file.Write($" {entry.Value[i]}");
 			}
@@ -110,17 +119,20 @@ public class KarmaHandler
 		using StreamReader file = new(fi.Open(FileMode.OpenOrCreate));
 		while (!file.EndOfStream)
 		{
-			string s = file.ReadLine();
+			var s = file.ReadLine();
 
-			if (string.IsNullOrWhiteSpace(s)) continue;
+			if (string.IsNullOrWhiteSpace(s))
+			{
+				continue;
+			}
 
-			int i = 0;
+			var i = 0;
 
-			ulong id = ulong.Parse(NextNumber(s, ref i));
+			var id = ulong.Parse(NextNumber(s, ref i));
 
-			int[] counts = new int[trackableEmotes.Length];
+			var counts = new int[trackableEmotes.Length];
 
-			for (int j = 0; j < counts.Length; j++)
+			for (var j = 0; j < counts.Length; j++)
 			{
 				i++;
 				counts[j] = int.Parse(NextNumber(s, ref i));
@@ -135,18 +147,28 @@ public class KarmaHandler
 	{
 		IMessage message = await cacheMessage.GetOrDownloadAsync();
 
-		if (message is null || message.Timestamp < START_TIME) return;
+		if (message is null || message.Timestamp < START_TIME)
+		{
+			return;
+		}
 
-		IGuildUser user = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(reaction.UserId).Result;
+		var user = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(reaction.UserId).Result;
 
 		if (trackableEmotes.Contains(reaction.Emote.Name))
 		{
-			if (!KarmaDictionary.ContainsKey(message.Author.Id)) KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
-			if (!RunningKarma.ContainsKey(message.Author.Id)) RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
+			if (!KarmaDictionary.ContainsKey(message.Author.Id))
+			{
+				KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
+			}
+
+			if (!RunningKarma.ContainsKey(message.Author.Id))
+			{
+				RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
+			}
 
 			if (message.Author.Id != reaction.UserId)
 			{
-				int id = Array.IndexOf(trackableEmotes, reaction.Emote.Name);
+				var id = Array.IndexOf(trackableEmotes, reaction.Emote.Name);
 				KarmaDictionary[message.Author.Id][id]++;
 				RunningKarma[message.Author.Id][id]++;
 				Console.WriteLine($"{DateTime.Now}: incremented {message.Author}'s {trackableEmotes[id]}s");
@@ -161,7 +183,10 @@ public class KarmaHandler
 			{
 				if (reaction.Emote.Name == "upvote")
 				{
-					if (!Program.BotOnly || channel.Id == Program.Config.BotChannelID) await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
+					if (!Program.BotOnly || channel.Id == Program.Config.BotChannelID)
+					{
+						await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
+					}
 				}
 
 				Console.WriteLine($"{DateTime.Now}: ignored {message.Author} self-vote");
@@ -179,16 +204,26 @@ public class KarmaHandler
 	{
 		IMessage message = await cacheMessage.GetOrDownloadAsync();
 
-		if (message is null || DateTime.Now < START_TIME) return;
+		if (message is null || DateTime.Now < START_TIME)
+		{
+			return;
+		}
 
 		if (trackableEmotes.Contains(reaction.Emote.Name))
 		{
-			if (!KarmaDictionary.ContainsKey(message.Author.Id)) KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
-			if (!RunningKarma.ContainsKey(message.Author.Id)) RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
+			if (!KarmaDictionary.ContainsKey(message.Author.Id))
+			{
+				KarmaDictionary.Add(message.Author.Id, new int[trackableEmotes.Length]);
+			}
+
+			if (!RunningKarma.ContainsKey(message.Author.Id))
+			{
+				RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
+			}
 
 			if (message.Author.Id != reaction.UserId)
 			{
-				int id = Array.IndexOf(trackableEmotes, reaction.Emote.Name);
+				var id = Array.IndexOf(trackableEmotes, reaction.Emote.Name);
 				KarmaDictionary[message.Author.Id][id]--;
 				RunningKarma[message.Author.Id][id]--;
 				Console.WriteLine($"{DateTime.Now}: decremented {message.Author}'s {trackableEmotes[id]}s");
@@ -198,14 +233,17 @@ public class KarmaHandler
 
 	private static string NextNumber(string s, ref int i)
 	{
-		int start = i;
-		bool startFound = false;
+		var start = i;
+		var startFound = false;
 
 		for (; i < s.Length; i++)
 		{
 			if (!char.IsNumber(s[i]))
 			{
-				if (startFound) return s[start..i];
+				if (startFound)
+				{
+					return s[start..i];
+				}
 			}
 			else if (!startFound)
 			{
@@ -214,7 +252,10 @@ public class KarmaHandler
 			}
 		}
 
-		if (char.IsNumber(s[^1])) return s[start..];
+		if (char.IsNumber(s[^1]))
+		{
+			return s[start..];
+		}
 
 		Console.WriteLine("Invalid number found.");
 		return "0";

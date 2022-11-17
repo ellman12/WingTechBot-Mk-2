@@ -82,9 +82,20 @@ public class UserAlarm
 	public virtual Task OnReceiveMessage(SocketMessage message)
 	{
 		Init(); // $$$ investigate
-		if (message.Author.Id != UserID) return Task.CompletedTask;
-		if (message.Channel.Id != ChannelID) return Task.CompletedTask;
-		if (!Ringing) return Task.CompletedTask;
+		if (message.Author.Id != UserID)
+		{
+			return Task.CompletedTask;
+		}
+
+		if (message.Channel.Id != ChannelID)
+		{
+			return Task.CompletedTask;
+		}
+
+		if (!Ringing)
+		{
+			return Task.CompletedTask;
+		}
 
 		_wordCount += message.Content.Split().Length;
 		if (_wordCount < WordCountRequirement)
@@ -112,7 +123,10 @@ public class UserAlarm
 		if (RepeatingTimes.Any(x => x.EvaluateAndIncrement(e.SignalTime, TimerInterval, SingleTimes)) ||
 			SingleTimes.Any(x => x.EvaluateAndRemove(e.SignalTime, TimerInterval, SingleTimes)))
 		{
-			if (Paused) return;
+			if (Paused)
+			{
+				return;
+			}
 
 			_count = 1;
 			Ringing = true;
@@ -141,8 +155,15 @@ public class UserAlarm
 	public void Log()
 	{
 		Console.WriteLine($"Alarm Times for {Name}:");
-		foreach (var x in RepeatingTimes) Console.WriteLine(x.Time);
-		foreach (var x in SingleTimes) Console.WriteLine(x.Time);
+		foreach (var x in RepeatingTimes)
+		{
+			Console.WriteLine(x.Time);
+		}
+
+		foreach (var x in SingleTimes)
+		{
+			Console.WriteLine(x.Time);
+		}
 	}
 
 	[OnDeserialized]
@@ -150,7 +171,10 @@ public class UserAlarm
 
 	public virtual void Reset()
 	{
-		foreach (var x in RepeatingTimes) x.Reset();
+		foreach (var x in RepeatingTimes)
+		{
+			x.Reset();
+		}
 	}
 
 	public RepeatingTime NextTime() => RepeatingTimes.MinBy(x => x.Time);

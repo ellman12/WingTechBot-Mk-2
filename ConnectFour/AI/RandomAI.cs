@@ -21,9 +21,18 @@ public class RandomAI : AI
 
 	public override void MatchEnd(State victor, int round) // This is called every time a round ends.
 	{
-		if (victor == State.Empty) Say("A draw? You can't ever defeat me! >;)"); // draw dialogue
-		else if (victor == Team) Say("Looks like I won, heehee! :)"); // win dialogue
-		else Say("I lost... But I'll get you next time! :`("); // loss dialogue
+		if (victor == State.Empty)
+		{
+			Say("A draw? You can't ever defeat me! >;)"); // draw dialogue
+		}
+		else if (victor == Team)
+		{
+			Say("Looks like I won, heehee! :)"); // win dialogue
+		}
+		else
+		{
+			Say("I lost... But I'll get you next time! :`("); // loss dialogue
+		}
 	}
 
 	public override void GameEnd() => Say("It was fun playing with you, teehee!"); // This is called at the end of a series of games.

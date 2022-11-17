@@ -29,27 +29,43 @@ public class Match
 
 	public void RunGame()
 	{
-		if (GameInProgress) throw new Exception("A game is already in progress.");
+		if (GameInProgress)
+		{
+			throw new("A game is already in progress.");
+		}
 
 		GameInProgress = true;
 
 		Round = 0;
 
-		State startingTeam = Board.CurrentTeam;
+		var startingTeam = Board.CurrentTeam;
 
 		while (Board.GameInProgress)
 		{
 			PromptingTeam = Board.CurrentTeam;
-			if (PromptingTeam == startingTeam) Round++;
+			if (PromptingTeam == startingTeam)
+			{
+				Round++;
+			}
 
-			int input = -1;
+			var input = -1;
 			if (_load && _loadCounter < _loadString.Length)
 			{
-				if (_loadCounter == 0) _writeLine("Replaying...");
+				if (_loadCounter == 0)
+				{
+					_writeLine("Replaying...");
+				}
+
 				try
 				{
-					if (Library.TryDec(_loadString[_loadCounter].ToString(), out input)) Board.InputMove(input, _auth, Round);
-					else throw new Exception();
+					if (Library.TryDec(_loadString[_loadCounter].ToString(), out input))
+					{
+						Board.InputMove(input, _auth, Round);
+					}
+					else
+					{
+						throw new();
+					}
 				}
 				catch
 				{
@@ -61,7 +77,10 @@ public class Match
 			}
 			else
 			{
-				if (_teams[PromptingTeam] is IHuman) Board.Draw(Round);
+				if (_teams[PromptingTeam] is IHuman)
+				{
+					Board.Draw(Round);
+				}
 
 				do
 				{
@@ -82,7 +101,7 @@ public class Match
 
 		Board.DisableCreation(_auth);
 
-		foreach (AI ai in _teams.Values)
+		foreach (var ai in _teams.Values)
 		{
 			try
 			{

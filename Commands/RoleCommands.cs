@@ -9,7 +9,7 @@ internal class NaughtyCommand : Command
 
 	public override string LogString => $"added naughty role to {requested.Username} {_duration}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 	public override bool GetRequested => true;
 }
 
@@ -21,7 +21,7 @@ internal class JesterCommand : Command
 
 	public override string LogString => $"added jester role to {requested.Username} {_duration}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 	public override bool GetRequested => true;
 }
 
@@ -33,7 +33,7 @@ internal class SlowmodeCommand : Command
 
 	public override string LogString => $"added slowmode role to {requested.Username} {_duration}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 	public override bool GetRequested => true;
 }
 
@@ -45,6 +45,6 @@ internal class DoodooCommand : Command
 
 	public override string LogString => $"added doodoo head role to {requested.Username} {_duration}";
 	public override bool Audit => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 	public override bool GetRequested => true;
 }

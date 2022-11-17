@@ -50,7 +50,10 @@ public class RepeatingTime : TimeBase
 
 	public void Reset()
 	{
-		while (Interval != 0 && Time.ToUniversalTime() <= DateTime.UtcNow) Increment();
+		while (Interval != 0 && Time.ToUniversalTime() <= DateTime.UtcNow)
+		{
+			Increment();
+		}
 	}
 
 	public bool EvaluateAndIncrement(DateTime time, double timerInterval, List<SingleTime> singleTimes)
@@ -60,7 +63,10 @@ public class RepeatingTime : TimeBase
 			Increment();
 			return !singleTimes.Any(x => x.Time.Date == Time.Date && x.Override);
 		}
-		else return false;
+		else
+		{
+			return false;
+		}
 	}
 }
 

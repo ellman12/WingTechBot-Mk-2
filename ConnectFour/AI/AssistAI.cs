@@ -16,7 +16,6 @@ public class AssistAI : ProAI, IHuman
 		Say("I'll help you out here.");
 	}
 
-
 	public void Init(ulong id, ConnectFour game)
 	{
 		if (!_init)
@@ -31,26 +30,32 @@ public class AssistAI : ProAI, IHuman
 	{
 		Say($"Input move, {board.CurrentTeam} team.");
 
-		int numberInput = -1;
-		int lastInput = -2;
+		var numberInput = -1;
+		var lastInput = -2;
 
-		bool confirmed = false;
+		var confirmed = false;
 		while (!confirmed)
 		{
-			int? move = _game.PromptMove(ID);
+			var move = _game.PromptMove(ID);
 
-			if (move is null) board.Forfeit();
+			if (move is null)
+			{
+				board.Forfeit();
+			}
 
 			numberInput = move ?? 0;
 
-			int[] values = GetValues(new FakeBoard(board));
+			var values = GetValues(new(board));
 
-			int max = Library.Max(values);
+			var max = Library.Max(values);
 
 			if ((values[max] > 500 && max != numberInput) ||
 				(values[numberInput] < 0 && values[max] > 0))
 			{
-				if (lastInput == numberInput) confirmed = true;
+				if (lastInput == numberInput)
+				{
+					confirmed = true;
+				}
 				else
 				{
 					Say($"Are you sure you want that? {max} may be a better option. Think carefully.");
@@ -58,7 +63,10 @@ public class AssistAI : ProAI, IHuman
 					lastInput = numberInput;
 				}
 			}
-			else confirmed = true;
+			else
+			{
+				confirmed = true;
+			}
 		}
 
 		return numberInput;
@@ -66,10 +74,18 @@ public class AssistAI : ProAI, IHuman
 
 	public override void MatchEnd(State victor, int round) // This is called every time a round ends.
 	{
-		if (victor == State.Empty) Say("Good stuff, human.");
-		else if (victor == Team) Say("Good stuff, human.");
-		else Say("We'll get them next time.");
-
+		if (victor == State.Empty)
+		{
+			Say("Good stuff, human.");
+		}
+		else if (victor == Team)
+		{
+			Say("Good stuff, human.");
+		}
+		else
+		{
+			Say("We'll get them next time.");
+		}
 	}
 
 	public override void GameEnd() => Say("I hope I was helpful."); // This is called at the end of a series of games.

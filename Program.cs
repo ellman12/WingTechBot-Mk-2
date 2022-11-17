@@ -49,8 +49,15 @@ public static class Program
 
 	private static async Task MainAsync()
 	{
-		if (!Directory.Exists("save")) Directory.CreateDirectory("save");
-		if (!File.Exists(CONFIG_PATH)) File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(new Config()));
+		if (!Directory.Exists("save"))
+		{
+			Directory.CreateDirectory("save");
+		}
+
+		if (!File.Exists(CONFIG_PATH))
+		{
+			File.WriteAllText(CONFIG_PATH, JsonSerializer.Serialize(new Config()));
+		}
 
 		Config = JsonSerializer.Deserialize<Config>(File.ReadAllText(CONFIG_PATH));
 
@@ -61,7 +68,7 @@ public static class Program
 			: new();
 
 		var config = new DiscordSocketConfig() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
-		Client = new DiscordSocketClient(config);
+		Client = new(config);
 
 		Client.MessageReceived += CommandHandler.CommandTask;
 		Client.MessageReceived += GameHandler.GameTask;
@@ -122,12 +129,12 @@ public static class Program
 
 	public static SocketUser GetUserFromMention(SocketMessage message, string[] arguments, int index = 1)
 	{
-		SocketUser requested = message.Author;
-		bool parsed = true;
+		var requested = message.Author;
+		var parsed = true;
 
 		if (arguments.Length > 1)
 		{
-			parsed = MentionUtils.TryParseUser(arguments[index], out ulong id);
+			parsed = MentionUtils.TryParseUser(arguments[index], out var id);
 			requested = Client.GetUser(id);
 		}
 
@@ -136,7 +143,10 @@ public static class Program
 			message.Channel.SendMessageAsync("User not found.");
 			Console.WriteLine("User not found.");
 			Console.WriteLine(arguments[index]);
-			if (parsed) Console.WriteLine(MentionUtils.ParseUser(arguments[index]));
+			if (parsed)
+			{
+				Console.WriteLine(MentionUtils.ParseUser(arguments[index]));
+			}
 		}
 
 		return requested;
@@ -145,7 +155,7 @@ public static class Program
 	public static bool TryGetUser(string mention, out IUser user)
 	{
 		user = null;
-		bool found = MentionUtils.TryParseUser(mention, out ulong id);
+		var found = MentionUtils.TryParseUser(mention, out var id);
 
 		if (found)
 		{
@@ -161,7 +171,7 @@ public static class Program
 
 	public static void AddToAuditLog(IUser mod, string action)
 	{
-		using StreamWriter file = File.AppendText(AUDIT_PATH);
+		using var file = File.AppendText(AUDIT_PATH);
 
 		file.WriteLine($"{mod.Username} {action} at {DateTime.Now}");
 	}

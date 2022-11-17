@@ -1,7 +1,6 @@
 ﻿namespace WingTechBot;
 using System;
 using System.Linq;
-using Discord;
 
 internal class GameCommand : Command
 {
@@ -16,10 +15,10 @@ internal class GameCommand : Command
 
 		if (Program.GameHandler.ActiveGames.Any(g => g.PlayerIDs.Contains(message.Author.Id)))
 		{
-			throw new Exception($"You are already part of an active game!");
+			throw new($"You are already part of an active game!");
 		}
 
-		Type foundGame = Program.GameHandler.Games.FirstOrDefault((Type t) => t.Name.ToLower() == arguments[1].ToLower());
+		var foundGame = Program.GameHandler.Games.FirstOrDefault((Type t) => t.Name.ToLower() == arguments[1].ToLower());
 
 		if (foundGame is null)
 		{
@@ -36,7 +35,7 @@ internal class GameCommand : Command
 	}
 
 	public override string LogString => $"started game: {_createGame.GetType().Name}";
-	public override string[] Aliases => new string[] { "game", "play", "playgame", "g" };
+	public override string[] Aliases => new[] { "game", "play", "playgame", "g" };
 }
 
 internal class ListGamesCommand : Command
@@ -45,7 +44,7 @@ internal class ListGamesCommand : Command
 	{
 		if (Program.GameHandler.Games.Length > 0)
 		{
-			string list = "Available Games:\n";
+			var list = "Available Games:\n";
 			foreach (var game in Program.GameHandler.Games)
 			{
 				list += $" - {game.Name}\n";
@@ -60,7 +59,7 @@ internal class ListGamesCommand : Command
 	}
 
 	public override string LogString => "listed available games";
-	public override string[] Aliases => new string[] { "listgames", "listgame", "lg", "list", "games" };
+	public override string[] Aliases => new[] { "listgames", "listgame", "lg", "list", "games" };
 }
 
 internal class ActiveGamesCommand : Command
@@ -69,14 +68,14 @@ internal class ActiveGamesCommand : Command
 	{
 		if (Program.GameHandler.ActiveGames.Count > 0)
 		{
-			string list = "Current Games:\n";
+			var list = "Current Games:\n";
 			foreach (var game in Program.GameHandler.ActiveGames)
 			{
-				IUser gm = Program.GetUser(game.GamemasterID);
+				var gm = Program.GetUser(game.GamemasterID);
 				list += $"{game.GetType().Name} (GM: {gm.Username}#{gm.Discriminator}):\n";
-				foreach (ulong id in game.PlayerIDs)
+				foreach (var id in game.PlayerIDs)
 				{
-					IUser user = Program.GetUser(id);
+					var user = Program.GetUser(id);
 					list += $" - {user.Username}#{user.Discriminator}\n";
 				}
 			}
@@ -90,7 +89,7 @@ internal class ActiveGamesCommand : Command
 	}
 
 	public override string LogString => "listed current games";
-	public override string[] Aliases => new string[] { "activegames", "activegame", "active", "actives", "ag", "listactivegames" };
+	public override string[] Aliases => new[] { "activegames", "activegame", "active", "actives", "ag", "listactivegames" };
 }
 
 internal class ClearGamesCommand : Command
@@ -108,6 +107,6 @@ internal class ClearGamesCommand : Command
 	}
 
 	public override string LogString => $"shutting down {_count} active game(s).";
-	public override string[] Aliases => new string[] { "cleargames", "endgames" };
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override string[] Aliases => new[] { "cleargames", "endgames" };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 }

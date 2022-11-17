@@ -16,7 +16,7 @@ public static class Library // feel free to add your own methods here!
 
 	public static int GetNextY(int x, Board board) // returns the y value of the next token placed in the specified column. Added by Ben.
 	{
-		for (int y = 0; y < board.Rows; y++)
+		for (var y = 0; y < board.Rows; y++)
 		{
 			if (board[x, y] != State.Empty)
 			{
@@ -35,16 +35,22 @@ public static class Library // feel free to add your own methods here!
 
 	public static int Max(int[] array) // returns the index of the largest value in the given array. Added by Ben.
 	{
-		int maxIndex = 0;
-		for (int i = 1; i < array.Length; i++)
+		var maxIndex = 0;
+		for (var i = 1; i < array.Length; i++)
 		{
-			if (array[i] > array[maxIndex]) maxIndex = i;
+			if (array[i] > array[maxIndex])
+			{
+				maxIndex = i;
+			}
 		}
 
 		List<int> indexes = new();
-		for (int i = 0; i < array.Length; i++)
+		for (var i = 0; i < array.Length; i++)
 		{
-			if (array[i] == array[maxIndex]) indexes.Add(i);
+			if (array[i] == array[maxIndex])
+			{
+				indexes.Add(i);
+			}
 		}
 
 		return indexes[Random.Next(indexes.Count)];
@@ -52,16 +58,22 @@ public static class Library // feel free to add your own methods here!
 
 	public static int Max(double[] array) // returns the index of the largest value in the given array. Added by Ben.
 	{
-		int maxIndex = 0;
-		for (int i = 1; i < array.Length; i++)
+		var maxIndex = 0;
+		for (var i = 1; i < array.Length; i++)
 		{
-			if (array[i] > array[maxIndex]) maxIndex = i;
+			if (array[i] > array[maxIndex])
+			{
+				maxIndex = i;
+			}
 		}
 
 		List<int> indexes = new();
-		for (int i = 0; i < array.Length; i++)
+		for (var i = 0; i < array.Length; i++)
 		{
-			if (array[i] == array[maxIndex]) indexes.Add(i);
+			if (array[i] == array[maxIndex])
+			{
+				indexes.Add(i);
+			}
 		}
 
 		return indexes[Random.Next(indexes.Count)];

@@ -1,6 +1,5 @@
 ﻿namespace WingTechBot;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Discord;
@@ -12,7 +11,7 @@ internal class KarmaCommand : Command
 	{
 		if (Program.KarmaHandler.KarmaDictionary.ContainsKey(requested.Id))
 		{
-			int[] counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
+			var counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
 
 			message.Channel.SendMessageAsync($"{requested.Mention} has {counts[0] - counts[1]} karma on record. (<:upvote:672248776903098369> {counts[0]} <:downvote:672248822474211334> {counts[1]})");
 		}
@@ -24,7 +23,7 @@ internal class KarmaCommand : Command
 
 	public override string LogString => $"reported {requested}'s karma";
 	public override bool GetRequested => true;
-	public override string[] Aliases => new string[] { "karma", "k" };
+	public override string[] Aliases => new[] { "karma", "k" };
 }
 
 internal class AwardCommand : Command
@@ -33,7 +32,7 @@ internal class AwardCommand : Command
 	{
 		if (Program.KarmaHandler.KarmaDictionary.ContainsKey(requested.Id))
 		{
-			int[] counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
+			var counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
 
 			message.Channel.SendMessageAsync($"{requested.Mention} has {counts[2]} <:silver:672249246442979338> {counts[3]} <:gold:672249212322316308> {counts[4]} <:platinum:672249164846858261>");
 		}
@@ -45,7 +44,7 @@ internal class AwardCommand : Command
 
 	public override string LogString => $"reported {requested}'s awards";
 	public override bool GetRequested => true;
-	public override string[] Aliases => new string[] { "award", "awards", "a" };
+	public override string[] Aliases => new[] { "award", "awards", "a" };
 }
 
 internal class RecordCommand : Command
@@ -54,7 +53,7 @@ internal class RecordCommand : Command
 	{
 		if (Program.KarmaHandler.KarmaDictionary.ContainsKey(requested.Id))
 		{
-			int[] counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
+			var counts = Program.KarmaHandler.KarmaDictionary[requested.Id];
 
 			message.Channel.SendMessageAsync($"{requested.Mention} has {counts[0] - counts[1]} karma on record. (<:upvote:672248776903098369> {counts[0]} <:downvote:672248822474211334> {counts[1]}) {requested} has: {counts[2]} <:silver:672249246442979338> {counts[3]} <:gold:672249212322316308> {counts[4]} <:platinum:672249164846858261>");
 		}
@@ -66,7 +65,7 @@ internal class RecordCommand : Command
 
 	public override string LogString => $"reported {requested}'s record";
 	public override bool GetRequested => true;
-	public override string[] Aliases => new string[] { "record", "records", "r" };
+	public override string[] Aliases => new[] { "record", "records", "r" };
 }
 
 internal class SaveCommand : Command
@@ -90,7 +89,7 @@ internal class LogCommand : Command
 		foreach (var entry in Program.KarmaHandler.KarmaDictionary)
 		{
 			Console.Write(entry.Key);
-			for (int i = 0; i < entry.Value.Length; i++)
+			for (var i = 0; i < entry.Value.Length; i++)
 			{
 				Console.Write($" {entry.Value[i]}");
 			}
@@ -113,7 +112,10 @@ internal class ReverseCommand : Command
 		{
 			_caseNumber = int.Parse(arguments[1]);
 		}
-		catch { throw new ArgumentException("Case number must be specified."); }
+		catch
+		{
+			throw new ArgumentException("Case number must be specified.");
+		}
 
 		string line;
 
@@ -123,22 +125,21 @@ internal class ReverseCommand : Command
 		}
 		catch
 		{
-			throw new Exception($"{_caseNumber} not found.");
+			throw new($"{_caseNumber} not found.");
 		}
 
-		string[] values = line.Split(' ');
+		var values = line.Split(' ');
 
-		ulong id = ulong.Parse(values[1]);
+		var id = ulong.Parse(values[1]);
 
-		int emoteID = int.Parse(values[2]);
+		var emoteID = int.Parse(values[2]);
 		Program.KarmaHandler.KarmaDictionary[id][emoteID] += int.Parse(values[3]);
 
 		message.Channel.SendMessageAsync($"Karma and awards from case {_caseNumber} has been returned to {Program.GetUser(id).Mention}...");
 
-		string[] arrLine = File.ReadAllLines(KarmaHandler.CASE_PATH);
+		var arrLine = File.ReadAllLines(KarmaHandler.CASE_PATH);
 		arrLine[_caseNumber] += " REVERSED";
 		File.WriteAllLines(KarmaHandler.CASE_PATH, arrLine);
-
 	}
 
 	public override string LogString => $"reversed case #{_caseNumber}.";
@@ -156,9 +157,12 @@ internal class ConfirmCommand : Command
 		{
 			_caseNumber = int.Parse(arguments[1]);
 		}
-		catch { throw new ArgumentException("Case number must be specified."); }
+		catch
+		{
+			throw new ArgumentException("Case number must be specified.");
+		}
 
-		string[] arrLine = File.ReadAllLines(KarmaHandler.CASE_PATH);
+		var arrLine = File.ReadAllLines(KarmaHandler.CASE_PATH);
 		try
 		{
 			arrLine[_caseNumber] += " CONFIRMED";
@@ -183,7 +187,7 @@ internal class RunningCommand : Command
 	{
 		if (Program.KarmaHandler.RunningKarma.ContainsKey(requested.Id))
 		{
-			int[] counts = Program.KarmaHandler.RunningKarma[requested.Id];
+			var counts = Program.KarmaHandler.RunningKarma[requested.Id];
 
 			message.Channel.SendMessageAsync($"{requested.Mention} has {counts[0] - counts[1]} running karma on record. (<:upvote:672248776903098369> {counts[0]} <:downvote:672248822474211334> {counts[1]})");
 		}
@@ -195,7 +199,7 @@ internal class RunningCommand : Command
 
 	public override string LogString => $"reported {requested}'s running karma";
 	public override bool GetRequested => true;
-	public override ulong[] RequiredRoles => new ulong[] { Program.Config.ModRoleID ?? 0 };
+	public override ulong[] RequiredRoles => new[] { Program.Config.ModRoleID ?? 0 };
 }
 
 internal class SpamCommand : Command
@@ -215,31 +219,46 @@ internal class TopCommand : Command
 {
 	public override void Execute()
 	{
-		List<ulong> sorted = (from kvp in Program.KarmaHandler.KarmaDictionary orderby kvp.Value[1] - kvp.Value[0] select kvp.Key).ToList();
+		var sorted = Program.KarmaHandler.KarmaDictionary
+			.OrderBy(kvp => kvp.Value[1] - kvp.Value[0])
+			.Select(kvp => kvp.Key)
+			.ToList();
 
-		int numToReport = 5;
+		var numToReport = 5;
 
 		if (arguments.Length >= 2)
 		{
-			bool success = int.TryParse(arguments[1], out numToReport);
+			var success = int.TryParse(arguments[1], out numToReport);
 			if (success)
 			{
-				if (numToReport <= 0) numToReport = 5;
-				if (numToReport > Program.KarmaHandler.KarmaDictionary.Count) numToReport = Program.KarmaHandler.KarmaDictionary.Count;
+				if (numToReport <= 0)
+				{
+					numToReport = 5;
+				}
+
+				if (numToReport > Program.KarmaHandler.KarmaDictionary.Count)
+				{
+					numToReport = Program.KarmaHandler.KarmaDictionary.Count;
+				}
 			}
 			else
 			{
-				numToReport = arguments[1].ToLower() == "all" ? Program.KarmaHandler.KarmaDictionary.Count : 5;
+				numToReport = 
+					arguments[1].ToLower() == "all" 
+					? Program.KarmaHandler.KarmaDictionary.Count 
+					: 5;
 			}
 		}
 
-		string text = $"```Karma Leaderboard, Top {numToReport}\n";
+		var text = $"```Karma Leaderboard, Top {numToReport}\n";
 
-		for (int i = 0; i < numToReport; i++)
+		for (var i = 0; i < numToReport; i++)
 		{
 			try
 			{
-				var user = ((IGuild)Program.Client.GetGuild(Program.Config.ServerID)).GetUserAsync(sorted[i]).Result;
+				var user = ((IGuild)Program.Client.GetGuild(Program.Config.ServerID))
+					.GetUserAsync(sorted[i])
+					.Result;
 				text += $"[{i + 1}] = {Program.KarmaHandler.KarmaDictionary[sorted[i]][0] - Program.KarmaHandler.KarmaDictionary[sorted[i]][1]} karma - {user.Username}#{user.Discriminator}\n";
 			}
 			catch

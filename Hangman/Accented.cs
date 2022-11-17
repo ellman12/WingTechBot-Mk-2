@@ -66,7 +66,7 @@ internal static class Accented
 
 	public static char RemoveDiacritics(this char c)
 	{
-		foreach (KeyValuePair<string, string> entry in _foreign_characters)
+		foreach (var entry in _foreign_characters)
 		{
 			if (entry.Key.IndexOf(c) != -1)
 			{
@@ -79,13 +79,13 @@ internal static class Accented
 
 	public static string RemoveDiacritics(this string s)
 	{
-		string text = "";
+		var text = "";
 
-		foreach (char c in s)
+		foreach (var c in s)
 		{
-			int len = text.Length;
+			var len = text.Length;
 
-			foreach (KeyValuePair<string, string> entry in _foreign_characters)
+			foreach (var entry in _foreign_characters)
 			{
 				if (entry.Key.IndexOf(c) != -1)
 				{
@@ -109,10 +109,13 @@ internal static class Accented
 
 	public static bool IsAmericanized(this string s)
 	{
-		bool output = true;
-		foreach (char c in s)
+		var output = true;
+		foreach (var c in s)
 		{
-			if (char.IsLetter(c)) output &= IsAmericanized(c);
+			if (char.IsLetter(c))
+			{
+				output &= IsAmericanized(c);
+			}
 		}
 
 		return output;

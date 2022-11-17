@@ -23,16 +23,23 @@ public class GameHandler
 
 	public Task GameTask(SocketMessage message)
 	{
-		if (string.IsNullOrEmpty(message.Content)) return Task.CompletedTask;
-		if (message.Channel is IGuildChannel && message.Channel.Name != "bot") return Task.CompletedTask;
+		if (string.IsNullOrEmpty(message.Content))
+		{
+			return Task.CompletedTask;
+		}
 
-		bool endGame = message.Content.Trim().ToLower() == "~endgame";
+		if (message.Channel is IGuildChannel && message.Channel.Name != "bot")
+		{
+			return Task.CompletedTask;
+		}
+
+		var endGame = message.Content.Trim().ToLower() == "~endgame";
 
 		if (!endGame && message.Content.Trim().ToLower()[0] == '~')
 		{
 			if (message.Content.Trim().Length > 1 && message.Content.Trim().ToLower()[1] == '~')
 			{
-				foreach (Game game in ActiveGames)
+				foreach (var game in ActiveGames)
 				{
 					if (game.GamemasterID == message.Author.Id || game.PlayerIDs.Contains(message.Author.Id))
 					{
@@ -45,7 +52,7 @@ public class GameHandler
 			return Task.CompletedTask;
 		}
 
-		foreach (Game game in ActiveGames)
+		foreach (var game in ActiveGames)
 		{
 			if (game.GamemasterID == message.Author.Id || game.PlayerIDs.Contains(message.Author.Id))
 			{
@@ -55,7 +62,10 @@ public class GameHandler
 					game.Shutdown();
 					EndGame(game);
 				}
-				else game.ReceiveMessage(message);
+				else
+				{
+					game.ReceiveMessage(message);
+				}
 
 				break;
 			}

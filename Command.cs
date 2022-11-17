@@ -17,12 +17,18 @@ public abstract class Command
 		this.message = message;
 		this.arguments = arguments;
 
-		if (message.Channel is SocketGuildChannel) userRoles = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(message.Author.Id).Result.RoleIds.ToArray();
+		if (message.Channel is SocketGuildChannel)
+		{
+			userRoles = ((IGuild)(message.Channel as SocketGuildChannel).Guild).GetUserAsync(message.Author.Id).Result.RoleIds.ToArray();
+		}
 
 		if (GetRequested)
 		{
 			requested = Program.GetUserFromMention(message, arguments);
-			if (requested is null) throw new ArgumentException($"Command {Name} requires a user to be mentioned.");
+			if (requested is null)
+			{
+				throw new ArgumentException($"Command {Name} requires a user to be mentioned.");
+			}
 		}
 
 		if (GetReply)
@@ -33,7 +39,10 @@ public abstract class Command
 			}
 			catch { }
 
-			if (replied is null) throw new ArgumentException($"Command {Name} must include a reply to another message");
+			if (replied is null)
+			{
+				throw new ArgumentException($"Command {Name} must include a reply to another message");
+			}
 		}
 
 		if (RequiredRoles is not null)
@@ -42,16 +51,19 @@ public abstract class Command
 			{
 				if (message.Author.Id != Program.Config.OwnerID && !RequiredRoles.Any(x => userRoles.Contains(x)))
 				{
-					throw new Exception($"You do not have sufficient rank to call command {Name}.");
+					throw new($"You do not have sufficient rank to call command {Name}.");
 				}
 			}
 			else
 			{
-				throw new Exception($"Command {Name} cannot be called in DMs.");
+				throw new($"Command {Name} cannot be called in DMs.");
 			}
 		}
 
-		if (OwnerOnly && message.Author.Id != Program.Config.OwnerID) throw new Exception($"Only {Program.GetUser(Program.Config.OwnerID).Mention} can call command {Name}.");
+		if (OwnerOnly && message.Author.Id != Program.Config.OwnerID)
+		{
+			throw new($"Only {Program.GetUser(Program.Config.OwnerID).Mention} can call command {Name}.");
+		}
 	}
 
 	public abstract void Execute();
@@ -72,10 +84,10 @@ public abstract class Command
 	{
 		get
 		{
-			Type type = GetType();
+			var type = GetType();
 			return type.Name[..(type.Name.Length - "COMMAND".Length)];
 		}
 	}
 
-	public virtual string[] Aliases => new string[] { Name.ToLower() };
+	public virtual string[] Aliases => new[] { Name.ToLower() };
 }

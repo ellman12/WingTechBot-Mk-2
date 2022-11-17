@@ -45,7 +45,10 @@ public class Board
 				_authSent = true;
 				return _auth;
 			}
-			else return -1;
+			else
+			{
+				return -1;
+			}
 		}
 	}
 
@@ -54,11 +57,17 @@ public class Board
 
 	public Board(Func<object, Discord.IMessage> saveWriteLine, Action clear, int columns = 7, int rows = 6, int connect = 4, int teams = 2, bool noMiddleStart = false, State currentTeam = State.Circle)
 	{
-		//if (GameInProgress) throw new Exception("A board is already in use."); // $$$ maybe reintroduce?
+		//if (GameInProgress) throw new("A board is already in use."); // $$$ maybe reintroduce?
 
-		if (connect > columns && connect > rows) throw new Exception("Connect cannot be larger than columns and rows.");
+		if (connect > columns && connect > rows)
+		{
+			throw new("Connect cannot be larger than columns and rows.");
+		}
 
-		if (teams >= Enum.GetValues(typeof(State)).Length) throw new Exception("There can be no more than four teams.");
+		if (teams >= Enum.GetValues(typeof(State)).Length)
+		{
+			throw new("There can be no more than four teams.");
+		}
 
 		GameInProgress = true;
 
@@ -99,10 +108,17 @@ public class Board
 
 	private bool TryDrop(int x, State state)
 	{
-		if (state == State.Empty) return false;
-		if (_gameState[x, 0] != State.Empty) return false;
+		if (state == State.Empty)
+		{
+			return false;
+		}
 
-		int y = Rows - 1;
+		if (_gameState[x, 0] != State.Empty)
+		{
+			return false;
+		}
+
+		var y = Rows - 1;
 
 		while (_gameState[x, y] != State.Empty)
 		{
@@ -113,7 +129,10 @@ public class Board
 
 		MoveHistory += $"{x:X}";
 
-		if (CheckFull()) EndGame();
+		if (CheckFull())
+		{
+			EndGame();
+		}
 
 		if (CheckVictor(x, y, _gameState[x, y]))
 		{
@@ -126,9 +145,16 @@ public class Board
 
 	public bool CheckFull()
 	{
-		for (int x = 0; x < Columns; x++)
-			for (int y = 0; y < Rows; y++)
-				if (_gameState[x, y] == State.Empty) return false;
+		for (var x = 0; x < Columns; x++)
+		{
+			for (var y = 0; y < Rows; y++)
+			{
+				if (_gameState[x, y] == State.Empty)
+				{
+					return false;
+				}
+			}
+		}
 
 		return true;
 	}
@@ -145,28 +171,43 @@ public class Board
 
 	public int CheckDirection(int x, int y, int a, int b, State state)
 	{
-		if (state == State.Empty) return 0;
+		if (state == State.Empty)
+		{
+			return 0;
+		}
 
-		int count = 1;
+		var count = 1;
 
 		int v, w;
 
-		for (int i = 1; i < Connect; i++)
+		for (var i = 1; i < Connect; i++)
 		{
 			v = x + a * i;
 			w = y + b * i;
 
-			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
-			else break;
+			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state)
+			{
+				count++;
+			}
+			else
+			{
+				break;
+			}
 		}
 
-		for (int i = 1; i < Connect; i++)
+		for (var i = 1; i < Connect; i++)
 		{
 			v = x + -a * i;
 			w = y + -b * i;
 
-			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state) count++;
-			else break;
+			if (v >= 0 && v < Columns && w >= 0 && w < Rows && _gameState[v, w] == state)
+			{
+				count++;
+			}
+			else
+			{
+				break;
+			}
 		}
 
 		return count;
@@ -213,8 +254,14 @@ public class Board
 		Draw(_round);
 
 		_saveWriteLine("Game Over.");
-		if (Victor == State.Empty) _saveWriteLine("Draw.");
-		else _saveWriteLine($"{Victor} Team wins!");
+		if (Victor == State.Empty)
+		{
+			_saveWriteLine("Draw.");
+		}
+		else
+		{
+			_saveWriteLine($"{Victor} Team wins!");
+		}
 
 		EnableCreationAllowed = true; // gives Game control over this.GameInProgress
 		DisableCreationAllowed = true; // same
@@ -223,7 +270,10 @@ public class Board
 
 	public void Forfeit()
 	{
-		Victor = TeamCount > 2 ? State.Empty : ConnectFour.Next(CurrentTeam, TeamCount);
+		Victor = 
+			TeamCount > 2 
+			? State.Empty 
+			: ConnectFour.Next(CurrentTeam, TeamCount);
 
 		EndGame();
 	}
@@ -236,18 +286,18 @@ public class Board
 	{
 		_clear();
 
-		string screen = $"```\nConnect {GetWord(Connect)}\n" +
+		var screen = $"```\nConnect {GetWord(Connect)}\n" +
 			$"Round: {round}\n";
 
 		WriteHistory(ref screen);
 
 		DrawTop(ref screen);
 
-		for (int y = 0; y < Rows; y++)
+		for (var y = 0; y < Rows; y++)
 		{
 			screen += "|";
 
-			for (int x = 0; x < Columns; x++)
+			for (var x = 0; x < Columns; x++)
 			{
 				DrawSlot(_gameState[x, y], ref screen);
 			}
@@ -287,9 +337,9 @@ public class Board
 	{
 		screen += "History: ";
 
-		State team = StartingTeam;
+		var team = StartingTeam;
 
-		for (int i = 0; i < MoveHistory.Length; i++)
+		for (var i = 0; i < MoveHistory.Length; i++)
 		{
 			screen += MoveHistory[i];
 			team = ConnectFour.Next(team, TeamCount);
@@ -338,12 +388,11 @@ public class Board
 		_ => 'Q',
 	};
 
-
 	private void DrawTop(ref string screen)
 	{
-		int width = Columns * 4 + 1;
+		var width = Columns * 4 + 1;
 
-		for (int i = 0; i < width; i++)
+		for (var i = 0; i < width; i++)
 		{
 			screen += '=';
 		}
@@ -355,7 +404,7 @@ public class Board
 	{
 		screen += '=';
 
-		for (int i = 0; i < Columns; i++)
+		for (var i = 0; i < Columns; i++)
 		{
 			screen += $"[{i:X}]=";
 		}

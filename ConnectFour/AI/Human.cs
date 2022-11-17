@@ -23,9 +23,12 @@ public class Human : AI, IHuman
 	{
 		Say($"Input move, {board.CurrentTeam} team.");
 
-		int? move = _game.PromptMove(ID);
+		var move = _game.PromptMove(ID);
 
-		if (move is null) board.Forfeit();
+		if (move is null)
+		{
+			board.Forfeit();
+		}
 
 		return move ?? 0;
 	}

@@ -19,14 +19,21 @@ public class AlarmHandler
 
 	public void HookAlarms(DiscordSocketClient client)
 	{
-		foreach (var x in Alarms) client.MessageReceived += x.OnReceiveMessage;
+		foreach (var x in Alarms)
+		{
+			client.MessageReceived += x.OnReceiveMessage;
+		}
 
 		client.Connected += delegate
 		{
 			if (_minuteTimer is null)
 			{
-				_minuteTimer = new Timer(UserAlarm.TimerInterval * 60_000);
-				foreach (var x in Alarms) _minuteTimer.Elapsed += x.OnTimedEvent;
+				_minuteTimer = new(UserAlarm.TimerInterval * 60_000);
+				foreach (var x in Alarms)
+				{
+					_minuteTimer.Elapsed += x.OnTimedEvent;
+				}
+
 				_minuteTimer.AutoReset = true;
 				_minuteTimer.Enabled = true;
 			}
