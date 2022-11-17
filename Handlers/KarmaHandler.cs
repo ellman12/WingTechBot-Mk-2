@@ -38,6 +38,8 @@ public class KarmaHandler
 
 	public static readonly DateTimeOffset START_TIME = new DateTime(2020, 11, 25);
 
+	private DateTime? _lastScold = null;
+
 	public async Task CheckRunningKarma()
 	{
 		while (true)
@@ -166,7 +168,19 @@ public class KarmaHandler
 				RunningKarma.Add(message.Author.Id, new int[trackableEmotes.Length]);
 			}
 
-			if (message.Author.Id != reaction.UserId)
+			if (message.Author.Id == reaction.UserId)
+			{
+				if (reaction.Emote.Name == "upvote" // reaction is upvote
+					&& (!Program.BotOnly || channel.Id == Program.Config.BotChannelID) // we are not ~tbot'd
+					&& (_lastScold is not DateTime lastScold || DateTime.Now - lastScold <= TimeSpan.FromMinutes(5))) // we didn't scold recently
+				{
+					await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
+					_lastScold = DateTime.Now;
+				}
+
+				Console.WriteLine($"{DateTime.Now}: ignored {message.Author} self-vote");
+			}
+			else
 			{
 				var id = Array.IndexOf(trackableEmotes, reaction.Emote.Name);
 				KarmaDictionary[message.Author.Id][id]++;
@@ -178,18 +192,6 @@ public class KarmaHandler
 					await message.AddReactionAsync(Emote.Parse("<:downvote:672248822474211334>"));
 					Console.WriteLine($"{DateTime.Now}: Downvoted self.");
 				}
-			}
-			else
-			{
-				if (reaction.Emote.Name == "upvote")
-				{
-					if (!Program.BotOnly || channel.Id == Program.Config.BotChannelID)
-					{
-						await message.Channel.SendMessageAsync($"{_upvoteScolds[Program.Random.Next(_upvoteScolds.Length)]} {message.Author.Mention}");
-					}
-				}
-
-				Console.WriteLine($"{DateTime.Now}: ignored {message.Author} self-vote");
 			}
 		}
 
