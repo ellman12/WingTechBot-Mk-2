@@ -231,7 +231,7 @@ internal class TopCommand : Command
 			var success = int.TryParse(arguments[1], out numToReport);
 			if (success)
 			{
-				numToReport = Math.Clamp(numToReport, Math.Min(5, Program.KarmaHandler.KarmaDictionary.Count), Program.KarmaHandler.KarmaDictionary.Count);
+				numToReport = Math.Clamp(numToReport, Math.Min(1, Program.KarmaHandler.KarmaDictionary.Count), Program.KarmaHandler.KarmaDictionary.Count);
 			}
 			else if (arguments[1].ToLower() != "all")
 			{
