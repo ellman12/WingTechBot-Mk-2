@@ -224,29 +224,18 @@ internal class TopCommand : Command
 			.Select(kvp => kvp.Key)
 			.ToList();
 
-		var numToReport = 5;
+		var numToReport = Program.KarmaHandler.KarmaDictionary.Count;
 
 		if (arguments.Length >= 2)
 		{
 			var success = int.TryParse(arguments[1], out numToReport);
 			if (success)
 			{
-				if (numToReport <= 0)
-				{
-					numToReport = 5;
-				}
-
-				if (numToReport > Program.KarmaHandler.KarmaDictionary.Count)
-				{
-					numToReport = Program.KarmaHandler.KarmaDictionary.Count;
-				}
+				numToReport = Math.Clamp(numToReport, Math.Min(5, Program.KarmaHandler.KarmaDictionary.Count), Program.KarmaHandler.KarmaDictionary.Count);
 			}
-			else
+			else if (arguments[1].ToLower() != "all")
 			{
-				numToReport = 
-					arguments[1].ToLower() == "all" 
-					? Program.KarmaHandler.KarmaDictionary.Count 
-					: 5;
+				message.Channel.SendMessageAsync($"Argument {arguments[1]} not recognized. Did you mean 'all'?");
 			}
 		}
 
