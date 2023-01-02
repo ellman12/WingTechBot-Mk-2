@@ -237,6 +237,10 @@ internal class TopCommand : Command
 			{
 				message.Channel.SendMessageAsync($"Argument {arguments[1]} not recognized. Did you mean 'all'?");
 			}
+			else
+			{
+				numToReport = Program.KarmaHandler.KarmaDictionary.Count;
+			}
 		}
 
 		var text = $"```Karma Leaderboard, Top {numToReport}\n";
