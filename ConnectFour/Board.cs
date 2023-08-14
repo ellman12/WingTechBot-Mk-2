@@ -270,9 +270,9 @@ public class Board
 
 	public void Forfeit()
 	{
-		Victor = 
-			TeamCount > 2 
-			? State.Empty 
+		Victor =
+			TeamCount > 2
+			? State.Empty
 			: ConnectFour.Next(CurrentTeam, TeamCount);
 
 		EndGame();

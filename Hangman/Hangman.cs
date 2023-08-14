@@ -145,9 +145,9 @@ public class Hangman : Game
 					}
 				}
 
-				actualClues = 
-					letters.Count - _clues <= 2 
-					? letters.Count - 2 
+				actualClues =
+					letters.Count - _clues <= 2
+					? letters.Count - 2
 					: _clues;
 			}
 
@@ -392,9 +392,9 @@ public class Hangman : Game
 
 			word = lines.Skip(_random.Next((int)_dictionaryCount - 1)).Take(1).First();
 		}
-		while (_banned.Contains(word) 
-			|| word.Length <= 2 
-			|| !word.Any((char c) => "aeiouy".Contains(c)) 
+		while (_banned.Contains(word)
+			|| word.Length <= 2
+			|| !word.Any((char c) => "aeiouy".Contains(c))
 			|| !word.IsAmericanized());
 
 		return word;

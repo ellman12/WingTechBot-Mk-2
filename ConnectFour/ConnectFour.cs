@@ -220,9 +220,9 @@ public class ConnectFour : Game
 		var numberInput = -1;
 		var input = Prompt(id, AllowedChannels, (string s) => Library.TryDec(s, out numberInput) || s == "end", true, saveMessage: true);
 
-		return 
-			input == "end" 
-			? null 
+		return
+			input == "end"
+			? null
 			: numberInput;
 	}
 }

@@ -106,14 +106,14 @@ public class CommandHandler
 
 			user.AddRoleAsync(server.GetRole(roleID.Value));
 
-			var minutes = 
-				arguments.Length < 2 
-				? -1 
+			var minutes =
+				arguments.Length < 2
+				? -1
 				: int.Parse(arguments[2]);
 
-			var duration = 
-				minutes >= 1 
-				? $"for {minutes} minute(s)" 
+			var duration =
+				minutes >= 1
+				? $"for {minutes} minute(s)"
 				: "permanently";
 
 			Program.AddToAuditLog(message.Author, $"added role {roleName} to {user.Username} {duration}");
