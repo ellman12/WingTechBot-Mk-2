@@ -3,9 +3,9 @@ I want the bot to be able to store and retrieve quotes from any user on the serv
 
 ## Tables
 
-| Quote (markdown string) | Person (refs user.id) | Times Quoted (int) |
-| ----------------------- | --------------------- | ------------------ |
-|                         |                       |                    |
+| Quote (markdown string) | Person | Times Quoted (int) |
+| ----------------------- | ------ | ------------------ |
+|                         |        |                    |
 
 
 ## Operations

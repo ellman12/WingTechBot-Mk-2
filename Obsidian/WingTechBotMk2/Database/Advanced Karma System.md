@@ -1,25 +1,18 @@
 The current karma system is good, but I would like to extend it with more features. I want to use a PostgreSQL database to allow us to easily see stats like how much karma a user has given to another user. 
 
 ## Tables
-### Users
-
-| uuid | username (string) |
-| ---- | ----------------- |
-|      |                   |
-Automatically populated when given the command to do so. Automatically adds a new user when they join the server.
-
 ### Karma
 
-| Giver (refs users.id) | Receiver (refs id) | Amount (int) |
-| --------------------- | ------------------ | ------------ |
-|                       |                    |              |
+| Giver | Receiver | Amount (int) |
+| ----- | -------- | ------------ |
+|       |          |              |
 
 ## Awards
 
 | Giver | Receiver | Emoji |
 | ----- | -------- | ----- |
 |       |          |       |
-Tracks how often a person has reacted to another person's posts with a specific emoji. E.g., `:gold:` or `:fire`. I want this to be available for *any* emoji, not just the typical gold/silver/platinum ones.
+Tracks how often a person has reacted to another person's posts with a specific emoji. E.g., `:gold:` or `:fire:`. I want this to be available for *any* emoji, not just the typical gold/silver/platinum ones.
 
 
 ## Operations
