@@ -365,3 +365,6 @@ Secrets.cs
 Images
 WingTechBot.zip
 /Hooks
+
+*.idea
+
