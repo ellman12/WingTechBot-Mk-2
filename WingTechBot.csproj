@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net6.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <ApplicationIcon>wingtech_logo.ico</ApplicationIcon>
   </PropertyGroup>
 
@@ -11,36 +11,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Discord.Net" Version="2.4.0" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
-    <PackageReference Include="System.Windows.Extensions" Version="6.0.0-rc.2.21480.5" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Update="Hangman\banned.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Hangman\words.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Images\fishe.jpg">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Images\neko0.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Images\neko1.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Images\neko2.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Images\neko3.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="Images\neko4.png">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <PackageReference Include="Discord.Net" Version="3.17.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
 </Project>
