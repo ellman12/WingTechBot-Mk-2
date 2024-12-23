@@ -42,7 +42,7 @@ public static class Program
 		await Client.LoginAsync(TokenType.Bot, Config.LoginToken);
 		await Client.SetCustomStatusAsync(Config.StatusMessage);
 		await Client.StartAsync();
-
+		
 		await Task.Delay(Timeout.Infinite);
 	}
 
@@ -50,7 +50,12 @@ public static class Program
 	{
 		BotChannel = Client.GetChannel(Config.BotChannelID) as SocketTextChannel;
 
-		return Task.CompletedTask;
+		if (BotChannel == null)
+		{
+			throw new NullReferenceException("Could not find bot channel");
+		}
+
+		await BotChannel.SendMessageAsync("Bot started");
 	}
 
 	private static Task Log(LogMessage message)
