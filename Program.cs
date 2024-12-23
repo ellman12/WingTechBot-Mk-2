@@ -9,7 +9,7 @@ namespace WingTechBot;
 public static class Program
 {
 	public static DiscordSocketClient Client { get; private set; }
-	
+
 	public static Config Config { get; private set; }
 
 	public static SocketTextChannel BotChannel { get; private set; }
@@ -32,7 +32,7 @@ public static class Program
 	{
 		Config = Config.FromJson();
 
-		DiscordSocketConfig config = new() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
+		DiscordSocketConfig config = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
 		Client = new DiscordSocketClient(config);
 
 		Client.Log += Log;
@@ -40,6 +40,7 @@ public static class Program
 		Client.Ready += Start;
 
 		await Client.LoginAsync(TokenType.Bot, Config.LoginToken);
+		await Client.SetGameAsync(Config.StatusMessage);
 		await Client.StartAsync();
 
 		await Task.Delay(Timeout.Infinite);
@@ -82,5 +83,5 @@ public static class Program
 
 		return requested;
 	}
-
 }
+
