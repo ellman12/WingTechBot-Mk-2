@@ -1,0 +1,6 @@
+- C#
+- Discord.NET
+- PostgreSQL
+- NUnit
+- Docker
+- AWS
