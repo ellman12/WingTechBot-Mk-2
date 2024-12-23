@@ -40,7 +40,7 @@ public static class Program
 		Client.Ready += Start;
 
 		await Client.LoginAsync(TokenType.Bot, Config.LoginToken);
-		await Client.SetGameAsync(Config.StatusMessage);
+		await Client.SetCustomStatusAsync(Config.StatusMessage);
 		await Client.StartAsync();
 
 		await Task.Delay(Timeout.Infinite);
