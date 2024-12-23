@@ -1,0 +1,8 @@
+﻿{
+	"LoginToken": "",
+	"BotChannelID": 0,
+	"ModRoleID": 0,
+	"BotAdmins": ["", ""],
+	"StartDate": "1970-1-1",
+	"StatusMessage": ""
+}

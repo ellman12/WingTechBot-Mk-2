@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using Discord;
@@ -10,12 +8,6 @@ namespace WingTechBot;
 
 public static class Program
 {
-	#if DEBUG
-	public const string ConfigPath = "C:/config.json";
-	#else
-	public const string ConfigPath = "idk lol";
-	#endif
-	
 	public static DiscordSocketClient Client { get; private set; }
 	
 	public static Config Config { get; private set; }
@@ -38,7 +30,7 @@ public static class Program
 
 	private static async Task MainAsync()
 	{
-		Config = JsonSerializer.Deserialize<Config>(await File.ReadAllTextAsync(ConfigPath));
+		Config = Config.FromJson();
 
 		DiscordSocketConfig config = new() { MessageCacheSize = 100, AlwaysDownloadUsers = true };
 		Client = new DiscordSocketClient(config);
@@ -55,7 +47,7 @@ public static class Program
 
 	private static Task Start()
 	{
-		BotChannel = Client.GetChannel(Config.BotChannelID ?? 0) as SocketTextChannel;
+		BotChannel = Client.GetChannel(Config.BotChannelID) as SocketTextChannel;
 
 		return Task.CompletedTask;
 	}
