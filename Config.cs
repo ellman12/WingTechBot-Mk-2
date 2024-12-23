@@ -9,8 +9,4 @@ public record Config
 	public ulong? BotChannelID { get; set; }
 
 	public ulong? ModRoleID { get; set; }
-	public ulong? JesterRoleID { get; set; }
-	public ulong? NaughtyRoleID { get; set; }
-	public ulong? SlowmodeRoleID { get; set; }
-	public ulong? DoodooRoleID { get; set; }
 }
