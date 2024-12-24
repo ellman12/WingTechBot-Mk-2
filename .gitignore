@@ -376,4 +376,5 @@ Obsidian/WingTechBotMk2/.obsidian/plugins
 # Files with sensitive info
 *config.json
 *.pem
+*.env
 
