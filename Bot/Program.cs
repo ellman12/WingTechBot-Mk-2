@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using WingTechBot.Commands;
 
 namespace WingTechBot;
 
@@ -28,7 +29,7 @@ public static class Program
 	private static async Task MainAsync()
 	{
 		Config = Config.FromJson();
-
+		
 		DiscordSocketConfig config = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
 		Client = new DiscordSocketClient(config);
 
@@ -39,7 +40,9 @@ public static class Program
 		await Client.LoginAsync(TokenType.Bot, Config.LoginToken);
 		await Client.SetCustomStatusAsync(Config.StatusMessage);
 		await Client.StartAsync();
-		
+
+		Client.SlashCommandExecuted += SlashCommandHandler.SlashCommandExecuted;
+
 		await Task.Delay(Timeout.Infinite);
 	}
 
@@ -52,7 +55,9 @@ public static class Program
 			throw new NullReferenceException("Could not find bot channel");
 		}
 
-		await BotChannel.SendMessageAsync("Bot started");
+		await SlashCommandHandler.SetUpCommands();
+
+		await BotChannel.SendMessageAsync("Bot started and ready");
 	}
 
 	private static Task Log(LogMessage message)
@@ -86,4 +91,3 @@ public static class Program
 		return requested;
 	}
 }
-
