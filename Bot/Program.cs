@@ -62,7 +62,7 @@ public static class Program
 
 	private static Task Log(LogMessage message)
 	{
-		Console.WriteLine(message.ToString());
+		Logger.LogLine(message.Message, message.Severity);
 		return Task.CompletedTask;
 	}
 

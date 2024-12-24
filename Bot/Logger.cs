@@ -1,0 +1,32 @@
+﻿using System.Diagnostics;
+using Discord;
+
+namespace WingTechBot;
+
+///<summary>Used for printing messages of variable importance to the terminal.</summary>
+public static class Logger
+{
+	public static void LogLine(object value, LogSeverity itemImportance = LogSeverity.Info)
+	{
+		SetConsoleColor(itemImportance);
+		Console.WriteLine($"{DateTime.Now} {value}");
+		Console.ResetColor();
+	}
+
+	private static void SetConsoleColor(LogSeverity itemImportance)
+	{
+		Console.ForegroundColor = itemImportance switch
+		{
+			LogSeverity.Critical or LogSeverity.Error => ConsoleColor.Red,
+			LogSeverity.Warning => ConsoleColor.Yellow,
+			LogSeverity.Info => ConsoleColor.White,
+			LogSeverity.Verbose => ConsoleColor.Cyan,
+			LogSeverity.Debug => ConsoleColor.Green,
+			_ => throw new ArgumentException()
+		};
+	}
+
+	public static void LogException(Exception e) => LogLine($"\nException raised in {GetCallingMethodName()}: {e.Message}\n", LogSeverity.Error);
+
+	private static string GetCallingMethodName() => new StackTrace().GetFrame(2)!.GetMethod()!.Name; //If it's set to 1 it'd print LogLine.
+}
