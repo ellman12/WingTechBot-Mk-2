@@ -10,7 +10,7 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 ## Project Plan and Todo
 - [x] Figure out the basics of making a bot
 - [x] Figure out how to use Docker and get the basic bot working in it
-- [ ] Set up docker compose on local
+- [x] Set up docker compose on local
 - [ ] Figure out how to use AWS or another method of [[Cloud Hosting]]
 	- [x] Get a basic bot on the cloud.
 	- [x] Get it to receive commands.
