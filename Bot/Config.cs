@@ -12,6 +12,8 @@ public sealed record Config
 	
 	public string LoginToken { get; init; }
 
+	public ulong ServerId { get; init; }
+	
 	public ulong BotChannelID { get; init; }
 
 	public ulong ModRoleID { get; init; }
