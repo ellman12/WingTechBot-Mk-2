@@ -366,12 +366,14 @@ Images
 WingTechBot.zip
 /Hooks
 
+# JetBrains Rider files and folders
 *.idea
 
+# Obsidian files and folders
 Obsidian/WingTechBotMk2/.obsidian/workspace.json
 Obsidian/WingTechBotMk2/.obsidian/plugins
 
+# Files with sensitive info
 *config.json
-
 *.pem
 
