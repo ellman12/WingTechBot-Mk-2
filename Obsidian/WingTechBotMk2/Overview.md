@@ -9,11 +9,13 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 
 ## Project Plan
 - [x] Figure out the basics of making a bot
-- [ ] Figure out how to use Docker and get the basic bot working in it
+- [x] Figure out how to use Docker and get the basic bot working in it
 - [ ] Figure out how to use AWS or another method of [[Cloud Hosting]]
+	- [x] Get a basic bot on the cloud.
+	- [ ] Get it to receive commands.
 	- [ ] Figure out how to use a database with it.
-	- [ ] Get a basic bot on the cloud.
 - [ ] [[Advanced Karma System]]
 - [ ] [[Quote System]]
+- [ ] [[Gato]]
 - [ ] Other smaller commands like [[Random Number Generation]]
 - [ ] 

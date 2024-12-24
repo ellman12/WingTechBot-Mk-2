@@ -9,7 +9,7 @@ public sealed record Config
 	#if DEBUG
 	public const string ConfigPath = "C:/config.json";
 	#else
-	public const string ConfigPath = "idk lol";
+	public const string ConfigPath = "/app/config.json";
 	#endif
 	
 	public string LoginToken { get; init; }
