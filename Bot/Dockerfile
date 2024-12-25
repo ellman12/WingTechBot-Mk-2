@@ -10,6 +10,9 @@ RUN dotnet publish -c Release -o out
 
 COPY config.json /app/
 
+COPY ./Migrations /app/Migrations
+
+
 FROM mcr.microsoft.com/dotnet/runtime:9.0
 WORKDIR /app
 COPY --from=build /app/out . 
