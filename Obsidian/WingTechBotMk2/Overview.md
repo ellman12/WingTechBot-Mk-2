@@ -11,10 +11,11 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 - [x] Figure out the basics of making a bot
 - [x] Figure out how to use Docker and get the basic bot working in it
 - [x] Set up docker compose on local
-- [ ] Figure out how to use AWS or another method of [[Cloud Hosting]]
+- [x] Figure out how to use AWS or another method of [[Cloud Hosting]]
 	- [x] Get a basic bot on the cloud.
 	- [x] Get it to receive commands.
-	- [ ] Figure out how to use a database with it.
+	- [x] Figure out how to use a database with it.
+- [ ] Create testing csproj and organize existing project files.
 - [ ] Create notes on how this was all setup
 - [ ] Research and do Agile and TDD stuff
 - [ ] [[Advanced Karma System]]
