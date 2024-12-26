@@ -3,15 +3,15 @@ The current karma system is good, but I would like to extend it with more featur
 ## Tables
 ### Karma
 
-| Giver | Receiver | Amount (int) |
-| ----- | -------- | ------------ |
-|       |          |              |
+| Giver | Receiver | Amount (int) | Created At | Updated At |
+| ----- | -------- | ------------ | ---------- | ---------- |
+|       |          |              |            |            |
 
 ## Awards
 
-| Giver | Receiver | Emoji |
-| ----- | -------- | ----- |
-|       |          |       |
+| Giver | Receiver | Emoji | Created At | Updated At |
+| ----- | -------- | ----- | ---------- | ---------- |
+|       |          |       |            |            |
 Tracks how often a person has reacted to another person's posts with a specific emoji. E.g., `:gold:` or `:fire:`. I want this to be available for *any* emoji, not just the typical gold/silver/platinum ones.
 
 

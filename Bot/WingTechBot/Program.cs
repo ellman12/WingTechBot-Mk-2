@@ -1,6 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using WingTechBot.Commands;
+using WingTechBot.Database;
+using WingTechBot.Database.Models;
 
 namespace WingTechBot;
 
@@ -14,6 +16,15 @@ public static class Program
 
 	public static void Main()
 	{
+		using BotDbContext context = new();
+		context.Database.EnsureCreated();
+
+		context.Karma.Add(new Karma {Giver = "giver", Receiver = "receiver", Amount = 69});
+		context.SaveChanges();
+		
+		Console.WriteLine(context.Karma.Select(a => a.Giver).Count());
+		Console.WriteLine(context.Karma.Select(a => a.Giver).First());
+
 		try
 		{
 			MainAsync().GetAwaiter().GetResult();
@@ -29,7 +40,7 @@ public static class Program
 	private static async Task MainAsync()
 	{
 		Config = Config.FromJson();
-		
+
 		DiscordSocketConfig config = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
 		Client = new DiscordSocketClient(config);
 

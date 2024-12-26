@@ -1,8 +1,0 @@
-services:
-  wingtech-bot:
-    image: wingtech-bot
-    container_name: wingtech-bot
-    ports:
-      - 8080:80
-    restart: unless-stopped
-
