@@ -77,28 +77,4 @@ public static class Program
 		return Task.CompletedTask;
 	}
 
-	public static SocketUser GetUserFromMention(SocketMessage message, string[] arguments, int index = 1)
-	{
-		var requested = message.Author;
-		var parsed = true;
-
-		if (arguments.Length > 1)
-		{
-			parsed = MentionUtils.TryParseUser(arguments[index], out var id);
-			requested = Client.GetUser(id);
-		}
-
-		if (requested is null || !parsed)
-		{
-			message.Channel.SendMessageAsync("User not found.");
-			Console.WriteLine("User not found.");
-			Console.WriteLine(arguments[index]);
-			if (parsed)
-			{
-				Console.WriteLine(MentionUtils.ParseUser(arguments[index]));
-			}
-		}
-
-		return requested;
-	}
 }
