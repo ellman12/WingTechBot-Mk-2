@@ -5,6 +5,8 @@ namespace WingTechBot.Commands;
 
 public static class SlashCommandHandler
 {
+	//It is essential that the keys are all lowercase.
+	//Also, when adding new ones, you might need to reload Discord.
 	private static readonly Dictionary<string, string> Commands = new()
 	{
 		{"help", "Lists all commands"},
