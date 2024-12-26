@@ -3,7 +3,7 @@ using Discord.WebSocket;
 
 namespace WingTechBot.Commands;
 
-public static class SlashCommandHandler
+public sealed class SlashCommandHandler
 {
 	//It is essential that the keys are all lowercase.
 	//Also, when adding new ones, you might need to reload Discord.
@@ -13,8 +13,18 @@ public static class SlashCommandHandler
 		{"gato", "Sends a random cat picture"},
 	};
 
-	///Sets up all commands for the bot.
-	public static async Task SetUpCommands()
+	private WingTechBot Bot { get; init; }
+
+	private SlashCommandHandler() {}
+
+	public static async Task<SlashCommandHandler> Create(WingTechBot bot)
+	{
+		SlashCommandHandler handler = new() {Bot = bot};
+		await handler.SetUpCommands();
+		return handler;
+	}
+
+	public async Task SetUpCommands()
 	{
 		await ClearCommands();
 
@@ -24,24 +34,22 @@ public static class SlashCommandHandler
 		}
 	}
 
-	private static async Task ClearCommands()
+	///Removes all slash commands from the bot.
+	private async Task ClearCommands()
 	{
-		var guild = Program.Client.GetGuild(Program.Config.ServerId);
+		var guild = Bot.Client.GetGuild(Bot.Config.ServerId);
 		await guild.DeleteApplicationCommandsAsync();
 	}
 
-	private static async Task<SlashCommandProperties> SetUpCommand(string name, string description)
+	private async Task<SlashCommandProperties> SetUpCommand(string name, string description)
 	{
-		SlashCommandBuilder globalCommand = new();
-		globalCommand.WithName(name);
-		globalCommand.WithDescription(description);
-
+		var globalCommand = new SlashCommandBuilder().WithName(name).WithDescription(description);
 		var built = globalCommand.Build();
-		await Program.Client.CreateGlobalApplicationCommandAsync(built);
+		await Bot.Client.CreateGlobalApplicationCommandAsync(built);
 		return built;
 	}
 
-	public static async Task SlashCommandExecuted(SocketSlashCommand command)
+	public async Task SlashCommandExecuted(SocketSlashCommand command)
 	{
 		await command.RespondAsync($"You executed {command.Data.Name}");
 
