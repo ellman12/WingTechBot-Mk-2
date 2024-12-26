@@ -22,4 +22,4 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 - [ ] [[Quote System]]
 - [ ] [[Gato]]
 - [ ] Other smaller commands like [[Random Number Generation]]
-- [ ] 
+- [ ] Have people check the security of the bot
