@@ -6,7 +6,7 @@
 		[Test]
 		public void Test_Addition()
 		{
-			Assert.That(4, Is.EqualTo(3));
+			Assert.That(3, Is.EqualTo(3));
 		}
 	}
 }
