@@ -7,17 +7,23 @@
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
+    
+    <!-- Global usings -->
+    <ItemGroup>
+        <Using Include="NUnit.Framework"/>
+        
+        <Using Include="WingTechBot"/>
+        <Using Include="WingTechBot.Database"/>
+        <Using Include="WingTechBot.Database.Models"/>
+    </ItemGroup>
 
+    <!-- NuGet -->
     <ItemGroup>
         <PackageReference Include="coverlet.collector" Version="6.0.2"/>
         <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1"/>
         <PackageReference Include="NUnit" Version="3.14.0"/>
         <PackageReference Include="NUnit.Analyzers" Version="4.3.0"/>
         <PackageReference Include="NUnit3TestAdapter" Version="4.6.0"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
     <ItemGroup>
