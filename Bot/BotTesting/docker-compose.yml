@@ -1,24 +1,4 @@
 services:
-  wingtech-bot-testing:
-    image: wingtech-bot-testing
-    container_name: wingtech-bot-testing
-    ports:
-      - 8080:80
-    restart: unless-stopped
-
-    # These values come from .env
-    environment:
-      - DATABASE_HOST=${DATABASE_HOST}
-      - DATABASE_PORT=${DATABASE_PORT}
-      - DATABASE_USER=${DATABASE_USER}
-      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
-      - DATABASE_NAME=${DATABASE_NAME}
-
-    depends_on:
-      - postgres-test
-
-    entrypoint: ["dotnet", "test", "--logger", "trx"]
-
   postgres-test:
     image: postgres:15
     container_name: postgres-test
