@@ -14,6 +14,9 @@ public static class EnvHelper
 		string[] lines = File.ReadAllLines(EnvPath);
 		foreach (var line in lines)
 		{
+			if (String.IsNullOrWhiteSpace(line))
+				continue;
+			
 			string[] split = line.Split('=', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 			Environment.SetEnvironmentVariable(split[0], split[1]);
 		}
