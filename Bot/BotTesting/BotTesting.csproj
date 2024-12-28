@@ -11,7 +11,8 @@
     <!-- Global usings -->
     <ItemGroup>
         <Using Include="NUnit.Framework"/>
-        
+        <Using Include="Microsoft.EntityFrameworkCore"/>
+
         <Using Include="WingTechBot"/>
         <Using Include="WingTechBot.Database"/>
         <Using Include="WingTechBot.Database.Models"/>
