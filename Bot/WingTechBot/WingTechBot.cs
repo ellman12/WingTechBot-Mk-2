@@ -32,7 +32,7 @@ public sealed class WingTechBot
 
 	private async Task OnClientReady()
 	{
-		BotChannel = Client.GetChannel(Config.BotChannelID) as SocketTextChannel;
+		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel;
 
 		if (BotChannel == null)
 			throw new NullReferenceException("Could not find bot channel");

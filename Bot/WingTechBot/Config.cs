@@ -10,9 +10,9 @@ public sealed record Config
 
 	public ulong ServerId { get; init; }
 	
-	public ulong BotChannelID { get; init; }
+	public ulong BotChannelId { get; init; }
 
-	public ulong ModRoleID { get; init; }
+	public ulong ModRoleId { get; init; }
 	
 	///Usernames of people who can run bot admin commands.
 	public string[] BotAdmins { get; init; }
