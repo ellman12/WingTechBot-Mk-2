@@ -1,0 +1,4 @@
+/* https://www.reddit.com/r/ObsidianMD/comments/1ejepas/is_there_a_way_to_remove_the_space_between_table/ */
+.cm-embed-block.cm-table-widget > .table-wrapper {
+    margin-top: -1em;
+}

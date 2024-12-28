@@ -1,6 +1,7 @@
 {
   "theme": "obsidian",
   "enabledCssSnippets": [
-    "NoCursorBlink"
+    "NoCursorBlink",
+    "RemoveTableBlankSpace"
   ]
 }
