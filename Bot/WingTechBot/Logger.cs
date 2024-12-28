@@ -12,6 +12,12 @@ public static class Logger
 		Console.WriteLine($"{DateTime.Now} {value}");
 		Console.ResetColor();
 	}
+	
+	public static Task LogLine(LogMessage message)
+	{
+		LogLine(message.Message, message.Severity);
+		return Task.CompletedTask;
+	}
 
 	private static void SetConsoleColor(LogSeverity itemImportance)
 	{
