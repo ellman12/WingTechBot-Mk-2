@@ -1,7 +1,3 @@
-using Discord;
-using Discord.WebSocket;
-using WingTechBot.Commands;
-
 namespace WingTechBot;
 
 public sealed class WingTechBot

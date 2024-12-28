@@ -1,7 +1,4 @@
-﻿using Discord;
-using Discord.WebSocket;
-
-namespace WingTechBot.Commands;
+﻿namespace WingTechBot.Commands;
 
 public sealed class SlashCommandHandler
 {

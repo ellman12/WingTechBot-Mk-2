@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Discord;
 
 namespace WingTechBot;
 

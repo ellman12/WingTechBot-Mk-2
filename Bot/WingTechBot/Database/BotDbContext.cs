@@ -1,7 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
-using WingTechBot.Database.Models;
-
-namespace WingTechBot.Database;
+﻿namespace WingTechBot.Database;
 
 ///Manages interfacing with WingTech Bot's database.
 public sealed class BotDbContext : DbContext

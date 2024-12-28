@@ -1,8 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-namespace WingTechBot.Database.Models;
+﻿namespace WingTechBot.Database.Models;
 
 ///Represents how much karma someone has sent to someone else.
 public sealed class Karma(string giver, string receiver, int amount) : Model

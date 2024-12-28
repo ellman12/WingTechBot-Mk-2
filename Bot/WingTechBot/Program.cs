@@ -1,6 +1,4 @@
-﻿using WingTechBot.Database;
-
-namespace WingTechBot;
+﻿namespace WingTechBot;
 
 public static class Program
 {
