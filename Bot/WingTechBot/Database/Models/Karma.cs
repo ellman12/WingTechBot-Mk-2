@@ -22,6 +22,12 @@ public sealed class Karma(string giver, string receiver, int amount) : Model
 	///Finds the row with this giver and receiver.
 	public static async Task<Karma> FindUserPair(string giver, string receiver)
 	{
+		if (String.IsNullOrWhiteSpace(giver) || String.IsNullOrWhiteSpace(receiver))
+			throw new ArgumentException("Username is required");
+
+		if (giver == receiver)
+			throw new ArgumentException("Giver and receiver are identical");
+		
 		await using BotDbContext context = new();
 		return await context.Karma.FirstOrDefaultAsync(karma => karma.Giver == giver && karma.Receiver == receiver);
 	}
