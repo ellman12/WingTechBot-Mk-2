@@ -4,7 +4,6 @@
 public sealed class BotDbContext : DbContext
 {
     //Tables
-    public DbSet<Karma> Karma { get; set; }
     
     ///Configures the database.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
