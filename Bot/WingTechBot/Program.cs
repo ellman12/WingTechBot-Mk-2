@@ -3,11 +3,19 @@
 public static class Program
 {
 	public static WingTechBot Bot { get; private set; }
-	
+
 	public static void Main()
 	{
-		using BotDbContext context = new();
-		context.Database.EnsureCreated();
+		try
+		{
+			using BotDbContext context = new();
+			context.Database.EnsureCreated();
+		}
+		catch (Exception e)
+		{
+			Console.WriteLine("Error starting database");
+			Console.WriteLine(e.Message);
+		}
 
 		try
 		{
