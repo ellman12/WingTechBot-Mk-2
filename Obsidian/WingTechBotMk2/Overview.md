@@ -7,7 +7,7 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 5. Get more experience contributing to open source and doing PRs.
 6. I want a good fork of a repo on my GitHub profile.
 
-## Project Plan and Todo
+## Project Plan and MVP
 - [x] Figure out the basics of making a bot
 - [x] Figure out how to use Docker and get the basic bot working in it
 - [x] Set up docker compose on local
@@ -15,11 +15,19 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 	- [x] Get a basic bot on the cloud.
 	- [x] Get it to receive commands.
 	- [x] Figure out how to use a database with it.
-- [ ] Create testing csproj and organize existing project files.
+- [x] Create testing csproj and organize existing project files.
 - [ ] Create notes on how this was all setup
 - [ ] Research and do Agile and TDD stuff
 - [ ] [[Advanced Karma System]]
-- [ ] [[Quote System]]
-- [ ] [[Gato]]
-- [ ] Other smaller commands like [[Random Number Generation]]
 - [ ] Have people check the security of the bot
+- [ ] 
+
+## Additional Features I'd Like
+- [ ] [[Quote System]]
+- [ ] [[Gato]] command
+- [ ] Other smaller commands like [[Random Number Generation]]
+
+## Future Possibilities
+- [ ] Ability for it to join a voice channel and do... stuff idk. Play sounds, soundboard sounds, etc.
+- [ ] AI/LLM stuff. Interface with ChatGPT, etc.
+- [ ] 
