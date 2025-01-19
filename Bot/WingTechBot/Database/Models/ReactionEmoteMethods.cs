@@ -18,6 +18,13 @@ public sealed partial class ReactionEmote
 			.Include(re => re.Reactions)
 			.FirstOrDefaultAsync(e => e.Name == name && e.DiscordEmoteId == discordEmoteId);
 	}
+	
+	public async Task SetKarmaValue(int newValue)
+	{
+		await using BotDbContext context = new();
+		KarmaValue = newValue;
+		await context.SaveChangesAsync();
+	}
 
 	public static async Task<ReactionEmote> AddEmote(string name, ulong? discordEmoteId, int karmaValue = 0)
 	{
