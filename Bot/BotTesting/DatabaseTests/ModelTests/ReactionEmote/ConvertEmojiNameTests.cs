@@ -1,6 +1,7 @@
 namespace BotTesting.DatabaseTests.ModelTests.ReactionEmote;
 using ReactionEmote = WingTechBot.Database.Models.ReactionEmote;
 
+[TestFixture]
 public sealed class ConvertEmojiNameTests
 {
 	[TestCase(":eyes:", "👀")]

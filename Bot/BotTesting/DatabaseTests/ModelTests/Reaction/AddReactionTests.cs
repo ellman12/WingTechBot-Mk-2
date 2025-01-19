@@ -2,6 +2,7 @@ namespace BotTesting.DatabaseTests.ModelTests.Reaction;
 using ReactionEmote = WingTechBot.Database.Models.ReactionEmote;
 using Reaction = WingTechBot.Database.Models.Reaction;
 
+[TestFixture]
 public sealed class AddReactionTests : ModelTests
 {
 	private static readonly TestCaseData[] ValidReactions =
@@ -26,7 +27,7 @@ public sealed class AddReactionTests : ModelTests
 		new(0ul, 456ul, 789ul, "🤷🏿‍♂️", null)
 	];
 
-	[Test, TestCaseSource(nameof(ValidReactions))]
+	[TestCaseSource(nameof(ValidReactions))]
 	public async Task ReactionEmoteDoesNotExist(ulong giverId, ulong receiverId, ulong messageId, string emoteName, ulong? discordEmoteId)
 	{
 		await Reaction.AddReaction(giverId, receiverId, messageId, emoteName, discordEmoteId);
@@ -39,7 +40,7 @@ public sealed class AddReactionTests : ModelTests
 		Assert.True(reaction.Emote.Name == emote.Name);
 	}
 
-	[Test, TestCaseSource(nameof(ValidReactions))]
+	[TestCaseSource(nameof(ValidReactions))]
 	public async Task ReactionEmoteExists(ulong giverId, ulong receiverId, ulong messageId, string emoteName, ulong? discordEmoteId)
 	{
 		await ReactionEmote.AddEmote(emoteName, discordEmoteId);
@@ -53,7 +54,7 @@ public sealed class AddReactionTests : ModelTests
 		Assert.True(reaction.Emote.Name == emote.Name);
 	}
 	
-	[Test, TestCaseSource(nameof(ValidReactions))]
+	[TestCaseSource(nameof(ValidReactions))]
 	public async Task FailsWhenReactionExists(ulong giverId, ulong receiverId, ulong messageId, string emoteName, ulong? discordEmoteId)
 	{
 		await Reaction.AddReaction(giverId, receiverId, messageId, emoteName, discordEmoteId);
