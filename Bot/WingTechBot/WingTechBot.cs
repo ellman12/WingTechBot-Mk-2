@@ -8,8 +8,6 @@ public sealed class WingTechBot
 
 	public SocketTextChannel BotChannel { get; private set; }
 
-	public SlashCommandHandler CommandHandler { get; private set; }
-
 	public static readonly DiscordSocketConfig DiscordConfig = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
 
 	private WingTechBot() {}
@@ -32,9 +30,6 @@ public sealed class WingTechBot
 
 		if (BotChannel == null)
 			throw new NullReferenceException("Could not find bot channel");
-
-		CommandHandler = await SlashCommandHandler.Create(this);
-		Client.SlashCommandExecuted += CommandHandler.SlashCommandExecuted;
 
 		await BotChannel.SendMessageAsync("Bot started and ready");
 	}
