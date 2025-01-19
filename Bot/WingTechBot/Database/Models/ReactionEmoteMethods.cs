@@ -38,7 +38,7 @@ public sealed partial class ReactionEmote
 
 		var existing = await Find(name, discordEmoteId);
 		if (existing != null)
-			throw new ArgumentException("Emote exists in ReactionEmote table");
+			throw new ArgumentException("ReactionEmote exists");
 
 		await using BotDbContext context = new();
 		ReactionEmote emote = new(name, discordEmoteId, karmaValue);
