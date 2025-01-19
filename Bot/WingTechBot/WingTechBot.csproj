@@ -14,6 +14,7 @@
         <Using Include="Microsoft.EntityFrameworkCore"/>
         <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
         <Using Include="System.ComponentModel.DataAnnotations"/>
+        <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
 
         <Using Include="WingTechBot.Commands"/>
         <Using Include="WingTechBot.Database"/>
