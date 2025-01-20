@@ -1,6 +1,6 @@
-namespace BotTesting.DatabaseTests.ModelTests.ReactionEmote;
-using ReactionEmote=WingTechBot.Database.Models.ReactionEmote;
+namespace BotTesting.DatabaseTests.ModelTests.ReactionEmoteTests;
 
+[TestFixture]
 public sealed class SetKarmaValueTests : ModelTests
 {
 	private static readonly TestCaseData[] ValidEmotes =
@@ -10,7 +10,7 @@ public sealed class SetKarmaValueTests : ModelTests
 		new("🤩", null, 3, 20),
 	];
 
-	[Test, TestCaseSource(nameof(ValidEmotes))]
+	[TestCaseSource(nameof(ValidEmotes))]
 	public async Task ReactionEmote_SetKarmaValue(string name, ulong? discordEmoteId, int originalValue, int newValue)
 	{
 		await using BotDbContext context = new();
