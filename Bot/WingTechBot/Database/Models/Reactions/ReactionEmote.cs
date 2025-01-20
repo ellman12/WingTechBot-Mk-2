@@ -1,4 +1,4 @@
-namespace WingTechBot.Database.Models;
+namespace WingTechBot.Database.Models.Reactions;
 
 ///Represents a Discord emote used for the karma and reaction tracker systems.
 public sealed partial class ReactionEmote(string name, ulong? discordEmoteId, int karmaValue = 0) : Model

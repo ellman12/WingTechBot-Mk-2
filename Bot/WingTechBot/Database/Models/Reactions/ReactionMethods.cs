@@ -1,4 +1,4 @@
-namespace WingTechBot.Database.Models;
+namespace WingTechBot.Database.Models.Reactions;
 
 public sealed partial class Reaction
 {

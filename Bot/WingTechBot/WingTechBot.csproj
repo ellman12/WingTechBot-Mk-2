@@ -19,6 +19,7 @@
         <Using Include="WingTechBot.Commands"/>
         <Using Include="WingTechBot.Database"/>
         <Using Include="WingTechBot.Database.Models"/>
+        <Using Include="WingTechBot.Database.Models.Reactions"/>
     </ItemGroup>
 
     <ItemGroup>
