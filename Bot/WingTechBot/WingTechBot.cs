@@ -1,3 +1,5 @@
+using WingTechBot.Commands.Reactions;
+
 namespace WingTechBot;
 
 public sealed class WingTechBot
@@ -12,6 +14,8 @@ public sealed class WingTechBot
 
 	private WingTechBot() {}
 
+	private readonly ReactionTracker reactionTracker = new();
+
 	public static async Task<WingTechBot> Create()
 	{
 		WingTechBot bot = new();
@@ -21,6 +25,9 @@ public sealed class WingTechBot
 		await bot.Client.LoginAsync(TokenType.Bot, bot.Config.LoginToken);
 		await bot.Client.SetCustomStatusAsync(bot.Config.StatusMessage);
 		await bot.Client.StartAsync();
+
+		bot.reactionTracker.SetUp(bot);
+
 		return bot;
 	}
 
