@@ -3,7 +3,7 @@ using WingTechBot=WingTechBot.WingTechBot;
 
 ///Represents any kind of integration test.
 [TestFixture]
-public abstract class IntegrationTest
+public abstract class IntegrationTests
 {
 	public static WingTechBot WingTechBot { get; internal set; }
 	public static WingTechBotTester BotTester { get; internal set; }

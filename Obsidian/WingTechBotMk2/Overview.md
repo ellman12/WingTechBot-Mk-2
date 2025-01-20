@@ -18,7 +18,7 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 - [x] Create testing csproj and organize existing project files.
 - [ ] Create notes on how this was all setup
 - [ ] Research and do Agile and TDD stuff
-- [ ] [[Advanced Karma System]]
+- [ ] [[Reaction Tracker]]
 - [ ] Have people check the security of the bot
 - [ ] 
 
