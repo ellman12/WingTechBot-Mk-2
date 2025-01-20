@@ -1,4 +1,4 @@
-namespace BotTesting.DatabaseTests.ModelTests;
+namespace ModelTests;
 
 ///Represents any test for database models.
 [TestFixture]
