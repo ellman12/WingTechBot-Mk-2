@@ -5,6 +5,8 @@ namespace WingTechBot;
 public sealed record Config
 {
 	public string LoginToken { get; init; }
+	
+	public ulong UserId { get; init; }
 
 	public ulong ServerId { get; init; }
 
