@@ -13,7 +13,11 @@
         <Using Include="Discord.WebSocket"/>
         <Using Include="NUnit.Framework"/>
         <Using Include="Microsoft.EntityFrameworkCore"/>
+        
+        <Using Include="TestingUtilities"/>
 
+        <Using Include="IntegrationTests.BotTester"/>
+        
         <Using Include="WingTechBot"/>
         <Using Include="WingTechBot.Database"/>
         <Using Include="WingTechBot.Database.Models"/>
@@ -29,6 +33,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="../TestingUtilities/TestingUtilities.csproj"/>
         <ProjectReference Include="../../WingTechBot/WingTechBot.csproj"/>
     </ItemGroup>
 
