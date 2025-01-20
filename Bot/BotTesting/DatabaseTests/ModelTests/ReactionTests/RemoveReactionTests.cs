@@ -1,6 +1,4 @@
-namespace BotTesting.DatabaseTests.ModelTests.Reaction;
-using ReactionEmote = WingTechBot.Database.Models.ReactionEmote;
-using Reaction = WingTechBot.Database.Models.Reaction;
+namespace BotTesting.DatabaseTests.ModelTests.ReactionTests;
 
 [TestFixture]
 public sealed class RemoveReactionTests : ModelTests

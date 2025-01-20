@@ -1,5 +1,4 @@
-namespace BotTesting.DatabaseTests.ModelTests.Reaction;
-using Reaction=WingTechBot.Database.Models.Reaction;
+namespace BotTesting.DatabaseTests.ModelTests.ReactionTests;
 
 [TestFixture]
 public sealed class ReactionEmoteRelationshipTests : ModelTests
