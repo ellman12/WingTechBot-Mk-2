@@ -18,7 +18,7 @@ public sealed record Config
 	public string[] BotAdmins { get; init; }
 
 	///Any attempt to give karma before this date is ignored.
-	public DateOnly StartDate { get; init; }
+	public DateTime StartDate { get; init; }
 
 	public string StatusMessage { get; init; }
 
