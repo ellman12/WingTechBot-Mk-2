@@ -6,7 +6,7 @@ public sealed class WingTechBot
 {
 	public DiscordSocketClient Client { get; } = new(DiscordConfig);
 
-	public Config Config { get; } = Config.FromJson();
+	public Config Config { get; private set; }
 
 	public SocketTextChannel BotChannel { get; private set; }
 
@@ -16,9 +16,11 @@ public sealed class WingTechBot
 
 	private readonly ReactionTracker reactionTracker = new();
 
-	public static async Task<WingTechBot> Create()
+	public static async Task<WingTechBot> Create(string configPath = null)
 	{
 		WingTechBot bot = new();
+		bot.Config = String.IsNullOrWhiteSpace(configPath) ? Config.FromJson() : Config.FromJson(configPath);
+
 		bot.Client.Log += Logger.LogLine;
 		bot.Client.Ready += bot.OnClientReady;
 
