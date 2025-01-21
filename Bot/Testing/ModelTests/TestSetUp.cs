@@ -1,4 +1,6 @@
-namespace BotTesting;
+using TestingUtilities;
+
+namespace ModelTests;
 
 ///Global set up before any tests are run.
 [SetUpFixture]

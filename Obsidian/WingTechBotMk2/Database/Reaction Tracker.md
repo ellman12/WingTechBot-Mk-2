@@ -1,5 +1,10 @@
 A significant expansion of the current karma and award system. This will track every reaction including karma and awards.
 
+## To Do
+- [ ] Ensure that events before the cutoff date are ignored
+	- [ ] This will be tricky to automatically test, but is essential
+- [ ] Ensure we test all reaction events like "all reactions removed", message deleted, etc.
+
 ## Tables
 
 Date values all use UTC.

@@ -28,7 +28,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\WingTechBot\WingTechBot.csproj"/>
+        <ProjectReference Include="../TestingUtilities/TestingUtilities.csproj"/>
+        <ProjectReference Include="../../WingTechBot/WingTechBot.csproj"/>
     </ItemGroup>
 
 </Project>

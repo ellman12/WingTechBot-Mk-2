@@ -1,4 +1,4 @@
-namespace BotTesting.DatabaseTests.ModelTests.ReactionEmoteTests;
+namespace ModelTests.ReactionEmoteTests;
 
 [TestFixture]
 public sealed class ConvertEmojiNameTests

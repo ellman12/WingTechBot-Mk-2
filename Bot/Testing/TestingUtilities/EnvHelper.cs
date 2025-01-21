@@ -1,4 +1,4 @@
-namespace BotTesting;
+namespace TestingUtilities;
 
 ///Helper methods for working with the .env file.
 public static class EnvHelper

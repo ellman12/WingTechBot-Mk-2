@@ -1,4 +1,4 @@
-namespace BotTesting.DatabaseTests.ModelTests.ReactionTests;
+namespace ModelTests.ReactionTests;
 
 [TestFixture]
 public sealed class AddReactionTests : ModelTests
