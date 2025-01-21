@@ -1,8 +1,7 @@
-using WingTechBot.Commands.Reactions;
+namespace IntegrationTests.BotTester;
 
-namespace WingTechBot;
-
-public sealed class WingTechBot
+///Used for WingTech Bot Mk 2 integration testing. Simulates a real human user by sending reactions to the bot's messages, among other things.
+public sealed class WingTechBotTester
 {
 	public DiscordSocketClient Client { get; } = new(DiscordConfig);
 
@@ -12,13 +11,11 @@ public sealed class WingTechBot
 
 	public static readonly DiscordSocketConfig DiscordConfig = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
 
-	private WingTechBot() {}
+	private WingTechBotTester() {}
 
-	private readonly ReactionTracker reactionTracker = new();
-
-	public static async Task<WingTechBot> Create(string configPath = null)
+	public static async Task<WingTechBotTester> Create(string configPath = null)
 	{
-		WingTechBot bot = new();
+		WingTechBotTester bot = new();
 		bot.Config = String.IsNullOrWhiteSpace(configPath) ? Config.FromJson() : Config.FromJson(configPath);
 
 		bot.Client.Log += Logger.LogLine;
@@ -27,8 +24,6 @@ public sealed class WingTechBot
 		await bot.Client.LoginAsync(TokenType.Bot, bot.Config.LoginToken);
 		await bot.Client.SetCustomStatusAsync(bot.Config.StatusMessage);
 		await bot.Client.StartAsync();
-
-		bot.reactionTracker.SetUp(bot);
 
 		return bot;
 	}
