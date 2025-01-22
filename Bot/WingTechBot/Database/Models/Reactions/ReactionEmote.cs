@@ -33,6 +33,6 @@ public sealed class ReactionEmoteConfiguration : IEntityTypeConfiguration<Reacti
 	public void Configure(EntityTypeBuilder<ReactionEmote> builder)
 	{
 		builder.Property(e => e.Id).ValueGeneratedOnAdd();
-		builder.Property(e => e.CreatedAt).HasDefaultValueSql("now()");
+		builder.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
 	}
 }

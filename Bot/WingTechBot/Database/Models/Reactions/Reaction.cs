@@ -30,7 +30,7 @@ public sealed class ReactionConfiguration : IEntityTypeConfiguration<Reaction>
 	public void Configure(EntityTypeBuilder<Reaction> builder)
 	{
 		builder.Property(e => e.Id).ValueGeneratedOnAdd();
-		builder.Property(e => e.CreatedAt).HasDefaultValueSql("now()");
+		builder.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
 
 		//One ReactionEmote can have 0, 1, or more Reactions referencing it.
 		builder

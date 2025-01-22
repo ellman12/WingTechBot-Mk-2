@@ -1,13 +1,7 @@
 A significant expansion of the current karma and award system. This will track every reaction including karma and awards.
 
 ## To Do
-- [ ] Ensure that events before the cutoff date are ignored
-	- [ ] This will be tricky to automatically test, but is essential
-- [ ] Ensure we test all reaction events like "all reactions removed", message deleted, etc.
-- [ ] Make sure removing reactions is fully tested.
-	- [ ] Events before cutoff date need to be ignored.
-	- [ ] If a reaction is removed but its row doesn't exist, log this in the console and do nothing.
-- [ ] Ensure the `CreatedAt` values are in UTC.
+- [ ] Ensure we test all reaction events like "all reactions removed", message (bulk) deleted, etc.
 
 ## Tables
 
