@@ -8,6 +8,8 @@ public sealed class WingTechBot
 
 	public Config Config { get; private set; }
 
+	public SocketGuild Guild { get; private set; }
+
 	public SocketTextChannel BotChannel { get; private set; }
 
 	public static readonly DiscordSocketConfig DiscordConfig = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
@@ -35,10 +37,8 @@ public sealed class WingTechBot
 
 	private async Task OnClientReady()
 	{
-		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel;
-
-		if (BotChannel == null)
-			throw new NullReferenceException("Could not find bot channel");
+		Guild = Client.GetGuild(Config.ServerId) ?? throw new NullReferenceException("Could not find guild");
+		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
 
 		// await BotChannel.SendMessageAsync("Bot started and ready");
 	}
