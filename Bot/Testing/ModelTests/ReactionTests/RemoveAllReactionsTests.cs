@@ -1,7 +1,7 @@
 namespace ModelTests.ReactionTests;
 
 [TestFixture]
-public sealed class RemoveAllReactionsTests : ModelTests
+public sealed class RemoveAllReactionsTests : ReactionTests
 {
 	private static readonly ReactionEmote[] ValidReactionEmotes =
 	[
@@ -15,28 +15,11 @@ public sealed class RemoveAllReactionsTests : ModelTests
 	public async Task ReactionsExist(int wtbMessages, int reactionsPerMessage)
 	{
 		int expectedReactionRows = wtbMessages * reactionsPerMessage;
+
+		await CreateReactions(wtbMessages, reactionsPerMessage, ValidReactionEmotes, 123, 789, 450);
+
+		await Task.Delay(Constants.DatabaseDelay);
 		
-		//Add reactions
-		const ulong GiverId = 123;
-		const ulong ReceiverId = 789;
-		ulong messageId = 450;
-
-		foreach (int _ in Enumerable.Range(0, wtbMessages))
-		{
-			foreach (int e in Enumerable.Range(0, reactionsPerMessage))
-			{
-				var emote = ValidReactionEmotes[e];
-				await Reaction.AddReaction(GiverId, ReceiverId, messageId, emote.Name, emote.DiscordEmoteId);
-
-				var newEmote = await ReactionEmote.Find(emote.Name, emote.DiscordEmoteId);
-				var reaction = await Reaction.Find(GiverId, ReceiverId, messageId, newEmote.Id);
-				Assert.NotNull(newEmote);
-				Assert.NotNull(reaction);
-			}
-
-			messageId++;
-		}
-
 		await using BotDbContext context = new();
 		Assert.AreEqual(await context.Reactions.CountAsync(), expectedReactionRows);
 

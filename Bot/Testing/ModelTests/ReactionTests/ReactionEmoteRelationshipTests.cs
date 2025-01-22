@@ -1,7 +1,7 @@
 namespace ModelTests.ReactionTests;
 
 [TestFixture]
-public sealed class ReactionEmoteRelationshipTests : ModelTests
+public sealed class ReactionEmoteRelationshipTests : ReactionTests
 {
 	[TestCase(123456ul, 123ul, 456ul, "upvote", 565656ul, 1)]
 	public async Task FindReferencedReactionEmote(ulong giverId, ulong receiverId, ulong messageId, string emoteName, ulong discordEmoteId, int emoteId)

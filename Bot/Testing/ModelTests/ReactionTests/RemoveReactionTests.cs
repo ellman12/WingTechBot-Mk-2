@@ -1,7 +1,7 @@
 namespace ModelTests.ReactionTests;
 
 [TestFixture]
-public sealed class RemoveReactionTests : ModelTests
+public sealed class RemoveReactionTests : ReactionTests
 {
 	private static readonly TestCaseData[] ValidReactions =
 	[
