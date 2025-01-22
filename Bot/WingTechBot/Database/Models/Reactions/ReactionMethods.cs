@@ -48,4 +48,17 @@ public sealed partial class Reaction
 		context.Reactions.Remove(reaction);
 		await context.SaveChangesAsync();
 	}
+
+	public static async Task RemoveAllReactions(ulong messageId)
+	{
+		if (messageId == 0) throw new ArgumentException("Invalid message ID");
+
+		await using BotDbContext context = new();
+
+		if (await context.Reactions.CountAsync(r => r.MessageId == messageId) == 0)
+			throw new ArgumentException($"No messages with id {messageId} to remove reactions from");
+
+		context.Reactions.RemoveRange(context.Reactions.Where(r => r.MessageId == messageId));
+		await context.SaveChangesAsync();
+	}
 }

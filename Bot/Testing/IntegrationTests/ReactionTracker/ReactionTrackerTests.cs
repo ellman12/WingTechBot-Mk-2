@@ -1,5 +1,3 @@
-using Discord;
-
 namespace IntegrationTests.ReactionTracker;
 
 public abstract class ReactionTrackerTests : IntegrationTests
@@ -22,5 +20,26 @@ public abstract class ReactionTrackerTests : IntegrationTests
 	public async Task ReactionTrackerTearDown()
 	{
 		await WingTechBot.BotChannel.SendMessageAsync($"Finish test {TestContext.CurrentContext.Test.Name}");
+	}
+
+	protected static async Task<List<IMessage>> CreateMessages(int wtbMessages, int reactionsPerMessage)
+	{
+		List<IMessage> messages = [];
+
+		foreach (int i in Enumerable.Range(0, wtbMessages))
+		{
+			messages.Add(await WingTechBot.BotChannel.SendMessageAsync($"Message {i}"));
+		}
+
+		foreach (int i in Enumerable.Range(0, wtbMessages))
+		{
+			foreach (int r in Enumerable.Range(0, reactionsPerMessage))
+			{
+				var message = await BotTester.BotChannel.GetMessageAsync(messages[i].Id);
+				await message.AddReactionAsync(ReactionEmotes[r].Parsed);
+			}
+		}
+
+		return messages;
 	}
 }

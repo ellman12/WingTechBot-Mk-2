@@ -9,22 +9,7 @@ public sealed class RemoveReactionTests : ReactionTrackerTests
 	[TestCase(8, 4, 4, 8 * 4)]
 	public async Task RemoveReactionsFromMessage(int wtbMessages, int reactionsPerMessage, int expectedEmoteRows, int expectedReactionRows)
 	{
-		//Add messages
-		List<IMessage> messages = [];
-
-		foreach (int i in Enumerable.Range(0, wtbMessages))
-		{
-			messages.Add(await WingTechBot.BotChannel.SendMessageAsync($"Message {i}"));
-		}
-
-		foreach (int i in Enumerable.Range(0, wtbMessages))
-		{
-			foreach (int r in Enumerable.Range(0, reactionsPerMessage))
-			{
-				var message = await BotTester.BotChannel.GetMessageAsync(messages[i].Id);
-				await message.AddReactionAsync(ReactionEmotes[r].Parsed);
-			}
-		}
+		var messages = await CreateMessages(wtbMessages, reactionsPerMessage);
 
 		//Ensure database tasks finish.
 		await Task.Delay(300);

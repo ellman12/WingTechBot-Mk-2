@@ -14,24 +14,24 @@ public sealed class ReactionTracker
 	}
 
 	private WingTechBot wingTechBot;
-	
+
 	private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
 		var cachedMessage = await message.GetOrDownloadAsync();
 		var name = reaction.Emote.Name;
-		
+
 		if (!IsSupportedEmote(reaction))
 		{
 			Logger.LogLine($"Ignoring unsupported reaction emote {name}", LogSeverity.Debug);
 			return;
 		}
-		
+
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
 			Logger.LogLine($"Ignoring new reaction {name} added to message before start date");
 			return;
 		}
-		
+
 		await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 	}
 
@@ -44,14 +44,21 @@ public sealed class ReactionTracker
 			Logger.LogLine($"Ignoring removal of reaction {reaction.Emote.Name} before start date");
 			return;
 		}
-		
+
 		await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
 	}
 
-	//TODO
 	private async Task OnReactionsCleared(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
-		throw new NotImplementedException();
+		var cachedMessage = await message.GetOrDownloadAsync();
+
+		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+		{
+			Logger.LogLine("Ignoring removal of all reactions before start date");
+			return;
+		}
+
+		await Reaction.RemoveAllReactions(message.Id);
 	}
 
 	//TODO
@@ -70,7 +77,7 @@ public sealed class ReactionTracker
 	{
 		if (Emoji.TryParse(reaction.Emote.Name, out Emoji _))
 			return true;
-		
+
 		return reaction.Emote is Emote emote && wingTechBot.Guild.Emotes.Any(e => e.Id == emote.Id);
 	}
 }
