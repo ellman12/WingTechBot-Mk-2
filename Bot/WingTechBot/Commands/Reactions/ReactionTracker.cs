@@ -5,40 +5,72 @@ public sealed class ReactionTracker
 {
 	public void SetUp(WingTechBot bot)
 	{
-		bot.Client.ReactionAdded += OnReactionAdded;
-		bot.Client.ReactionRemoved += OnReactionRemoved;
-		bot.Client.ReactionsCleared += OnReactionsCleared;
-		bot.Client.ReactionsRemovedForEmote += OnReactionsRemovedForEmote;
-		bot.Client.MessageDeleted += OnMessageDeleted;
+		wingTechBot = bot;
+		wingTechBot.Client.ReactionAdded += OnReactionAdded;
+		wingTechBot.Client.ReactionRemoved += OnReactionRemoved;
+		wingTechBot.Client.ReactionsCleared += OnReactionsCleared;
+		wingTechBot.Client.ReactionsRemovedForEmote += OnReactionsRemovedForEmote;
+		wingTechBot.Client.MessageDeleted += OnMessageDeleted;
 	}
+
+	private WingTechBot wingTechBot;
 	
-	private static async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
+	private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
-		ulong authorId = (await message.GetOrDownloadAsync()).Author.Id;
-		await Reaction.AddReaction(reaction.UserId, authorId, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
+		var cachedMessage = await message.GetOrDownloadAsync();
+		var name = reaction.Emote.Name;
+		
+		if (!IsSupportedEmote(reaction))
+		{
+			Logger.LogLine($"Ignoring unsupported reaction emote {name}", LogSeverity.Debug);
+			return;
+		}
+		
+		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+		{
+			Logger.LogLine($"Ignoring new reaction {name} added to message before start date");
+			return;
+		}
+		
+		await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 	}
 
-	private static async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
+	private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
-		ulong authorId = (await message.GetOrDownloadAsync()).Author.Id;
-		await Reaction.RemoveReaction(reaction.UserId, authorId, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
+		var cachedMessage = await message.GetOrDownloadAsync();
+
+		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+		{
+			Logger.LogLine($"Ignoring removal of reaction {reaction.Emote.Name} before start date");
+			return;
+		}
+		
+		await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
 	}
 
 	//TODO
-	private static async Task OnReactionsCleared(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
+	private async Task OnReactionsCleared(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
 		throw new NotImplementedException();
 	}
 
 	//TODO
-	private static async Task OnReactionsRemovedForEmote(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, IEmote emote)
+	private async Task OnReactionsRemovedForEmote(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, IEmote emote)
 	{
 		throw new NotImplementedException();
 	}
 
 	//TODO
-	private static async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
+	private async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
 		throw new NotImplementedException();
+	}
+
+	private bool IsSupportedEmote(SocketReaction reaction)
+	{
+		if (Emoji.TryParse(reaction.Emote.Name, out Emoji _))
+			return true;
+		
+		return reaction.Emote is Emote emote && wingTechBot.Guild.Emotes.Any(e => e.Id == emote.Id);
 	}
 }
