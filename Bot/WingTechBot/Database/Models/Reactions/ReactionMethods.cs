@@ -13,7 +13,6 @@ public sealed partial class Reaction
 	public static async Task<Reaction> AddReaction(ulong giverId, ulong receiverId, ulong messageId, string emoteName, ulong? discordEmoteId)
 	{
 		if (giverId == 0 || receiverId == 0 || messageId == 0) throw new ArgumentException("Invalid ID");
-		if (giverId == receiverId) throw new ArgumentException("Giver and receiver cannot be the same");
 		if (discordEmoteId == null && !Emoji.TryParse(emoteName, out Emoji _)) throw new ArgumentException("Invalid emoji name");
 		if (discordEmoteId != null && Emoji.TryParse(emoteName, out Emoji _)) throw new ArgumentException("Emoji cannot have a Discord emote ID");
 		if (String.IsNullOrWhiteSpace(emoteName)) throw new ArgumentException("Invalid emote name");
@@ -33,7 +32,6 @@ public sealed partial class Reaction
 	public static async Task RemoveReaction(ulong giverId, ulong receiverId, ulong messageId, string emoteName, ulong? discordEmoteId)
 	{
 		if (giverId == 0 || receiverId == 0 || messageId == 0) throw new ArgumentException("Invalid ID");
-		if (giverId == receiverId) throw new ArgumentException("Giver and receiver cannot be the same");
 		if (discordEmoteId == null && !Emoji.TryParse(emoteName, out Emoji _)) throw new ArgumentException("Invalid emoji name");
 		if (discordEmoteId != null && Emoji.TryParse(emoteName, out Emoji _)) throw new ArgumentException("Emoji cannot have a Discord emote ID");
 		if (String.IsNullOrWhiteSpace(emoteName)) throw new ArgumentException("Invalid emote name");

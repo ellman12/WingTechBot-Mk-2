@@ -2,6 +2,7 @@ A significant expansion of the current karma and award system. This will track e
 
 ## To Do
 - [ ] Ensure we test all reaction events like "all reactions removed", message (bulk) deleted, etc.
+- [ ] Make sure reactions added to your own messages count AND that they don't count towards karma and the reactions totals
 
 ## Tables
 

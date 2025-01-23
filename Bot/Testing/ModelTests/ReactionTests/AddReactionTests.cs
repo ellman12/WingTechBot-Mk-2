@@ -16,7 +16,6 @@ public sealed class AddReactionTests : ReactionTests
 	private static readonly TestCaseData[] InvalidReactions = 
 	[
 		new(123ul, 456ul, 789ul, "", null),
-		new(123ul, 123ul, 789ul, "🤩", null),
 		new(123ul, 745849ul, 0ul, "🤩", null),
 		new(123ul, 456ul, 789ul, "upvote", 0ul),
 		new(4445ul, 4445ul, 789ul, "upvote", 0ul),
