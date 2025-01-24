@@ -22,7 +22,7 @@ public sealed class ReactionTracker
 
 		if (!IsSupportedEmote(reaction))
 		{
-			Logger.LogLine($"Ignoring unsupported reaction emote {name}", LogSeverity.Debug);
+			Logger.LogLine($"Ignoring unsupported reaction emote {name}");
 			return;
 		}
 
@@ -41,7 +41,7 @@ public sealed class ReactionTracker
 
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
-			Logger.LogLine($"Ignoring removal of reaction {reaction.Emote.Name} before start date");
+			Logger.LogLine($"Message too old, ignoring removal of reaction {reaction.Emote.Name}");
 			return;
 		}
 
@@ -54,7 +54,7 @@ public sealed class ReactionTracker
 
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
-			Logger.LogLine("Ignoring removal of all reactions before start date");
+			Logger.LogLine("Message too old, ignoring removal of all reactions");
 			return;
 		}
 
@@ -67,7 +67,7 @@ public sealed class ReactionTracker
 
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
-			Logger.LogLine("Ignoring removal of all reactions before start date");
+			Logger.LogLine($"Message too old, ignoring removal of reactions for emote {emote.Name}");
 			return;
 		}
 
