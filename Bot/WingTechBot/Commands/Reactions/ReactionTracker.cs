@@ -11,6 +11,7 @@ public sealed class ReactionTracker
 		wingTechBot.Client.ReactionsCleared += OnReactionsCleared;
 		wingTechBot.Client.ReactionsRemovedForEmote += OnReactionsRemovedForEmote;
 		wingTechBot.Client.MessageDeleted += OnMessageDeleted;
+		//Note, some events, like channel deleted and messages bulk deleted I haven't implemented because they never happen.
 	}
 
 	private WingTechBot wingTechBot;
@@ -74,10 +75,20 @@ public sealed class ReactionTracker
 		await Reaction.RemoveReactionsForEmote(message.Id, emote.Name, emote is Emote e ? e.Id : null);
 	}
 
-	//TODO
 	private async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
-		throw new NotImplementedException();
+		if (message.Value is not IUserMessage)
+			return;
+
+		var cachedMessage = await message.GetOrDownloadAsync();
+
+		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+		{
+			Logger.LogLine("Message too old, ignoring removal of all reactions for deleted message");
+			return;
+		}
+
+		await Reaction.RemoveAllReactions(message.Id);
 	}
 
 	private bool IsSupportedEmote(SocketReaction reaction)
