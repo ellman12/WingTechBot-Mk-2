@@ -61,10 +61,17 @@ public sealed class ReactionTracker
 		await Reaction.RemoveAllReactions(message.Id);
 	}
 
-	//TODO
 	private async Task OnReactionsRemovedForEmote(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, IEmote emote)
 	{
-		throw new NotImplementedException();
+		var cachedMessage = await message.GetOrDownloadAsync();
+
+		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+		{
+			Logger.LogLine("Ignoring removal of all reactions before start date");
+			return;
+		}
+
+		await Reaction.RemoveReactionsForEmote(message.Id, emote.Name, emote is Emote e ? e.Id : null);
 	}
 
 	//TODO

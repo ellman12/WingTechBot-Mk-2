@@ -59,4 +59,20 @@ public sealed partial class Reaction
 		context.Reactions.RemoveRange(context.Reactions.Where(r => r.MessageId == messageId));
 		await context.SaveChangesAsync();
 	}
+
+	public static async Task RemoveReactionsForEmote(ulong messageId, string emoteName, ulong? discordEmoteId)
+	{
+		if (messageId == 0) throw new ArgumentException("Invalid message ID");
+		if (discordEmoteId == null && !Emoji.TryParse(emoteName, out Emoji _)) throw new ArgumentException("Invalid emoji name");
+		if (discordEmoteId != null && Emoji.TryParse(emoteName, out Emoji _)) throw new ArgumentException("Emoji cannot have a Discord emote ID");
+		if (String.IsNullOrWhiteSpace(emoteName)) throw new ArgumentException("Invalid emote name");
+		
+		await using BotDbContext context = new();
+
+		if (await context.Reactions.CountAsync(r => r.MessageId == messageId) == 0)
+			throw new ArgumentException($"No messages with id {messageId} to remove reactions from");
+
+		context.Reactions.RemoveRange(context.Reactions.Where(r => r.MessageId == messageId && r.Emote.Name == emoteName && r.Emote.DiscordEmoteId == discordEmoteId));
+		await context.SaveChangesAsync();	
+	}
 }
