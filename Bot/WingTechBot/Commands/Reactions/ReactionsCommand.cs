@@ -25,8 +25,6 @@ public sealed partial class ReactionsCommand : SlashCommand
 	
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		await PreprocessCommand(command);
-
 		if (command.CommandName != "reactions")
 			return;
 

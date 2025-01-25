@@ -48,6 +48,8 @@ public sealed class WingTechBot
 	{
 		await ClearCommands();
 
+		Client.SlashCommandExecuted += PreprocessCommand;
+
 		await reactionsCommand.SetUp(this);
 	}
 
@@ -56,5 +58,11 @@ public sealed class WingTechBot
 	{
 		var guild = Client.GetGuild(Config.ServerId);
 		await guild.DeleteApplicationCommandsAsync();
+	}
+
+	private async Task PreprocessCommand(SocketSlashCommand command)
+	{
+		//Makes command timeout longer than 3 seconds. Essential for debug breakpoints.
+		await command.DeferAsync();
 	}
 }
