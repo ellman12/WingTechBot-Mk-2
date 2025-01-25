@@ -18,6 +18,7 @@ public sealed class WingTechBot
 
 	private readonly ReactionTracker reactionTracker = new();
 	private readonly ReactionsCommand reactionsCommand = new();
+	private readonly TopCommand topCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
@@ -51,6 +52,7 @@ public sealed class WingTechBot
 		Client.SlashCommandExecuted += PreprocessCommand;
 
 		await reactionsCommand.SetUp(this);
+		await topCommand.SetUp(this);
 	}
 
 	///Removes all slash commands from the bot. However, because Discord is terrible this is unreliable and often does nothing.

@@ -1,6 +1,7 @@
 namespace ModelTests.ReactionTests.QueryTests;
 
-public sealed class GetReactionsUserReceivedTests : ReactionTests
+[TestFixture]
+public sealed class ReactionQueryTests : ReactionTests
 {
 	[TestCase]
 	public async Task GetReactionsUserReceived()
