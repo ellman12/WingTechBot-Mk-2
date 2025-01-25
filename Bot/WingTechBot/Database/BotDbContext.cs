@@ -24,4 +24,20 @@ public sealed class BotDbContext : DbContext
         var assemblyWithConfigurations = GetType().Assembly;
         modelBuilder.ApplyConfigurationsFromAssembly(assemblyWithConfigurations);
     }
+    
+    public void RunMigrationsIfNeeded()
+    {
+        using BotDbContext context = new();
+        var pendingMigrations = context.Database.GetPendingMigrations();
+
+        if (pendingMigrations.Any())
+        {
+            Logger.LogLine("There are pending migrations that need to be applied.");
+            context.Database.Migrate();
+        }
+        else
+        {
+            Logger.LogLine("The database is up to date.");
+        }
+    }
 }

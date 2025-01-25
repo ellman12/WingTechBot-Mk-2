@@ -9,7 +9,7 @@ public static class Program
 		try
 		{
 			using BotDbContext context = new();
-			context.Database.EnsureCreated();
+			context.RunMigrationsIfNeeded();
 		}
 		catch (Exception e)
 		{
