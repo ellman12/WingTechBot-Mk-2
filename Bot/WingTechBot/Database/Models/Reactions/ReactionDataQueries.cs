@@ -8,7 +8,7 @@ public sealed partial class Reaction
 		await using BotDbContext context = new();
 		return context.Reactions
 			.Include(r => r.Emote)
-			.Where(r => r.ReceiverId == receiverId && (year == null ? r.Emote.CreatedAt.Year > 0 : r.Emote.CreatedAt.Year == year))
+			.Where(r => r.ReceiverId == receiverId && r.GiverId != r.ReceiverId && (year == null ? r.Emote.CreatedAt.Year > 0 : r.Emote.CreatedAt.Year == year))
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, g.Count()))
