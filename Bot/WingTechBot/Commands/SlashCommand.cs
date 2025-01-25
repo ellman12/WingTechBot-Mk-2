@@ -8,10 +8,4 @@ public abstract class SlashCommand
 	public abstract Task HandleCommand(SocketSlashCommand command);
 
 	public WingTechBot Bot { get; protected set; }
-
-	protected async Task PreprocessCommand(SocketSlashCommand command)
-	{
-		//Makes command timeout longer than 3 seconds. Essential for debug breakpoints.
-		await command.DeferAsync();
-	}
 }

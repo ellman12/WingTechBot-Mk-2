@@ -15,6 +15,7 @@
         <Using Include="Microsoft.EntityFrameworkCore"/>
         
         <Using Include="TestingUtilities"/>
+        <Using Include="TestingUtilities.Seeders"/>
 
         <Using Include="IntegrationTests.BotTester"/>
         

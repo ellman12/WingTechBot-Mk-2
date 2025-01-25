@@ -17,6 +17,8 @@ public sealed class WingTechBot
 	private WingTechBot() {}
 
 	private readonly ReactionTracker reactionTracker = new();
+	private readonly ReactionsCommand reactionsCommand = new();
+	private readonly TopCommand topCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
@@ -40,6 +42,29 @@ public sealed class WingTechBot
 		Guild = Client.GetGuild(Config.ServerId) ?? throw new NullReferenceException("Could not find guild");
 		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
 
-		// await BotChannel.SendMessageAsync("Bot started and ready");
+		await SetUpCommands();
+	}
+
+	private async Task SetUpCommands()
+	{
+		await ClearCommands();
+
+		Client.SlashCommandExecuted += PreprocessCommand;
+
+		await reactionsCommand.SetUp(this);
+		await topCommand.SetUp(this);
+	}
+
+	///Removes all slash commands from the bot. However, because Discord is terrible this is unreliable and often does nothing.
+	private async Task ClearCommands()
+	{
+		var guild = Client.GetGuild(Config.ServerId);
+		await guild.DeleteApplicationCommandsAsync();
+	}
+
+	private async Task PreprocessCommand(SocketSlashCommand command)
+	{
+		//Makes command timeout longer than 3 seconds. Essential for debug breakpoints.
+		await command.DeferAsync();
 	}
 }

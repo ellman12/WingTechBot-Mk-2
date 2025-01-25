@@ -13,11 +13,15 @@ public sealed class SetKarmaValueTests : ModelTests
 	[TestCaseSource(nameof(ValidEmotes))]
 	public async Task ReactionEmote_SetKarmaValue(string name, ulong? discordEmoteId, int originalValue, int newValue)
 	{
+		name = ReactionEmote.ConvertEmojiName(name);
 		await using BotDbContext context = new();
+
 		var emote = await ReactionEmote.AddEmote(name, discordEmoteId);
-		Assert.NotNull(await ReactionEmote.Find(ReactionEmote.ConvertEmojiName(name), discordEmoteId));
+		Assert.NotNull(await ReactionEmote.Find(name, discordEmoteId));
 
 		await emote.SetKarmaValue(newValue);
-		Assert.True(emote.KarmaValue == newValue);
+
+		emote = await ReactionEmote.Find(name, discordEmoteId);
+		Assert.AreEqual(emote.KarmaValue, newValue);
 	}
 }
