@@ -22,6 +22,7 @@ public sealed partial class ReactionEmote
 	public async Task SetKarmaValue(int newValue)
 	{
 		await using BotDbContext context = new();
+		context.Attach(this);
 		KarmaValue = newValue;
 		await context.SaveChangesAsync();
 	}
