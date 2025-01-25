@@ -25,7 +25,12 @@ public sealed record Config
 	///Read in config.json from project root and parse it.
 	public static Config FromJson()
 	{
+		#if DEBUG
 		string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName, "config.json");
+		#else
+		string path = "/app/config.json";
+		#endif
+		
 		return FromJson(path);
 	}
 
