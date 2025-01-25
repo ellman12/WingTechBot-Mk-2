@@ -5,4 +5,19 @@
         <ImplicitUsings>enable</ImplicitUsings>
     </PropertyGroup>
 
+    <!-- Global usings -->
+    <ItemGroup>
+        <Using Include="Microsoft.EntityFrameworkCore"/>
+        <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
+        <Using Include="System.ComponentModel.DataAnnotations"/>
+        <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
+
+        <Using Include="WingTechBot.Database"/>
+        <Using Include="WingTechBot.Database.Models"/>
+        <Using Include="WingTechBot.Database.Models.Reactions"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="../../WingTechBot/WingTechBot.csproj"/>
+    </ItemGroup>
 </Project>
