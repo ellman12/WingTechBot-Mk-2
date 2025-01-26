@@ -19,6 +19,13 @@ public sealed class ReactionTracker
 	private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
 		var cachedMessage = await message.GetOrDownloadAsync();
+		
+		if (cachedMessage == null)
+		{
+			Logger.LogLine("Skipping reaction added to message without value");
+			return;
+		}
+		
 		var name = reaction.Emote.Name;
 
 		if (!IsSupportedEmote(reaction))
@@ -39,6 +46,12 @@ public sealed class ReactionTracker
 	private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
 		var cachedMessage = await message.GetOrDownloadAsync();
+		
+		if (cachedMessage == null)
+		{
+			Logger.LogLine("Skipping reaction removed from message without value");
+			return;
+		}
 
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
@@ -52,6 +65,12 @@ public sealed class ReactionTracker
 	private async Task OnReactionsCleared(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
 		var cachedMessage = await message.GetOrDownloadAsync();
+		
+		if (cachedMessage == null)
+		{
+			Logger.LogLine("Skipping reactions removed from message without value");
+			return;
+		}
 
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
@@ -65,6 +84,12 @@ public sealed class ReactionTracker
 	private async Task OnReactionsRemovedForEmote(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, IEmote emote)
 	{
 		var cachedMessage = await message.GetOrDownloadAsync();
+		
+		if (cachedMessage == null)
+		{
+			Logger.LogLine("Skipping reactions removed from message without value");
+			return;
+		}
 
 		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 		{
