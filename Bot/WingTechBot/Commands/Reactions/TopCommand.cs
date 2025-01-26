@@ -6,11 +6,11 @@ public sealed class TopCommand : SlashCommand
 	{
 		Bot = bot;
 		Bot.Client.SlashCommandExecuted += HandleCommand;
-		
+
 		var topCommand = new SlashCommandBuilder()
 			.WithName("top")
 			.WithDescription("Shows the leaderboard for karma");
-			
+
 		try
 		{
 			await Bot.Client.CreateGlobalApplicationCommandAsync(topCommand.Build());
@@ -26,7 +26,7 @@ public sealed class TopCommand : SlashCommand
 	{
 		if (command.CommandName != "top")
 			return;
-		
+
 		await GetKarmaLeaderboard(command);
 	}
 
@@ -38,13 +38,16 @@ public sealed class TopCommand : SlashCommand
 		string message;
 		if (karmaLeaderboard.Length > 0)
 		{
-			message = $"```{year} Karma Leaderboard\n";
-			for (int i = 0; i < karmaLeaderboard.Length; i++)
+			int rank = 0;
+			message = karmaLeaderboard.Select((entry, index) =>
 			{
-				var entry = karmaLeaderboard[i];
-				var user = await Bot.Client.GetUserAsync(entry.receiverId);
-				message += $"{i + 1}. {user.Username} — {entry.karma}\n";
-			}
+				if (index == 0 || entry.karma != karmaLeaderboard[index - 1].karma)
+					rank = index + 1;
+
+				var username = Bot.Client.GetUserAsync(entry.receiverId).Result.Username;
+				return (rank, username, entry.karma);
+			})
+			.Aggregate($"```{year} Karma Leaderboard\n", (current, entry) => current + $"{entry.rank}. {entry.karma.ToString().PadLeft(3),-4} {entry.username}\n");
 			message += "```";
 		}
 		else
