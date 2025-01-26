@@ -34,7 +34,5 @@ public sealed class WingTechBotTester
 
 		if (BotChannel == null)
 			throw new NullReferenceException("Could not find bot channel");
-
-		// await BotChannel.SendMessageAsync("Bot started and ready");
 	}
 }
