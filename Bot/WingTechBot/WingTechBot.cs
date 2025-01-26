@@ -43,6 +43,10 @@ public sealed class WingTechBot
 		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
 
 		await SetUpCommands();
+
+		#if RELEASE
+		await BotChannel.SendMessageAsync("Bot started and ready");
+		#endif
 	}
 
 	private async Task SetUpCommands()
