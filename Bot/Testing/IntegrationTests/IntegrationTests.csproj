@@ -4,18 +4,25 @@
         <TargetFramework>net9.0</TargetFramework>
         <LangVersion>latest</LangVersion>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
     </PropertyGroup>
-    
+
     <!-- Global usings -->
     <ItemGroup>
+        <Using Include="Discord"/>
+        <Using Include="Discord.WebSocket"/>
         <Using Include="NUnit.Framework"/>
         <Using Include="Microsoft.EntityFrameworkCore"/>
+        
+        <Using Include="TestingUtilities"/>
+        <Using Include="TestingUtilities.Seeders"/>
 
+        <Using Include="IntegrationTests.BotTester"/>
+        
         <Using Include="WingTechBot"/>
         <Using Include="WingTechBot.Database"/>
         <Using Include="WingTechBot.Database.Models"/>
+        <Using Include="WingTechBot.Database.Models.Reactions"/>
     </ItemGroup>
 
     <!-- NuGet -->
@@ -28,7 +35,14 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\WingTechBot\WingTechBot.csproj"/>
+        <ProjectReference Include="../TestingUtilities/TestingUtilities.csproj"/>
+        <ProjectReference Include="../../WingTechBot/WingTechBot.csproj"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Update="config.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 
 </Project>

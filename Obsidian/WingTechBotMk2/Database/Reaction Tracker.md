@@ -1,5 +1,8 @@
 A significant expansion of the current karma and award system. This will track every reaction including karma and awards.
 
+## To Do
+- [ ] Make sure reactions added to your own messages count AND that they don't count towards karma and the reactions totals
+
 ## Tables
 
 Date values all use UTC.
