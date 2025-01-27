@@ -54,13 +54,12 @@ public sealed class GatoAddCommand : SlashCommand
 			return;
 		}
 
-		using HttpClient client = new();
-		byte[] imageBytes = await client.GetByteArrayAsync(image.Url);
+		byte[] imageBytes = await Gato.HttpClient.GetByteArrayAsync(image.Url);
 
 		await using MemoryStream imageStream = new(imageBytes);
 		FileAttachment file = new(imageStream, image.Filename);
 
-		var message = await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded:");
+		var message = await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded {file.FileName}:");
 
 		image = message.Attachments.FirstOrDefault();
 		if (image == null)

@@ -2,6 +2,8 @@ namespace WingTechBot.Database.Models.Gatos;
 
 public sealed partial class Gato
 {
+	public static HttpClient HttpClient { get; } = new();
+
 	public static async Task<Gato> Find(string url, string name, ulong uploaderId)
 	{
 		await using BotDbContext context = new();

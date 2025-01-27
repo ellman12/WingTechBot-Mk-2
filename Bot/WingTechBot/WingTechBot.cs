@@ -22,6 +22,8 @@ public sealed class WingTechBot
 	private readonly TopCommand topCommand = new();
 
 	private readonly InfoCommand infoCommand = new();
+
+	private readonly GatoCommand gatoCommand = new();
 	private readonly GatoAddCommand gatoAddCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
@@ -62,6 +64,7 @@ public sealed class WingTechBot
 		await reactionsCommand.SetUp(this);
 		await topCommand.SetUp(this);
 		await infoCommand.SetUp(this);
+		await gatoCommand.SetUp(this);
 		await gatoAddCommand.SetUp(this);
 	}
 
