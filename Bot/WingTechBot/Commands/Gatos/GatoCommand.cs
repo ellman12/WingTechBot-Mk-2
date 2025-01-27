@@ -40,6 +40,7 @@ public sealed class GatoCommand : SlashCommand
 	{
 		await using BotDbContext context = new();
 		string name = (string)command.Data.Options.FirstOrDefault()?.Value;
+		name = name?.ToLower();
 
 		Gato gato = await context.Gatos.OrderBy(_ => EF.Functions.Random()).FirstOrDefaultAsync(g => String.IsNullOrWhiteSpace(name) ? g.Id > 0 : g.Name == name);
 

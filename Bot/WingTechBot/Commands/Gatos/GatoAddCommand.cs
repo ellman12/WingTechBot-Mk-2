@@ -59,7 +59,7 @@ public sealed class GatoAddCommand : SlashCommand
 		await using MemoryStream imageStream = new(imageBytes);
 		FileAttachment file = new(imageStream, image.Filename);
 
-		var message = await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded {file.FileName}:");
+		var message = await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded `{file.FileName}`:");
 
 		image = message.Attachments.FirstOrDefault();
 		if (image == null)

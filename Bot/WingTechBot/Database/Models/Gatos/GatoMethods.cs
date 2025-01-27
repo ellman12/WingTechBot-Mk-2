@@ -19,7 +19,7 @@ public sealed partial class Gato
 			throw new ArgumentException("Gato exists");
 
 		await using BotDbContext context = new();
-		Gato gato = new(url, name, uploaderId);
+		Gato gato = new(url, name?.ToLower(), uploaderId);
 		await context.Gatos.AddAsync(gato);
 		await context.SaveChangesAsync();
 		return gato;
