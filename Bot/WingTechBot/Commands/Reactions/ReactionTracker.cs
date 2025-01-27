@@ -18,102 +18,137 @@ public sealed class ReactionTracker
 
 	private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
-		var cachedMessage = await message.GetOrDownloadAsync();
-		
-		if (cachedMessage == null)
+		try
 		{
-			Logger.LogLine("Skipping reaction added to message without value");
-			return;
-		}
-		
-		var name = reaction.Emote.Name;
+			var cachedMessage = await message.GetOrDownloadAsync();
 
-		if (!IsSupportedEmote(reaction))
+			if (cachedMessage == null)
+			{
+				Logger.LogLine("Skipping reaction added to message without value");
+				return;
+			}
+
+			var name = reaction.Emote.Name;
+
+			if (!IsSupportedEmote(reaction))
+			{
+				Logger.LogLine($"Ignoring unsupported reaction emote {name}");
+				return;
+			}
+
+			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			{
+				Logger.LogLine($"Ignoring new reaction {name} added to message before start date");
+				return;
+			}
+
+			await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
+		}
+		catch (Exception e)
 		{
-			Logger.LogLine($"Ignoring unsupported reaction emote {name}");
-			return;
+			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
 		}
-
-		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
-		{
-			Logger.LogLine($"Ignoring new reaction {name} added to message before start date");
-			return;
-		}
-
-		await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 	}
 
 	private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
-		var cachedMessage = await message.GetOrDownloadAsync();
-		
-		if (cachedMessage == null)
+		try
 		{
-			Logger.LogLine("Skipping reaction removed from message without value");
-			return;
-		}
+			var cachedMessage = await message.GetOrDownloadAsync();
 
-		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			if (cachedMessage == null)
+			{
+				Logger.LogLine("Skipping reaction removed from message without value");
+				return;
+			}
+
+			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			{
+				Logger.LogLine($"Message too old, ignoring removal of reaction {reaction.Emote.Name}");
+				return;
+			}
+
+			await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
+		}
+		catch (Exception e)
 		{
-			Logger.LogLine($"Message too old, ignoring removal of reaction {reaction.Emote.Name}");
-			return;
+			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
 		}
-
-		await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
 	}
 
 	private async Task OnReactionsCleared(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
-		var cachedMessage = await message.GetOrDownloadAsync();
-		
-		if (cachedMessage == null)
+		try
 		{
-			Logger.LogLine("Skipping reactions removed from message without value");
-			return;
-		}
+			var cachedMessage = await message.GetOrDownloadAsync();
 
-		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			if (cachedMessage == null)
+			{
+				Logger.LogLine("Skipping reactions removed from message without value");
+				return;
+			}
+
+			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			{
+				Logger.LogLine("Message too old, ignoring removal of all reactions");
+				return;
+			}
+
+			await Reaction.RemoveAllReactions(message.Id);
+		}
+		catch (Exception e)
 		{
-			Logger.LogLine("Message too old, ignoring removal of all reactions");
-			return;
+			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
 		}
-
-		await Reaction.RemoveAllReactions(message.Id);
 	}
 
 	private async Task OnReactionsRemovedForEmote(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, IEmote emote)
 	{
-		var cachedMessage = await message.GetOrDownloadAsync();
-		
-		if (cachedMessage == null)
+		try
 		{
-			Logger.LogLine("Skipping reactions removed from message without value");
-			return;
-		}
+			var cachedMessage = await message.GetOrDownloadAsync();
 
-		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			if (cachedMessage == null)
+			{
+				Logger.LogLine("Skipping reactions removed from message without value");
+				return;
+			}
+
+			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			{
+				Logger.LogLine($"Message too old, ignoring removal of reactions for emote {emote.Name}");
+				return;
+			}
+
+			await Reaction.RemoveReactionsForEmote(message.Id, emote.Name, emote is Emote e ? e.Id : null);
+		}
+		catch (Exception e)
 		{
-			Logger.LogLine($"Message too old, ignoring removal of reactions for emote {emote.Name}");
-			return;
+			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
 		}
-
-		await Reaction.RemoveReactionsForEmote(message.Id, emote.Name, emote is Emote e ? e.Id : null);
 	}
 
 	private async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
-		if (message.Value is not IUserMessage)
-			return;
-
-		var cachedMessage = await message.GetOrDownloadAsync();
-
-		if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+		try
 		{
-			Logger.LogLine("Message too old, ignoring removal of all reactions for deleted message");
-			return;
-		}
+			if (message.Value is not IUserMessage)
+				return;
 
-		await Reaction.RemoveAllReactions(message.Id);
+			var cachedMessage = await message.GetOrDownloadAsync();
+
+			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			{
+				Logger.LogLine("Message too old, ignoring removal of all reactions for deleted message");
+				return;
+			}
+
+			await Reaction.RemoveAllReactions(message.Id);
+		}
+		catch (Exception e)
+		{
+			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
+		}
 	}
 
 	private bool IsSupportedEmote(SocketReaction reaction)
