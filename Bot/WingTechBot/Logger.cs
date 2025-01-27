@@ -11,7 +11,7 @@ public static class Logger
 		Console.WriteLine($"{DateTime.Now} {value}");
 		Console.ResetColor();
 	}
-	
+
 	public static Task LogLine(LogMessage message)
 	{
 		LogLine(message.Message, message.Severity);
@@ -31,7 +31,13 @@ public static class Logger
 		};
 	}
 
-	public static void LogException(Exception e) => LogLine($"\nException raised in {GetCallingMethodName()}: {e.Message}\n", LogSeverity.Error);
+	public static void LogException(Exception e) => LogLine($"Exception raised in {GetCallingMethodName()}: {e.Message}\n", LogSeverity.Error);
+
+	public static async Task LogExceptionAsMessage(Exception e, IMessageChannel channel)
+	{
+		LogLine($"Exception raised: {e.Message}\n", LogSeverity.Error);
+		await channel.SendMessageAsync($"Exception raised: {e.Message}\n");
+	}
 
 	private static string GetCallingMethodName() => new StackTrace().GetFrame(2)!.GetMethod()!.Name; //If it's set to 1 it'd print LogLine.
 }
