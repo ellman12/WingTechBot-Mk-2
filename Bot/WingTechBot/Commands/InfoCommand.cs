@@ -16,7 +16,7 @@ public sealed class InfoCommand : SlashCommand
 		}
 		catch (Exception e)
 		{
-			Logger.LogLine("Error adding reactions command");
+			Logger.LogLine("Error adding info command");
 			Logger.LogException(e);
 		}
 	}

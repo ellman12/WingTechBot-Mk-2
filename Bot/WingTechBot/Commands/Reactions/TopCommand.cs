@@ -17,7 +17,7 @@ public sealed class TopCommand : SlashCommand
 		}
 		catch (Exception e)
 		{
-			Logger.LogLine("Error adding reactions command");
+			Logger.LogLine("Error adding top command");
 			Logger.LogException(e);
 		}
 	}
