@@ -3,7 +3,7 @@ namespace WingTechBot.Database.Models.Reactions;
 using static DatabaseGeneratedOption;
 
 ///Represents the karma for a user during a specific year. This is the format the previous version of <see cref="WingTechBot"/> used, which didn't track individual reactions to messages.
-public sealed class LegacyKarma(ulong userId, int year, int upvotes, int downvotes, int silver, int gold, int platinum) : Model
+public sealed partial class LegacyKarma(ulong userId, int year, int upvotes, int downvotes, int silver, int gold, int platinum) : Model
 {
 	public ulong UserId { get; private init; } = userId;
 
