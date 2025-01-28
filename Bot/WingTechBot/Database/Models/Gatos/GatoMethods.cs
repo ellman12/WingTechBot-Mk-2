@@ -35,7 +35,7 @@ public sealed partial class Gato
 		await using BotDbContext context = new();
 		return await context.Gatos
 			.GroupBy(g => g.Name)
-			.ToAsyncEnumerable()
+			.AsAsyncEnumerable()
 			.Select(g => (name: String.IsNullOrWhiteSpace(g.Key) ? "No name" : g.Key, count: g.Count()))
 			.OrderByDescending(g => g.count)
 			.ToArrayAsync();
