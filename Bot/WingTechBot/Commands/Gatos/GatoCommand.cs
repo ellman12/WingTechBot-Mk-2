@@ -21,10 +21,10 @@ public sealed class GatoCommand : SlashCommand
 		if (command.CommandName != Name)
 			return;
 
-		await SendRandomImage(command);
+		await SendRandomMedia(command);
 	}
 
-	private async Task SendRandomImage(SocketSlashCommand command)
+	private async Task SendRandomMedia(SocketSlashCommand command)
 	{
 		await using BotDbContext context = new();
 		string name = (string)command.Data.Options.FirstOrDefault()?.Value;
@@ -44,13 +44,13 @@ public sealed class GatoCommand : SlashCommand
 		}
 		else
 		{
-			//Less efficient but necessary. Trying to send the name and url in the same message causes an ugly filename to appear between the name and image.
+			//Less efficient but necessary. Trying to send the name and url in the same message causes an ugly filename to appear between the name and media.
 			//However, sending it as an actual file doesn't... 🤷‍♂️
-			byte[] imageBytes = await Gato.HttpClient.GetByteArrayAsync(gato.Url);
+			byte[] mediaBytes = await Gato.HttpClient.GetByteArrayAsync(gato.Url);
 			string filename = Path.GetFileName(new Uri(gato.Url).LocalPath);
 
-			await using MemoryStream imageStream = new(imageBytes);
-			FileAttachment file = new(imageStream, filename);
+			await using MemoryStream mediaStream = new(mediaBytes);
+			FileAttachment file = new(mediaStream, filename);
 
 			await command.FollowupWithFileAsync(file, gato.Name);
 		}

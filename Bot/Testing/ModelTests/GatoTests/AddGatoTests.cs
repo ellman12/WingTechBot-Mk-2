@@ -4,9 +4,9 @@ public sealed class AddGatoTests : ModelTests
 {
 	private static readonly TestCaseData[] ValidGatos =
 	[
-		new("Stormy", 123456ul, "https://cdn.discordapp.com/attachments/this_isnt_a_real_image.jpg"),
-		new("A Cat Name With Spaces", 69420ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.png"),
-		new(null, 3ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.png")
+		new("stormy", 123456ul, "https://cdn.discordapp.com/attachments/this_isnt_a_real_image.jpg"),
+		new("a cat name with spaces", 69420ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.png"),
+		new(null, 3ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.mp4")
 	];
 
 	private static readonly TestCaseData[] InvalidGatos =

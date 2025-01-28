@@ -4,7 +4,7 @@ public sealed class GatoTopCommand : SlashCommand
 {
 	public override async Task SetUp(WingTechBot bot)
 	{
-		var gatoTopCommand = new SlashCommandBuilder().WithName("gato-top").WithDescription("Shows a leaderboard for how many images each cat has.");
+		var gatoTopCommand = new SlashCommandBuilder().WithName("gato-top").WithDescription("Shows a leaderboard for how many items each cat has.");
 		await AddCommand(bot, gatoTopCommand);
 	}
 

@@ -6,14 +6,14 @@ public sealed partial class Gato(string url, string name, ulong uploaderId) : Mo
 	[Key]
 	public int Id { get; private init; }
 
-	///URL to the image on Discord.
+	///URL to the media on Discord.
 	[Required]
 	public string Url { get; private init; } = url;
 
 	///Name of the cat.
 	public string Name { get; private init; } = name;
 
-	///Who uploaded the cat image.
+	///Who uploaded the cat media.
 	[Required]
 	public ulong UploaderId { get; private init; } = uploaderId;
 

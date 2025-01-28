@@ -6,10 +6,10 @@ public sealed class GatoAddCommand : SlashCommand
 	{
 		var gatoAddCommand = new SlashCommandBuilder()
 			.WithName("gato-add")
-			.WithDescription("Upload an image of a cat, optionally including a name.")
+			.WithDescription("Upload an image or video of a cat, optionally including a name.")
 			.AddOption(new SlashCommandOptionBuilder()
-				.WithName("image")
-				.WithDescription("Image of the gato")
+				.WithName("media")
+				.WithDescription("Media of the gato")
 				.WithType(ApplicationCommandOptionType.Attachment)
 				.WithRequired(true)
 			)
@@ -28,36 +28,35 @@ public sealed class GatoAddCommand : SlashCommand
 		if (command.CommandName != Name)
 			return;
 
-		await SaveImage(command);
+		await SaveMedia(command);
 	}
 
-	///Gets the provided image and sends it back so it's stored on Discord.
-	private async Task SaveImage(SocketSlashCommand command)
+	///Gets the provided image or video and sends it back so it's stored on Discord.
+	private async Task SaveMedia(SocketSlashCommand command)
 	{
 		var options = command.Data.Options;
-		Attachment image = options.First(o => o.Name == "image").Value as Attachment;
+		Attachment media = options.First(o => o.Name == "media").Value as Attachment;
 
-		if (image == null)
+		if (media == null)
 		{
 			await Logger.LogExceptionAsMessage(new NullReferenceException("Missing attachment"), command.Channel);
 			return;
 		}
 
-		byte[] imageBytes = await Gato.HttpClient.GetByteArrayAsync(image.Url);
-
-		await using MemoryStream imageStream = new(imageBytes);
-		FileAttachment file = new(imageStream, image.Filename);
+		byte[] mediaBytes = await Gato.HttpClient.GetByteArrayAsync(media.Url);
+		await using MemoryStream mediaStream = new(mediaBytes);
+		FileAttachment file = new(mediaStream, media.Filename);
 
 		var message = await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded `{file.FileName}`:");
 
-		image = message.Attachments.FirstOrDefault();
-		if (image == null)
+		media = message.Attachments.FirstOrDefault();
+		if (media == null)
 		{
 			await Logger.LogExceptionAsMessage(new NullReferenceException("Missing attachment"), command.Channel);
 			return;
 		}
 
 		string name = (string)options.FirstOrDefault(o => o.Name == "name")?.Value;
-		await Gato.AddGato(image.Url, name?.Trim(), command.User.Id);
+		await Gato.AddGato(media.Url, name?.Trim(), command.User.Id);
 	}
 }
