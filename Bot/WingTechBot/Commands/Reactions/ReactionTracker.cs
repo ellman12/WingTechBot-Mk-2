@@ -143,6 +143,12 @@ public sealed class ReactionTracker
 				return;
 			}
 
+			if (!cachedMessage.Reactions.Any())
+			{
+				Logger.LogLine($"No reactions to remove from message {cachedMessage.Id}", LogSeverity.Debug);
+				return;
+			}
+
 			await Reaction.RemoveAllReactions(message.Id);
 		}
 		catch (Exception e)
