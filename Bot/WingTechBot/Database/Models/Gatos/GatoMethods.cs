@@ -29,4 +29,15 @@ public sealed partial class Gato
 	{
 		return Uri.TryCreate(url, UriKind.Absolute, out Uri uriResult) && (uriResult.Scheme == Uri.UriSchemeHttp || uriResult.Scheme == Uri.UriSchemeHttps);
 	}
+
+	public static async Task<(string name, int count)[]> GetGatoLeaderboard()
+	{
+		await using BotDbContext context = new();
+		return await context.Gatos
+			.GroupBy(g => g.Name)
+			.ToAsyncEnumerable()
+			.Select(g => (name: String.IsNullOrWhiteSpace(g.Key) ? "No name" : g.Key, count: g.Count()))
+			.OrderByDescending(g => g.count)
+			.ToArrayAsync();
+	}
 }
