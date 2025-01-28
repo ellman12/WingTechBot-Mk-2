@@ -35,26 +35,27 @@ public sealed class TopCommand : SlashCommand
 		int year = DateTime.Now.Year;
 		var karmaLeaderboard = await Karma.GetKarmaLeaderboard(year);
 
-		string message;
-		if (karmaLeaderboard.Length > 0)
+		if (!karmaLeaderboard.Any())
 		{
-			int rank = 0;
-			message = karmaLeaderboard.Select((entry, index) =>
+			await command.FollowupAsync($"No karma for {year}");
+			return;
+		}
+
+		var entries = karmaLeaderboard.Aggregate(
+			(rankings: new List<(int rank, string username, int karma)>(), lastKarma: 0, index: 1, lastRank: 0),
+			(current, entry) =>
 			{
-				if (index == 0 || entry.karma != karmaLeaderboard[index - 1].karma)
-					rank = index + 1;
+				var (rankings, lastKarma, index, lastRank) = current;
+				int newRank = entry.karma == lastKarma ? lastRank : index;
 
 				var username = Bot.Client.GetUserAsync(entry.receiverId).Result.Username;
-				return (rank, username, entry.karma);
-			})
-			.Aggregate($"```{year} Karma Leaderboard\n", (current, entry) => current + $"{entry.rank}. {entry.karma.ToString().PadLeft(3),-4} {entry.username}\n");
-			message += "```";
-		}
-		else
-		{
-			message = $"No karma for {year}";
-		}
 
-		await command.FollowupAsync(message);
+				rankings.Add((newRank, username, entry.karma));
+				return (rankings, entry.karma, index + 1, newRank);
+			},
+			result => result.rankings)
+			.Select(entry => $"{entry.rank.ToString(),-6} {entry.karma.ToString(),-7} {entry.username}");
+
+		await command.FollowupAsync($"```{year} Karma Leaderboard\n----------------------\nRank   Karma   Name\n{String.Join('\n', entries)}```");
 	}
 }

@@ -43,9 +43,9 @@ public sealed class GatoTopCommand : SlashCommand
 				rankings.Add((newRank, entry.name, entry.count));
 				return (rankings, entry.count, index + 1, newRank);
 			},
-			tuple => tuple.rankings)
+			result => result.rankings)
 			.Select(entry => $"{entry.rank.ToString(),-6} {entry.count.ToString(),-7} {entry.name}");
 
-		await command.FollowupAsync($"```Gato Leaderboard\nRank   Count   Name\n{String.Join('\n', entries)}```");
+		await command.FollowupAsync($"```Gato Leaderboard\n----------------\nRank   Count   Name\n{String.Join('\n', entries)}```");
 	}
 }
