@@ -7,6 +7,7 @@ public sealed class BotDbContext : DbContext
     public DbSet<Reaction> Reactions { get; set; }
     public DbSet<ReactionEmote> ReactionEmotes { get; set; }
     public DbSet<Gato> Gatos { get; set; }
+    public DbSet<LegacyKarma> LegacyKarma { get; set; }
 
     ///Configures the database.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
