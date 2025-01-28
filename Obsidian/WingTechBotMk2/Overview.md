@@ -20,12 +20,10 @@ A rewrite of Ben's [WingTechBot](https://github.com/benjaminiserman/WingTechBot)
 - [ ] Research and do Agile and TDD stuff
 - [ ] [[Reaction Tracker]]
 - [ ] Have people check the security of the bot
-- [ ] 
-
-## Additional Features I'd Like
-- [ ] [[Quote System]]
+- [ ] Games
 - [ ] [[Gato]] command
 - [ ] Other smaller commands like [[Random Number Generation]]
+
 
 ## Future Possibilities
 - [ ] Ability for it to join a voice channel and do... stuff idk. Play sounds, soundboard sounds, etc.
