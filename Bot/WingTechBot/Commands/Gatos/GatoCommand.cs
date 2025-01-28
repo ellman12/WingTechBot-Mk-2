@@ -1,3 +1,5 @@
+using System.Globalization;
+
 namespace WingTechBot.Commands.Gatos;
 
 public sealed class GatoCommand : SlashCommand
@@ -52,7 +54,7 @@ public sealed class GatoCommand : SlashCommand
 			await using MemoryStream mediaStream = new(mediaBytes);
 			FileAttachment file = new(mediaStream, filename);
 
-			await command.FollowupWithFileAsync(file, gato.Name);
+			await command.FollowupWithFileAsync(file, String.IsNullOrWhiteSpace(gato.Name) ? "" : CultureInfo.CurrentCulture.TextInfo.ToTitleCase(gato.Name));
 		}
 	}
 }
