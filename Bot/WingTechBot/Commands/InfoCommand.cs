@@ -5,25 +5,13 @@ public sealed class InfoCommand : SlashCommand
 {
 	public override async Task SetUp(WingTechBot bot)
 	{
-		Bot = bot;
-		Bot.Client.SlashCommandExecuted += HandleCommand;
-
 		var infoCommand = new SlashCommandBuilder().WithName("info").WithDescription("Displays various info about the bot.");
-
-		try
-		{
-			await Bot.Client.CreateGlobalApplicationCommandAsync(infoCommand.Build());
-		}
-		catch (Exception e)
-		{
-			Logger.LogLine("Error adding info command");
-			Logger.LogException(e);
-		}
+		await AddCommand(bot, infoCommand);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != "info")
+		if (command.CommandName != Name)
 			return;
 
 		string message = $@"

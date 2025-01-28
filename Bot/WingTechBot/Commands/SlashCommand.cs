@@ -5,7 +5,25 @@ public abstract class SlashCommand
 {
 	public abstract Task SetUp(WingTechBot bot);
 
-	public abstract Task HandleCommand(SocketSlashCommand command);
+	protected string Name { get; private set; }
 
-	public WingTechBot Bot { get; protected set; }
+	protected WingTechBot Bot { get; set; }
+
+	protected async Task AddCommand(WingTechBot bot, SlashCommandBuilder commandBuilder)
+	{
+		Bot = bot;
+		Name = commandBuilder.Name;
+		Bot.Client.SlashCommandExecuted += HandleCommand;
+
+		try
+		{
+			await Bot.Client.CreateGlobalApplicationCommandAsync(commandBuilder.Build());
+		}
+		catch (Exception e)
+		{
+			await Logger.LogExceptionAsMessage(e, Bot.BotChannel);
+		}
+	}
+
+	public abstract Task HandleCommand(SocketSlashCommand command);
 }

@@ -4,9 +4,6 @@ public sealed class GatoCommand : SlashCommand
 {
 	public override async Task SetUp(WingTechBot bot)
 	{
-		Bot = bot;
-		Bot.Client.SlashCommandExecuted += HandleCommand;
-
 		var gatoCommand = new SlashCommandBuilder()
 			.WithName("gato")
 			.WithDescription("Sends a random picture of any cat, or one with the name specified.")
@@ -16,21 +13,12 @@ public sealed class GatoCommand : SlashCommand
 				.WithType(ApplicationCommandOptionType.String)
 				.WithRequired(false)
 			);
-
-		try
-		{
-			await Bot.Client.CreateGlobalApplicationCommandAsync(gatoCommand.Build());
-		}
-		catch (Exception e)
-		{
-			Logger.LogLine("Error adding gato command");
-			Logger.LogException(e);
-		}
+		await AddCommand(bot, gatoCommand);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != "gato")
+		if (command.CommandName != Name)
 			return;
 
 		await SendRandomImage(command);

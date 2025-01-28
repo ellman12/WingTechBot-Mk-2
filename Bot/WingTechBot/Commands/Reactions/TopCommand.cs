@@ -4,27 +4,16 @@ public sealed class TopCommand : SlashCommand
 {
 	public override async Task SetUp(WingTechBot bot)
 	{
-		Bot = bot;
-		Bot.Client.SlashCommandExecuted += HandleCommand;
-
 		var topCommand = new SlashCommandBuilder()
 			.WithName("top")
 			.WithDescription("Shows the leaderboard for karma");
 
-		try
-		{
-			await Bot.Client.CreateGlobalApplicationCommandAsync(topCommand.Build());
-		}
-		catch (Exception e)
-		{
-			Logger.LogLine("Error adding top command");
-			Logger.LogException(e);
-		}
+		await AddCommand(bot, topCommand);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != "top")
+		if (command.CommandName != Name)
 			return;
 
 		await GetKarmaLeaderboard(command);

@@ -4,28 +4,16 @@ public sealed partial class ReactionsCommand : SlashCommand
 {
 	public override async Task SetUp(WingTechBot bot)
 	{
-		Bot = bot;
-		Bot.Client.SlashCommandExecuted += HandleCommand;
-
 		var reactionsCommand = new SlashCommandBuilder()
 			.WithName("reactions")
 			.WithDescription("Shows totals for all reactions you have received this year")
 		;
-
-		try
-		{
-			await Bot.Client.CreateGlobalApplicationCommandAsync(reactionsCommand.Build());
-		}
-		catch (Exception e)
-		{
-			Logger.LogLine("Error adding reactions command");
-			Logger.LogException(e);
-		}
+		await AddCommand(bot, reactionsCommand);
 	}
 	
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != "reactions")
+		if (command.CommandName != Name)
 			return;
 
 		var options = command.Data.Options;
