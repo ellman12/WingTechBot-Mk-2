@@ -1,3 +1,5 @@
+using System.Reflection;
+
 namespace WingTechBot.Database.Models.Reactions;
 
 public sealed partial class LegacyKarma
@@ -23,5 +25,16 @@ public sealed partial class LegacyKarma
 		await using BotDbContext context = new();
 		await context.LegacyKarma.AddRangeAsync(users);
 		await context.SaveChangesAsync();
+	}
+
+	///<summary>Converts this <see cref="LegacyKarma"/> row into a dictionary of <see cref="ReactionEmote"/>s and their totals.</summary>
+	///<remarks>This is used to facilitate querying <see cref="ReactionTracker"/> data when legacy karma data is included.</remarks>
+	public Dictionary<ReactionEmote, int> ConvertEmotes()
+	{
+		using BotDbContext context = new();
+		return GetType()
+			.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+			.Where(p => p.Name != "UserId" && p.Name != "Year")
+			.ToDictionary(p => context.ReactionEmotes.First(re => p.Name.ToLower().Contains(re.Name)), p => (int)p.GetValue(this)!);
 	}
 }
