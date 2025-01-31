@@ -32,6 +32,6 @@ public sealed class StartGameCommand : SlashCommand
 			return;
 		}
 
-		await Bot.GameHandler.CreateGame(command, gameName);
+		await Bot.GameHandler.CreateGame(command, game.Name);
 	}
 }

@@ -31,6 +31,8 @@ public sealed class WingTechBot
 
 	public GameHandler GameHandler { get; private set; }
 	private readonly StartGameCommand startGameCommand = new();
+	private readonly ListGamesCommand listGamesCommand = new();
+	private readonly ActiveGamesCommand activeGamesCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
@@ -86,6 +88,8 @@ public sealed class WingTechBot
 		await gatoAddCommand.SetUp(this);
 		await gatoTopCommand.SetUp(this);
 		await startGameCommand.SetUp(this);
+		await listGamesCommand.SetUp(this);
+		await activeGamesCommand.SetUp(this);
 	}
 
 	///Removes all slash commands from the bot. However, because Discord is terrible this is unreliable and often does nothing.
