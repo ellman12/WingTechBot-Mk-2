@@ -8,22 +8,24 @@ public sealed class KarmaTests : ReactionTests
 	{
 		int year = DateTime.Now.Year;
 		await ReactionSeeder.Seed(420, 250, 400, 4, 20, 24);
+		await LegacyKarma.ImportFile(Path.Combine(KarmaTestsPath, "karma.txt"), year);
+		await LegacyKarma.ImportFile(Path.Combine(KarmaTestsPath, "karma.txt"), 2022); //If all works properly these will be ignored.
+		await Task.Delay(Constants.DatabaseDelay);
 
 		await using BotDbContext context = new();
-		var results = await Karma.GetKarmaLeaderboard(year);
-
-		Assert.That(results.Length == 0);
-
 		var upvote = await context.ReactionEmotes.FirstAsync(e => e.Name == "upvote");
-		await upvote.SetKarmaValue(1);
 		var downvote = await context.ReactionEmotes.FirstAsync(e => e.Name == "downvote");
-		await upvote.SetKarmaValue(-1);
+		await upvote.SetKarmaValue(1);
+		await downvote.SetKarmaValue(-1);
+		await Task.Delay(Constants.DatabaseDelay);
 
-		results = await Karma.GetKarmaLeaderboard(year);
-		Assert.That(results.Length > 0);
-		Assert.That(results.Length == results.Select(r => r.receiverId).Distinct().Count());
+		var results = await Karma.GetKarmaLeaderboard(year);
+		Assert.IsNotEmpty(results);
+		Assert.AreEqual(results.Length, results.Select(r => r.receiverId).Distinct().Count());
+		Assert.AreEqual(context.LegacyKarma.Count(lk => lk.Year == year), 36);
+		Assert.AreEqual(results.First(r => r.receiverId == 76).karma, 37);
 
-		//Ensure past years are ignored.
+		//Add additional reactions with previous years and ensure they are ignored.
 		foreach (int i in Enumerable.Range(1, 5))
 		{
 			ulong messageId = 123456 * (ulong)i;
@@ -33,8 +35,9 @@ public sealed class KarmaTests : ReactionTests
 			string interval = $"{i} YEAR{(i > 1 ? "S" : "")}";
 			await context.Database.ExecuteSqlRawAsync($"UPDATE \"Reactions\" SET \"CreatedAt\" = \"CreatedAt\" - INTERVAL '{interval}' WHERE \"MessageId\" = {messageId}");
 		}
-		
+
 		var newResults = await Karma.GetKarmaLeaderboard(year);
 		Assert.That(results.SequenceEqual(newResults));
+		Assert.AreEqual(newResults.First(r => r.receiverId == 76).karma, 37);
 	}
 }

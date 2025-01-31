@@ -8,9 +8,9 @@ public sealed partial class ReactionsCommand
 		var reactions = await Reaction.GetReactionsUserReceived(command.User.Id, year);
 
 		string message;
-		if (reactions.Length > 0)
+		if (reactions.Count > 0)
 		{
-			message = reactions.Aggregate($"{command.User.Username} received\n", (current, reaction) => current + $"* {reaction.count} {reaction.reactionEmote}\n");
+			message = reactions.Aggregate($"{command.User.Username} received\n", (current, reaction) => current + $"* {reaction.Value} {reaction.Key}\n");
 			message += $"in {year}";
 		}
 		else

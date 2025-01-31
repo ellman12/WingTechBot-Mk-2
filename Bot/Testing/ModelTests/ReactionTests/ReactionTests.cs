@@ -2,6 +2,8 @@ namespace ModelTests.ReactionTests;
 
 public abstract class ReactionTests : ModelTests
 {
+	protected static readonly string KarmaTestsPath = Path.Combine(Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName, "ReactionTests/LegacyKarmaTests");
+
 	///Create some reaction rows for testing.
 	protected static async Task CreateReactions(int messages, int reactionsPerMessage, ReactionEmote[] emotes, ulong giverId, ulong receiverId, ulong messageId)
 	{
