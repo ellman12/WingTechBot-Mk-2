@@ -24,6 +24,8 @@ public sealed class WingTechBot
 
 	public GameHandler GameHandler { get; private set; }
 	private readonly StartGameCommand startGameCommand = new();
+	private readonly ListGamesCommand listGamesCommand = new();
+	private readonly ActiveGamesCommand activeGamesCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
