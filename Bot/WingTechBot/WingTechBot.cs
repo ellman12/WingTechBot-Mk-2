@@ -22,6 +22,9 @@ public sealed class WingTechBot
 	private readonly ConcurrentDictionary<string, SlashCommand> slashCommands = new();
 	private readonly ReactionTracker reactionTracker = new();
 
+	public GameHandler GameHandler { get; private set; }
+	private readonly StartGameCommand startGameCommand = new();
+
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
 		WingTechBot bot = new();
@@ -35,6 +38,8 @@ public sealed class WingTechBot
 		await bot.Client.StartAsync();
 
 		bot.reactionTracker.SetUp(bot);
+
+		bot.GameHandler = new GameHandler(bot);
 
 		return bot;
 	}
