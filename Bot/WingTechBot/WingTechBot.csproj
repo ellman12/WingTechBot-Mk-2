@@ -17,7 +17,11 @@
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
 
         <Using Include="WingTechBot.Commands"/>
+        <Using Include="WingTechBot.Commands.Gatos"/>
         <Using Include="WingTechBot.Commands.Reactions"/>
+        <Using Include="WingTechBot.Games"/>
+        <Using Include="WingTechBot.Games.GameCommands"/>
+
         <Using Include="WingTechBot.Database"/>
         <Using Include="WingTechBot.Database.Models"/>
         <Using Include="WingTechBot.Database.Models.Gatos"/>

@@ -1,6 +1,3 @@
-using WingTechBot.Commands.Gatos;
-using WingTechBot.Commands.Reactions;
-
 namespace WingTechBot;
 
 public sealed class WingTechBot
@@ -32,6 +29,9 @@ public sealed class WingTechBot
 	private readonly GatoAddCommand gatoAddCommand = new();
 	private readonly GatoTopCommand gatoTopCommand = new();
 
+	public GameHandler GameHandler { get; private set; }
+	private readonly StartGameCommand startGameCommand = new();
+
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
 		WingTechBot bot = new();
@@ -45,6 +45,8 @@ public sealed class WingTechBot
 		await bot.Client.StartAsync();
 
 		bot.reactionTracker.SetUp(bot);
+
+		bot.GameHandler = new GameHandler(bot);
 
 		return bot;
 	}
@@ -76,12 +78,14 @@ public sealed class WingTechBot
 
 		Client.SlashCommandExecuted += PreprocessCommand;
 
+		Logger.LogLine("Setting up slash commands");
 		await reactionsCommand.SetUp(this);
 		await topCommand.SetUp(this);
 		await infoCommand.SetUp(this);
 		await gatoCommand.SetUp(this);
 		await gatoAddCommand.SetUp(this);
 		await gatoTopCommand.SetUp(this);
+		await startGameCommand.SetUp(this);
 	}
 
 	///Removes all slash commands from the bot. However, because Discord is terrible this is unreliable and often does nothing.
