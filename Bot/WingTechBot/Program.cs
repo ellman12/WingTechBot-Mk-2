@@ -4,6 +4,8 @@ public static class Program
 {
 	public static WingTechBot Bot { get; private set; }
 
+	public static readonly string ProjectRoot = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+
 	public static void Main()
 	{
 		try

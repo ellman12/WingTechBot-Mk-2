@@ -26,7 +26,7 @@ public sealed record Config
 	public static Config FromJson()
 	{
 		#if DEBUG
-		string path = Path.Combine(Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName, "config.json");
+		string path = Path.Combine(Program.ProjectRoot, "config.json");
 		#else
 		string path = "/app/config.json";
 		#endif
