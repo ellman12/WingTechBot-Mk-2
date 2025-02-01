@@ -13,7 +13,12 @@ public sealed class WingTechBot
 
 	public SocketTextChannel BotChannel { get; private set; }
 
-	public static readonly DiscordSocketConfig DiscordConfig = new() {MessageCacheSize = 100, AlwaysDownloadUsers = true};
+	private static readonly DiscordSocketConfig DiscordConfig = new()
+	{
+		MessageCacheSize = 100,
+		AlwaysDownloadUsers = true,
+		GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+	};
 
 	private WingTechBot() {}
 
