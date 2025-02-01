@@ -6,8 +6,13 @@ public static class Program
 
 	public static readonly string ProjectRoot = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
 
-	public static void Main()
+	public static void Main(string[] args)
 	{
+		if (args.Any(arg => arg == "--no-recreate-commands"))
+		{
+			SlashCommand.NoRecreateCommands = true;
+		}
+
 		try
 		{
 			using BotDbContext context = new();

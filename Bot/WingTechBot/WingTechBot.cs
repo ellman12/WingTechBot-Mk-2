@@ -63,7 +63,16 @@ public sealed class WingTechBot
 
 	private async Task SetUpCommands()
 	{
-		await ClearCommands();
+		if (SlashCommand.NoRecreateCommands)
+		{
+			Logger.LogLine("Commands will not be recreated");
+		}
+		else
+		{
+			Logger.LogLine("Clearing slash commands");
+			await ClearCommands();
+			Logger.LogLine("Setting up slash commands");
+		}
 
 		Client.SlashCommandExecuted += PreprocessCommand;
 
