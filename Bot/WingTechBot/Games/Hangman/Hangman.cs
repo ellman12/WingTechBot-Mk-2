@@ -2,8 +2,13 @@ namespace WingTechBot.Games.Hangman;
 
 public sealed class Hangman : Game
 {
-	protected override async Task GameSetup()
+	public override async Task GameSetup()
 	{
 		Console.WriteLine("hi");
+	}
+
+	protected override Task ProcessMessage(SocketMessage message)
+	{
+		throw new NotImplementedException();
 	}
 }

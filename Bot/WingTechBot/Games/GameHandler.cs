@@ -25,9 +25,25 @@ public sealed class GameHandler
 			return;
 		}
 
-		game.ThreadChannel = await Bot.BotChannel.CreateThreadAsync(gameName, autoArchiveDuration: ThreadArchiveDuration.OneHour);
-		await command.FollowupAsync($"Game started: <#{game.ThreadChannel.Id}>");
+		game.ThreadChannel = await Bot.BotChannel.CreateThreadAsync($"{gameName} {DateTime.Now:g}", autoArchiveDuration: ThreadArchiveDuration.OneHour);
 		ActiveGames.Add(game);
-	}
 
+		Bot.Client.MessageReceived += game.MessageReceived;
+
+		game.CancelToken = new CancellationTokenSource();
+		game.Task = Task.Run(async Task () =>
+		{
+			try
+			{
+				await game.GameSetup();
+			}
+			catch (Exception e)
+			{
+				if (e is not TaskCanceledException)
+					await Logger.LogExceptionAsMessage(e, Bot.BotChannel);
+			}
+		}, game.CancelToken.Token);
+
+		await command.FollowupAsync($"Game started: <#{game.ThreadChannel.Id}>");
+	}
 }
