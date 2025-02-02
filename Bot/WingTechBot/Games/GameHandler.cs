@@ -2,9 +2,9 @@ namespace WingTechBot.Games;
 
 public sealed class GameHandler
 {
-	public WingTechBot Bot { get; private init; }
+	public WingTechBot Bot { get; }
 
-	public Type[] AvailableGames { get; private init; }
+	public Type[] AvailableGames { get; }
 
 	public List<Game> ActiveGames { get; } = [];
 
@@ -30,19 +30,24 @@ public sealed class GameHandler
 
 		Bot.Client.MessageReceived += game.MessageReceived;
 
-		game.CancelToken = new CancellationTokenSource();
+		game.CancelTokenSource = new CancellationTokenSource();
 		game.Task = Task.Run(async Task () =>
 		{
 			try
 			{
 				await game.GameSetup();
+				await game.RunGame();
 			}
 			catch (Exception e)
 			{
 				if (e is not TaskCanceledException)
 					await Logger.LogExceptionAsMessage(e, Bot.BotChannel);
 			}
-		}, game.CancelToken.Token);
+			finally
+			{
+				ActiveGames.Remove(game);
+			}
+		}, game.CancelTokenSource.Token);
 
 		await command.FollowupAsync($"Game started: <#{game.ThreadChannel.Id}>");
 	}

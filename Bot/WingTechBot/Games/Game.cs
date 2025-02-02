@@ -9,7 +9,7 @@ public abstract class Game
 	public Task Task { get; set; }
 
 	///Used to cancel the <see cref="Game.Task"/>, if necessary.
-	public CancellationTokenSource CancelToken { get; set; }
+	public CancellationTokenSource CancelTokenSource { get; set; }
 
 	///The Discord Thread this game sends and receives messages in.
 	public SocketThreadChannel ThreadChannel { get; set; }
@@ -26,9 +26,11 @@ public abstract class Game
 	///Any setup this game requires. E.g., number of players, etc.
 	public abstract Task GameSetup();
 
+	public abstract Task RunGame();
+
 	public  async Task EndGame()
 	{
-		await CancelToken.CancelAsync();
+		await CancelTokenSource.CancelAsync();
 	}
 
 	public async Task MessageReceived(SocketMessage message)
@@ -42,6 +44,8 @@ public abstract class Game
 	}
 
 	protected abstract Task ProcessMessage(SocketMessage message);
+
+	protected async Task SendMessage(string message) => await ThreadChannel.SendMessageAsync(message);
 
 	private bool ValidMessage(SocketMessage message)
 	{
