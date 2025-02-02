@@ -14,7 +14,6 @@ public static class UserInput
 			if (messageReceived == null || !ValidUserMessage(messageReceived))
 			{
 				await Task.Delay(100, token);
-				Logger.LogLine("WAITING");
 				continue;
 			}
 
@@ -32,5 +31,7 @@ public static class UserInput
 		return value;
 	}
 
-	public static bool ValidUserMessage(IMessage message) => !message.Author.IsBot && !message.Author.IsWebhook;
+	public static async Task<string> Prompt(SocketTextChannel channel, string prompt, CancellationToken token) => await Prompt<string>(channel, prompt, token);
+
+	private static bool ValidUserMessage(IMessage message) => !message.Author.IsBot && !message.Author.IsWebhook;
 }

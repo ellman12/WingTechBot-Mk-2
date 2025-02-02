@@ -7,6 +7,11 @@ public sealed class Hangman : Game
 		Console.WriteLine("hi");
 	}
 
+	public override async Task RunGame()
+	{
+		throw new NotImplementedException();
+	}
+
 	protected override Task ProcessMessage(SocketMessage message)
 	{
 		throw new NotImplementedException();
