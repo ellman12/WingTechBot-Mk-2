@@ -26,6 +26,7 @@ public sealed class WingTechBot
 	private readonly StartGameCommand startGameCommand = new();
 	private readonly ListGamesCommand listGamesCommand = new();
 	private readonly ActiveGamesCommand activeGamesCommand = new();
+	private readonly EndGamesCommand endGamesCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
