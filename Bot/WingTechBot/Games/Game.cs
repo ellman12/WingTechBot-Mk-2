@@ -26,6 +26,11 @@ public abstract class Game
 	///Any setup this game requires. E.g., number of players, etc.
 	public abstract Task GameSetup();
 
+	public  async Task EndGame()
+	{
+		await CancelToken.CancelAsync();
+	}
+
 	public async Task MessageReceived(SocketMessage message)
 	{
 		LastMessage = message;
