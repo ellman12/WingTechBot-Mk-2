@@ -19,7 +19,7 @@ public static class UserInput
 
 			try
 			{
-				value = (T)Convert.ChangeType(messageReceived.Content, typeof(T));
+				value = (T)Convert.ChangeType(messageReceived.Content.ToLower(), typeof(T));
 				break;
 			}
 			catch (Exception e)
