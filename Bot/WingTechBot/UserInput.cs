@@ -43,5 +43,10 @@ public static class UserInput
 		return await Prompt<string>(channel, prompt, token, condition);
 	}
 
+	public static async Task<string> MultipleChoice(SocketTextChannel channel, string prompt, CancellationToken token, params string[] choices)
+	{
+		return await Prompt(channel, prompt, token, choices.Contains);
+	}
+
 	private static bool ValidUserMessage(IMessage message) => !message.Author.IsBot && !message.Author.IsWebhook;
 }
