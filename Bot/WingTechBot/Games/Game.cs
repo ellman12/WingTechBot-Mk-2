@@ -16,7 +16,9 @@ public abstract class Game
 
 	public IMessage LastMessage { get; private set; }
 
-	public List<IUser> Players { get; set; }
+	public IReadOnlyCollection<SocketGuildUser> AvailablePlayers { get; set; }
+
+	public List<IUser> Players { get; set; } = [];
 
 	public virtual uint MaxPlayers { get; protected set; } = Int32.MaxValue;
 
@@ -28,7 +30,7 @@ public abstract class Game
 
 	public abstract Task RunGame();
 
-	public  async Task EndGame()
+	public async Task EndGame()
 	{
 		await CancelTokenSource.CancelAsync();
 	}
@@ -47,9 +49,27 @@ public abstract class Game
 
 	protected async Task SendMessage(string message) => await ThreadChannel.SendMessageAsync(message);
 
+	protected async Task GetPlayers()
+	{
+		while (Players.Count < MaxPlayers)
+		{
+			if (UserInput.TryGetUser(ThreadChannel, AvailablePlayers, $"Enter player {Players.Count + 1}'s username or \"stop\" to stop adding players", CancelTokenSource.Token, out IUser user))
+			{
+				Players.Add(user);
+			}
+			else
+			{
+				if (LastMessage.Content.ToLower() == "stop")
+					return;
+
+				if (user == null)
+					await SendMessage("Player not found");
+			}
+		}
+	}
+
 	private bool ValidMessage(SocketMessage message)
 	{
 		return message.Channel is SocketThreadChannel && message.Channel.Id == ThreadChannel.Id && !message.Author.IsBot && !message.Author.IsWebhook;
 	}
-
 }

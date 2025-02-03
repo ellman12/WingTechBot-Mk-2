@@ -59,5 +59,13 @@ public static class UserInput
 		return input == "y";
 	}
 
+	public static bool TryGetUser(SocketTextChannel channel, IReadOnlyCollection<SocketGuildUser> availableUsers, string prompt, CancellationToken token, out IUser user)
+	{
+		string input = Prompt(channel, prompt, token).Result;
+		user = availableUsers.FirstOrDefault(u => String.Equals(u.Username, input, StringComparison.InvariantCultureIgnoreCase));
+
+		return user != null;
+	}
+
 	private static bool ValidUserMessage(IMessage message) => !message.Author.IsBot && !message.Author.IsWebhook;
 }

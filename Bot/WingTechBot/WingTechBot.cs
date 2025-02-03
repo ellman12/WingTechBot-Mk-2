@@ -14,7 +14,7 @@ public sealed class WingTechBot
 	{
 		MessageCacheSize = 100,
 		AlwaysDownloadUsers = true,
-		GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+		GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildMembers
 	};
 
 	private WingTechBot() {}
