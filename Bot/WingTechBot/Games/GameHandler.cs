@@ -25,7 +25,14 @@ public sealed class GameHandler
 			return;
 		}
 
+		game.GameMaster = command.User;
+		game.Players.Add(command.User);
+
 		game.ThreadChannel = await Bot.BotChannel.CreateThreadAsync($"{gameName} {DateTime.Now:g}", autoArchiveDuration: ThreadArchiveDuration.OneHour);
+		game.AvailablePlayers = Bot.BotChannel.Users;
+
+		game.AvailablePlayers = Bot.Guild.GetChannel(1331075094570733568).Users; //TODO: this is temp
+
 		ActiveGames.Add(game);
 
 		Bot.Client.MessageReceived += game.MessageReceived;

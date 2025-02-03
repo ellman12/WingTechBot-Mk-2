@@ -1,3 +1,5 @@
+using WingTechBot.Games.Utils;
+
 namespace WingTechBot.Games.Unscramble;
 
 public sealed class Unscramble : Game
@@ -10,8 +12,8 @@ public sealed class Unscramble : Game
 
 	public override async Task GameSetup()
 	{
-		Word = Words[Random.Shared.Next(0, Words.Length)];
-		ScrambledWord = new string(Word.OrderBy(_ => Guid.NewGuid()).ToArray());
+		Word = WordUtils.GetRandomWord();
+		ScrambledWord = new string([.. Word.OrderBy(_ => Guid.NewGuid())]);
 
 		Logger.LogLine($"Starting a game of Unscramble with the words {Word} and {ScrambledWord}");
 
@@ -22,7 +24,7 @@ public sealed class Unscramble : Game
 	{
 		while (!CancelTokenSource.IsCancellationRequested)
 		{
-			string input = await UserInput.Prompt(ThreadChannel, "What is your guess?", CancelTokenSource.Token);
+			string input = await UserInput.StringPrompt(ThreadChannel, "What is your guess?", CancelTokenSource.Token);
 
 			if (input.Length != Word.Length)
 			{
@@ -30,7 +32,7 @@ public sealed class Unscramble : Game
 				continue;
 			}
 
-			if (String.Equals(input, Word, StringComparison.InvariantCultureIgnoreCase))
+			if (string.Equals(input, Word, StringComparison.InvariantCultureIgnoreCase))
 			{
 				await SendMessage($"Correct! You guessed \"{Word}\" in {attempts} guesses.");
 				break;
