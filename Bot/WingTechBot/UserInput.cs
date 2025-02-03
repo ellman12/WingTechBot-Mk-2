@@ -43,9 +43,20 @@ public static class UserInput
 		return await Prompt<string>(channel, prompt, token, condition);
 	}
 
+	public static async Task<char> CharPrompt(SocketTextChannel channel, string prompt, CancellationToken token, Predicate<char> condition = null)
+	{
+		return await Prompt(channel, prompt, token, condition);
+	}
+
 	public static async Task<string> MultipleChoice(SocketTextChannel channel, string prompt, CancellationToken token, params string[] choices)
 	{
 		return await Prompt(channel, prompt, token, choices.Contains);
+	}
+
+	public static async Task<bool> PromptYN(SocketTextChannel channel, string prompt, CancellationToken token)
+	{
+		string input = await Prompt(channel, $"{prompt} (y/n)", token, s => s is "y" or "n");
+		return input == "y";
 	}
 
 	private static bool ValidUserMessage(IMessage message) => !message.Author.IsBot && !message.Author.IsWebhook;
