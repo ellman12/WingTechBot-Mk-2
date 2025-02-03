@@ -12,6 +12,8 @@ public sealed class Hangman : Game
 
 	private bool pvp;
 
+	private IUser CurrentHost => Players[currentHostIndex];
+
 	private static readonly string[] heads =
 	[
 		"(O.O)",
@@ -67,10 +69,34 @@ public sealed class Hangman : Game
 
 	public override async Task RunGame()
 	{
-		throw new NotImplementedException();
+		while (true)
+		{
+			await RunRound();
+		}
 	}
 
-	private async Task RunRound() {}
+	private async Task RunRound()
+	{
+		if (pvp)
+		{
+			AdvanceHost();
+			await SendMessage($"Prompting {CurrentHost.Username} for the word...");
+			word = (await UserInput.Prompt(await CurrentHost.CreateDMChannelAsync(), "What should the word be?", CancelTokenSource.Token)).Trim().ToUpper();
+		}
+		else
+		{
+			word = Words[Random.Shared.Next(0, Words.Length)].Trim().ToUpper();
+		}
+
+		;
+	}
+
+	private void AdvanceHost()
+	{
+		currentHostIndex++;
+		if (currentHostIndex >= Players.Count)
+			currentHostIndex = 0;
+	}
 
 	protected override async Task ProcessMessage(SocketMessage message) {}
 }

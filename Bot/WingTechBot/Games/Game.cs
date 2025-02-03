@@ -56,6 +56,7 @@ public abstract class Game
 			if (UserInput.TryGetUser(ThreadChannel, AvailablePlayers, $"Enter player {Players.Count + 1}'s username or \"stop\" to stop adding players", CancelTokenSource.Token, out IUser user))
 			{
 				Players.Add(user);
+				await ThreadChannel.AddUserAsync(user as IGuildUser);
 			}
 			else
 			{
