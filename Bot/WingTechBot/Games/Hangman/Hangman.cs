@@ -49,7 +49,7 @@ public class Hangman : Game
 
 	public override async Task GameSetup()
 	{
-		_pvp = !await UserInput.PromptYN(ThreadChannel, "Would you like to face a bot? (y/n)", CancelTokenSource.Token);
+		_pvp = !await UserInput.PromptYN(ThreadChannel, "Would you like to face a bot?", CancelTokenSource.Token);
 		_clues = (await UserInput.Prompt<int>(ThreadChannel, "How many clues would you like? (recommended: 0-2)", CancelTokenSource.Token)).Input;
 
 		while (Players.Count < 1 || (_pvp && Players.Count < 2))
@@ -119,7 +119,7 @@ public class Hangman : Game
 		if (_pvp)
 		{
 			AdvanceHost();
-			await SendMessage($"Prompting ${CurrentHost.Username} for next word... Check your DMs");
+			await SendMessage($"Prompting {CurrentHost.Username} for next word... Check your DMs");
 			var dmChannel = await CurrentHost.CreateDMChannelAsync();
 			var receivedWord = await UserInput.StringPrompt(
 				dmChannel, 
@@ -164,7 +164,7 @@ public class Hangman : Game
 
 			if (missingLetters.Count <= 0)
 			{
-				throw new Exception($"Hangman crashed while trying to generate clues for word ${_word}");
+				throw new Exception($"Hangman crashed while trying to generate clues for word {_word}");
 			}
 		}
 
@@ -172,7 +172,7 @@ public class Hangman : Game
 
 		await SendMessage($"===[NEW ROUND]===\n**{WordUtils.GetNumberName(_check.Count(char.IsLetter))}** letters");
 
-		Logger.LogLine($"Starting round of Hangman with the word {_word}");
+		Logger.LogLine($"Starting round of Hangman with a {_word.Length} letter word");
 
 	}
 	private async Task<RoundFinishState> RunRound()
@@ -204,7 +204,7 @@ public class Hangman : Game
 			{
 				input = await UserInput.Prompt<string>(ThreadChannel, "Guess a letter or word!", CancelTokenSource.Token, condition: s => s.Length == 1 || s.Length == _word.Length);
 				lastUser = input.Message.Author;
-				if (lastUser == CurrentHost)
+				if (_pvp && lastUser == CurrentHost)
 				{
 					await SendMessage("The host cannot guess on their own prompt!");
 					continue;
