@@ -10,11 +10,6 @@ public class Hangman : Game
 
 	private Dictionary<IUser, int> _scores;
 
-	private static HashSet<string> _banned;
-
-	private const string DICTIONARY_PATH = @"Hangman\words.txt";
-	private const string BANNED_PATH = @"Hangman\banned.txt";
-
 	private static readonly Random _random = new();
 	private const int StrikeLimit = 6;
 
@@ -47,7 +42,6 @@ public class Hangman : Game
 
 	private bool _pvp;
 	private int _clues;
-	private static int? _dictionaryCount = null;
 	
 	private record RoundFinishState(bool IsWin, IUser Winner, string FinishScreen);
 
@@ -82,10 +76,6 @@ public class Hangman : Game
 				_scores.Add(player, 0);
 			}
 		}
-		else
-		{
-			InitBannedWords();
-		}
 	}
 
 	public override async Task RunGame()
@@ -97,7 +87,14 @@ public class Hangman : Game
 
 			if (finishState.IsWin)
 			{
-				_scores[finishState.Winner]++;
+				if (_pvp)
+				{
+					_scores[finishState.Winner]++;
+				}
+				else
+				{
+					_score++;
+				}
 			}
 
 			await SendMessage(finishState.FinishScreen);
@@ -124,7 +121,13 @@ public class Hangman : Game
 			AdvanceHost();
 			await SendMessage($"Prompting ${CurrentHost.Username} for next word... Check your DMs");
 			var dmChannel = await CurrentHost.CreateDMChannelAsync();
-			var receivedWord = await UserInput.StringPrompt(dmChannel, "What should the word be?", CancelTokenSource.Token, condition: (string s) => s.Length < 100);
+			var receivedWord = await UserInput.StringPrompt(
+				dmChannel, 
+				"What should the word be?", 
+				CancelTokenSource.Token, 
+				condition: (string s) => s.Length < 100 
+					&& !WordUtils.BannedWords.Contains(s.Trim().ToLower())
+			);
 			_word = receivedWord.Trim().ToUpper();
 		}
 		else
@@ -333,21 +336,6 @@ public class Hangman : Game
 		}
 
 		return clue;
-	}
-
-	private static void InitBannedWords()
-	{
-		if (_banned is null)
-		{
-			_banned = [];
-			FileInfo fi = new(BANNED_PATH);
-
-			using StreamReader file = new(fi.Open(FileMode.Open));
-			while (!file.EndOfStream)
-			{
-				_banned.Add(file.ReadLine());
-			}
-		}
 	}
 
 	private void AdvanceHost()
