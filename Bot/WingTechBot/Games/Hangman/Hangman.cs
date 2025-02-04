@@ -1,26 +1,27 @@
+using WingTechBot.Games.Utils;
+
 namespace WingTechBot.Games.Hangman;
 
-public sealed class Hangman : Game
+public class Hangman : Game
 {
-	private string word = "";
-	private readonly List<char> correctLetters = [], incorrectLetters = [];
-	private readonly List<string> wordGuesses = [];
+	private string _word = string.Empty, _check = string.Empty;
+	private readonly HashSet<char> _letterGuesses = [];
+	private readonly HashSet<string> _wordGuesses = [];
 
-	private Dictionary<IUser, int> scores;
+	private Dictionary<IUser, int> _scores;
 
-	private int currentHostIndex = -1;
+	private static HashSet<string> _banned;
 
-	private bool pvp;
+	private const string DICTIONARY_PATH = @"Hangman\words.txt";
+	private const string BANNED_PATH = @"Hangman\banned.txt";
 
-	private IUser CurrentHost => Players[currentHostIndex];
-
-	private int Strikes => incorrectLetters.Count + wordGuesses.Count;
-
+	private static readonly Random _random = new();
 	private const int StrikeLimit = 6;
 
-	private static readonly string[] heads =
-	[
-		"(O.O)",
+
+	private static readonly string[] _heads =
+    [
+        "(O.O)",
 		"(O.-)",
 		"(-.-)",
 		"(O.o)",
@@ -30,44 +31,60 @@ public sealed class Hangman : Game
 		"(@.@)",
 		"(o-o)",
 		"(-_-)",
-		"(UwU)",
-		"(OwO)", //<-- me_irl when I'm about to die if the player doesn't guess the right word.
+		"(OwO)",
 		"(=.=)",
 		"(OxO)",
 		"(o_o)",
 		"(._.)",
 		"(;_;)",
 		"(^.^)",
-		"(~.~)"
+		"(~.~)",
 	];
+
+	private int _currentHostIndex = -1, _strikes = 0, _score = 0, _total = 0;
+
+	private IUser CurrentHost => Players[_currentHostIndex];
+
+	private bool _pvp;
+	private int _clues;
+	private static int? _dictionaryCount = null;
+	
+	private record RoundFinishState(bool IsWin, IUser Winner, string FinishScreen);
+
+	private static bool IsGuessableCharacter(char c) => char.IsLetter(c) && c.IsAmericanized();
 
 	public override async Task GameSetup()
 	{
-		pvp = !await UserInput.PromptYN(ThreadChannel, "Would you like to face a bot? ", CancelTokenSource.Token);
+		_pvp = !await UserInput.PromptYN(ThreadChannel, "Would you like to face a bot? (y/n)", CancelTokenSource.Token);
+		_clues = (await UserInput.Prompt<int>(ThreadChannel, "How many clues would you like? (recommended: 0-2)", CancelTokenSource.Token)).Input;
 
-		while (!Players.Any() || (pvp && Players.Count == 1))
+		while (Players.Count < 1 || (_pvp && Players.Count < 2))
 		{
-			if (!Players.Any())
+			if (Players.Count < 1)
 			{
-				await SendMessage("You can't play hangman with zero players!");
+				await SendMessage("You need at least one player.");
 				await GetPlayers();
 			}
 
-			if (pvp && Players.Count == 1)
+			if (_pvp && Players.Count < 2)
 			{
 				await SendMessage("You need at least two players to play multiplayer.");
 				await GetPlayers();
 			}
 		}
 
-		if (pvp)
+		if (_pvp)
 		{
-			scores = new Dictionary<IUser, int>();
+			_scores = [];
 
 			foreach (var player in Players)
 			{
-				scores.Add(player, 0);
+				_scores.Add(player, 0);
 			}
+		}
+		else
+		{
+			InitBannedWords();
 		}
 	}
 
@@ -76,12 +93,20 @@ public sealed class Hangman : Game
 		while (true)
 		{
 			await RoundSetup();
-			await RunRound();
+			var finishState = await RunRound();
 
-			string input = await UserInput.Prompt(ThreadChannel, "Type \"next\" to continue or \"end\" to stop playing.", CancelTokenSource.Token, s => s.Trim().ToLower() is "next" or "end");
+			if (finishState.IsWin)
+			{
+				_scores[finishState.Winner]++;
+			}
+
+			await SendMessage(finishState.FinishScreen);
+			
+			string input = await UserInput.StringPrompt(ThreadChannel, "Type \"next\" to continue or \"end\" to stop playing.", CancelTokenSource.Token, s => s.Trim().ToLower() is "next" or "end");
 
 			if (input == "end")
 			{
+				await Shutdown();
 				await SendMessage("Game finished");
 				break;
 			}
@@ -90,115 +115,178 @@ public sealed class Hangman : Game
 
 	private async Task RoundSetup()
 	{
-		if (pvp)
+		_letterGuesses.Clear();
+		_wordGuesses.Clear();
+		_strikes = 0;
+
+		if (_pvp)
 		{
 			AdvanceHost();
-			await SendMessage($"Prompting {CurrentHost.Username} for the word...");
-			word = (await UserInput.Prompt(await CurrentHost.CreateDMChannelAsync(), "What should the word be?", CancelTokenSource.Token)).Trim().ToUpper();
+			await SendMessage($"Prompting ${CurrentHost.Username} for next word... Check your DMs");
+			var dmChannel = await CurrentHost.CreateDMChannelAsync();
+			var receivedWord = await UserInput.StringPrompt(dmChannel, "What should the word be?", CancelTokenSource.Token, condition: (string s) => s.Length < 100);
+			_word = receivedWord.Trim().ToUpper();
 		}
 		else
 		{
-			word = Words[Random.Shared.Next(0, Words.Length)].Trim().ToUpper();
+			_word = WordUtils.GetRandomWord(
+				allowCurses: false, 
+				shouldAmericanize: true, 
+				minLength: 2, 
+				filterFn: word => word.Any(c => "aeiouy".Contains(c))
+					&& word.Distinct().Count() >= _clues + 3
+			).ToUpper(); // Get random word
 		}
 
-		correctLetters.Clear();
-		incorrectLetters.Clear();
-		wordGuesses.Clear();
+		_check = _word.RemoveDiacritics();
 
-		await SendMessage(GetScreen());
+		_total++;
 
-		Logger.LogLine($"Starting round of Hangman with the word {word}");
+		// get clues
+		var missingLetters = new HashSet<char>();
+
+		foreach (var c in _check)
+		{
+			if (IsGuessableCharacter(c))
+			{
+				missingLetters.Add(c);
+			}
+		}
+
+		while (_letterGuesses.Count < _clues)
+		{
+			var c = _word[_random.Next(_word.Length)];
+			missingLetters.Remove(c);
+			_letterGuesses.Add(c);
+
+			if (missingLetters.Count <= 0)
+			{
+				throw new Exception($"Hangman crashed while trying to generate clues for word ${_word}");
+			}
+		}
+
+		(ulong id, string text) = (0, null);
+
+		await SendMessage($"===[NEW ROUND]===\n**{WordUtils.GetNumberName(_check.Count(char.IsLetter))}** letters");
+
+		Logger.LogLine($"Starting round of Hangman with the word {_word}");
+
 	}
-
-	private async Task RunRound()
+	private async Task<RoundFinishState> RunRound()
 	{
+		IUser lastUser = null;
+
 		while (true)
 		{
-			string output = "";
+			var screen = GetScreen();
 
-			if (Strikes == StrikeLimit)
+			if (_strikes >= StrikeLimit) // strike gameover
 			{
-				await SendMessage($"Game over! The word was: {word}");
-				break;
+				screen += $"Gameover! The word was: {_word}";
+				return new RoundFinishState(false, null, screen);
 			}
+			
+			var wordGuessedSuccessfully = _check.All(c => IsGuessableCharacter(c) && _letterGuesses.Contains(c));
 
-			if (word.All(c => correctLetters.Contains(c)))
+			if (wordGuessedSuccessfully)
 			{
-				break;
+				screen += "Correct!";
+				return new RoundFinishState(true, lastUser, screen);
 			}
+		
+			await SendMessage(screen);
 
-			string input = (await UserInput.Prompt(ThreadChannel, "Guess a letter or word", CancelTokenSource.Token)).ToUpper();
-
-			if (input.Length > 1)
+			UserInput.ReceivedInput<string> input;
+			while (true)
 			{
-				if (input == word)
+				input = await UserInput.Prompt<string>(ThreadChannel, "Guess a letter or word!", CancelTokenSource.Token, condition: s => s.Length == 1 || s.Length == _word.Length);
+				lastUser = input.Message.Author;
+				if (lastUser == CurrentHost)
 				{
-					output = "Correct!";
-					correctLetters.AddRange(word.Distinct());
+					await SendMessage("The host cannot guess on their own prompt!");
+					continue;
 				}
-				else
-				{
-					wordGuesses.Add(input);
-				}
-			}
-			else
-			{
-				char letter = input[0];
-				if (word.Contains(letter))
-				{
-					correctLetters.Add(letter);
-					output = "Correct!";
-				}
-				else
-				{
-					incorrectLetters.Add(letter);
-				}
-			}
 
-			output += GetScreen();
-			await SendMessage(output);
+				var guess = input.Input.Trim().ToUpper().RemoveDiacritics();
+			
+				if (guess.Length == 1 && IsGuessableCharacter(guess[0])) // letter guess
+				{
+					if (!_letterGuesses.Contains(guess[0]))
+					{
+						_letterGuesses.Add(guess[0]);
+						if (!_check.Contains(guess[0]))
+						{
+							_strikes++;
+						}
+
+						break;
+					}	
+				}
+
+				if (guess == _check) // word guess success
+				{
+					return new RoundFinishState(true, input.Message.Author, "Correct!");
+				}
+				
+				
+				if (IsValidGuess(guess, _check, _wordGuesses, _letterGuesses)) // word guess fail
+				{
+					await SendMessage($"{guess} is not the word.");
+					_wordGuesses.Add(guess);
+					_strikes++;
+				}
+			}
 		}
 	}
 
-	private void AdvanceHost()
+	public async Task Shutdown()
 	{
-		currentHostIndex++;
-		if (currentHostIndex >= Players.Count)
-			currentHostIndex = 0;
-	}
+		if (_pvp)
+		{
+			var orderedScores = _scores.OrderByDescending(kvp => kvp.Value);
 
-	protected override async Task ProcessMessage(SocketMessage message) {}
+			var gameOverText = $"Gameover! Scores:\n";
+
+			foreach (var kvp in orderedScores)
+			{
+				var (player, score) = kvp;
+				gameOverText += $"{score} - {player.Username}#{player.Discriminator}\n";
+			}
+
+			await SendMessage(gameOverText);
+		}
+		else
+		{
+			await SendMessage($"Gameover! Got: {_score}/{_total}");
+		}
+	}
 
 	private string GetScreen()
 	{
-		string message =
-			$"""
-			```
-			||-------
-			||      |
-			||    {Head}
-			||    {Body}
-			||    {Legs}
-			||
-			||
-			====[HANGMAN]====
-			RIGHT: {String.Join(' ', word.Select(c => word.Contains(c) && correctLetters.Contains(c) ? c : '_'))}
-			WRONG: {String.Join(' ', incorrectLetters)}
-			{String.Join("\n", wordGuesses)}
-			```
-			""";
+		var screen = "```" +
+					$"||-------\n" +
+					$"||      |\n" +
+					$"||    {GetHead()}\n" +
+					$"||    {GetBody()}\n" +
+					$"||    {GetLegs()}\n" +
+					$"||\n" +
+					$"||\n" +
+					$"====[HANGMAN]====\n" +
+					$"{GetClue()}\n";
 
-		return message;
+		screen += "```";
+
+		return screen;
 	}
 
-	private string Head => Strikes switch
+	private string GetHead() => _strikes switch
 	{
-		1 => heads[0],
-		>= 2 => heads[Random.Shared.Next(heads.Length)],
+		1 => _heads[0],
+		>= 2 => _heads[_random.Next(_heads.Length)],
 		_ => "     "
 	};
 
-	private string Body => Strikes switch
+	private string GetBody() => _strikes switch
 	{
 		2 => "  8  ",
 		3 => "  8 -",
@@ -206,10 +294,95 @@ public sealed class Hangman : Game
 		_ => "     "
 	};
 
-	private string Legs => Strikes switch
+	private string GetLegs() => _strikes switch
 	{
 		5 => " /  ",
 		6 => @" / \",
 		_ => "   "
 	};
+
+	private string GetClue()
+	{
+		var clue = string.Empty;
+
+		for (var i = 0; i < _word.Length; i++)
+		{
+			if (_letterGuesses.Contains(_check[i]) || !_check[i].IsAmericanized())
+			{
+				clue += $"{_word[i]} ";
+			}
+			else
+			{
+				clue += $"_ ";
+			}
+		}
+
+		clue += "\n" + "wrong:";
+
+		foreach (var c in _letterGuesses)
+		{
+			if (!_check.Contains(c))
+			{
+				clue += $" {c}";
+			}
+		}
+
+		foreach (var s in _wordGuesses)
+		{
+			clue += $"\n - {s}";
+		}
+
+		return clue;
+	}
+
+	private static void InitBannedWords()
+	{
+		if (_banned is null)
+		{
+			_banned = [];
+			FileInfo fi = new(BANNED_PATH);
+
+			using StreamReader file = new(fi.Open(FileMode.Open));
+			while (!file.EndOfStream)
+			{
+				_banned.Add(file.ReadLine());
+			}
+		}
+	}
+
+	private void AdvanceHost()
+	{
+		_currentHostIndex++;
+		if (_currentHostIndex >= Players.Count)
+		{
+			_currentHostIndex = 0;
+		}
+	}
+
+	private static bool IsValidGuess(string guess, string word, HashSet<string> previousGuesses, HashSet<char> letterGuesses)
+	{
+		if (previousGuesses.Contains(guess))
+		{
+			return false;
+		}
+	
+		if (guess.Length != word.Length)
+		{
+			return false;
+		}
+		
+		// if letter doesn't match and could not possibly match
+		if (guess
+			.Select((letter, index) => (letter, index))
+			.Any(t => word[t.index] != t.letter 
+				&& (letterGuesses.Contains(t.letter) 
+					|| letterGuesses.Contains(word[t.index]))))
+		{
+			return false;
+		}
+	
+		return true;
+	}
+
+	protected override async Task ProcessMessage(SocketMessage message) {}
 }

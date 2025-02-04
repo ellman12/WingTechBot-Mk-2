@@ -22,8 +22,6 @@ public abstract class Game
 
 	public virtual uint MaxPlayers { get; protected set; } = Int32.MaxValue;
 
-	///List of words that can be used for games like <see cref="Hangman"/>
-	protected static string[] Words { get; } = File.ReadAllLines(Path.Combine(Program.ProjectRoot, "Games", "words.txt"));
 
 	///Any setup this game requires. E.g., number of players, etc.
 	public abstract Task GameSetup();
@@ -60,7 +58,7 @@ public abstract class Game
 			}
 			else
 			{
-				if (LastMessage.Content.ToLower() == "stop")
+				if (LastMessage.Content.Equals("stop", StringComparison.CurrentCultureIgnoreCase))
 					return;
 
 				if (user == null)
