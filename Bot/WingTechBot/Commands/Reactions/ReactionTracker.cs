@@ -47,6 +47,12 @@ public sealed class ReactionTracker
 				await ReactionScolding.SendScold(name, await channel.GetOrDownloadAsync(), reaction.User.Value);
 			}
 
+			//Bot downvotes itself if someone adds a downvote to one of its messages.
+			if (cachedMessage.Author.Id == wingTechBot.Config.UserId && name == "downvote")
+			{
+				await cachedMessage.AddReactionAsync(reaction.Emote);
+			}
+
 			await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 		}
 		catch (Exception e)
