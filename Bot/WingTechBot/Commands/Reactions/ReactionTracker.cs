@@ -42,6 +42,11 @@ public sealed class ReactionTracker
 				return;
 			}
 
+			if (reaction.UserId == cachedMessage.Author.Id)
+			{
+				await ReactionScolding.SendScold(name, await channel.GetOrDownloadAsync(), reaction.User.Value);
+			}
+
 			await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 		}
 		catch (Exception e)
