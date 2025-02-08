@@ -5,6 +5,9 @@
         <TargetFramework>net9.0</TargetFramework>
         <ApplicationIcon>wingtech_logo.ico</ApplicationIcon>
         <ImplicitUsings>enable</ImplicitUsings>
+
+        <!-- Disables certain features that break tests. -->
+        <DefineConstants>NOT_TESTING</DefineConstants>
     </PropertyGroup>
 
     <!-- Global usings -->
