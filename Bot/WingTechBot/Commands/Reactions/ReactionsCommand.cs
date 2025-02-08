@@ -1,16 +1,16 @@
 namespace WingTechBot.Commands.Reactions;
 
-public sealed partial class ReactionsCommand : SlashCommand
+public sealed class ReactionsCommand : SlashCommand
 {
 	public override async Task SetUp(WingTechBot bot)
 	{
 		var reactionsCommand = new SlashCommandBuilder()
-			.WithName("reactions")
-			.WithDescription("Shows totals for all reactions you have received this year")
-		;
+				.WithName("reactions")
+				.WithDescription("Shows totals for all reactions you have received this year")
+			;
 		await AddCommand(bot, reactionsCommand);
 	}
-	
+
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
 		if (command.CommandName != Name)
@@ -23,5 +23,24 @@ public sealed partial class ReactionsCommand : SlashCommand
 			await UserReactionsForYear(command);
 			return;
 		}
+	}
+
+	private static async Task UserReactionsForYear(SocketSlashCommand command)
+	{
+		int year = DateTime.Now.Year;
+		var reactions = await Reaction.GetReactionsUserReceived(command.User.Id, year);
+
+		string message;
+		if (reactions.Count > 0)
+		{
+			message = reactions.Aggregate($"{command.User.Username} received\n", (current, reaction) => current + $"* {reaction.Value} {reaction.Key}\n");
+			message += $"in {year}";
+		}
+		else
+		{
+			message = $"No reactions received for {year}";
+		}
+
+		await command.FollowupAsync(message);
 	}
 }
