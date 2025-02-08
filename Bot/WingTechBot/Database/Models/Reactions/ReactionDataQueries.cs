@@ -11,7 +11,7 @@ public sealed partial class Reaction
 
 		return context.Reactions
 			.Include(r => r.Emote)
-			.Where(r => r.ReceiverId == receiverId && r.GiverId != r.ReceiverId && r.Emote.CreatedAt.Year == year)
+			.Where(r => r.ReceiverId == receiverId && r.GiverId != r.ReceiverId && r.CreatedAt.Year == year)
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, Count: g.Count()))
@@ -38,7 +38,7 @@ public sealed partial class Reaction
 
 		return context.Reactions
 			.Include(r => r.Emote)
-			.Where(r => r.ReceiverId == receiverId && giverIds.Contains(r.GiverId) && r.Emote.CreatedAt.Year == year)
+			.Where(r => r.ReceiverId == receiverId && giverIds.Contains(r.GiverId) && r.CreatedAt.Year == year)
 			.Where(filter)
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
@@ -60,7 +60,7 @@ public sealed partial class Reaction
 
 		return context.Reactions
 			.Include(r => r.Emote)
-			.Where(r => r.GiverId == giverId && r.GiverId != r.ReceiverId && r.Emote.CreatedAt.Year == year)
+			.Where(r => r.GiverId == giverId && r.GiverId != r.ReceiverId && r.CreatedAt.Year == year)
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, Count: g.Count()))
@@ -86,7 +86,7 @@ public sealed partial class Reaction
 
 		return context.Reactions
 			.Include(r => r.Emote)
-			.Where(r => r.GiverId == giverId && receiverIds.Contains(r.ReceiverId) && r.Emote.CreatedAt.Year == year)
+			.Where(r => r.GiverId == giverId && receiverIds.Contains(r.ReceiverId) && r.CreatedAt.Year == year)
 			.Where(filter)
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
