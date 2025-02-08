@@ -4,7 +4,11 @@ public static class Program
 {
 	public static WingTechBot Bot { get; private set; }
 
+	#if DEBUG
 	public static readonly string ProjectRoot = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+	#elif RELEASE
+	public const string ProjectRoot = "/app";
+	#endif
 
 	public static void Main(string[] args)
 	{
