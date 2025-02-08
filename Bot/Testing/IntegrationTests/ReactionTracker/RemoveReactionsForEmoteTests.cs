@@ -5,12 +5,12 @@ public sealed class RemoveReactionsForEmoteTests : ReactionTrackerTests
 	[TestCase(1, 1), TestCase(2, 1), TestCase(2, 2), TestCase(8, 4)]
 	public async Task RemoveReactionsForEmote(int wtbMessages, int reactionsPerMessage)
 	{
-		int expectedReactionRows = wtbMessages * reactionsPerMessage;
+		int expectedReactionRows = (wtbMessages * reactionsPerMessage) + wtbMessages; //Include self-downvotes
 		var messages = await CreateMessages(wtbMessages, reactionsPerMessage);
 
 		//Ensure we can properly remove multiple reaction rows.
 		var message = await WingTechBot.BotChannel.GetMessageAsync(messages.First().Id);
-		await message.AddReactionAsync(ReactionEmotes.First().Parsed);
+		await message.AddReactionAsync(ReactionEmotes.Last().Parsed);
 		expectedReactionRows++;
 
 		await Task.Delay(Constants.DatabaseDelay);

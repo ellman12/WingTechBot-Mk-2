@@ -4,8 +4,8 @@ public abstract class ReactionTrackerTests : IntegrationTests
 {
 	public static readonly ReactionEmote[] ReactionEmotes =
 	[
-		new("upvote", 1325537736626671697ul),
 		new("downvote", 1328082903703224330ul),
+		new("upvote", 1325537736626671697ul),
 		new("👀", null),
 		new("🤩", null)
 	];

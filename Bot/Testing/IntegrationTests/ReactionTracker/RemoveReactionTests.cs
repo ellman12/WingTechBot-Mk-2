@@ -6,7 +6,7 @@ public sealed class RemoveReactionTests : ReactionTrackerTests
 	[TestCase(1, 1), TestCase(2, 1), TestCase(2, 2), TestCase(8, 4)]
 	public async Task RemoveReactionsFromMessage(int wtbMessages, int reactionsPerMessage)
 	{
-		int expectedReactionRows = wtbMessages * reactionsPerMessage;
+		int expectedReactionRows = (wtbMessages * reactionsPerMessage) + wtbMessages; //Include self-downvotes
 		
 		var messages = await CreateMessages(wtbMessages, reactionsPerMessage);
 
@@ -15,7 +15,7 @@ public sealed class RemoveReactionTests : ReactionTrackerTests
 		await using BotDbContext context = new();
 		Assert.AreEqual(await context.ReactionEmotes.CountAsync(), reactionsPerMessage);
 		Assert.AreEqual(await context.Reactions.CountAsync(), expectedReactionRows);
-		Assert.That(await context.Reactions.AllAsync(r => r.GiverId == BotTester.Config.UserId && r.ReceiverId == WingTechBot.Config.UserId));
+		Assert.That(await context.Reactions.AllAsync(r => r.ReceiverId == WingTechBot.Config.UserId));
 
 		//Remove the freshly-created reactions
 		foreach (int i in Enumerable.Range(0, wtbMessages))
