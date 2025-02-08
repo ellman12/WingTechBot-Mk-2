@@ -50,4 +50,47 @@ public sealed partial class Reaction
 			})
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
+
+	///Gets each reaction a user has given and the amount of each, including legacy karma and ignoring self-reactions.
+	public static async Task<Dictionary<ReactionEmote, int>> GetReactionsUserGiven(ulong giverId, int year)
+	{
+		await using BotDbContext context = new();
+		var legacyKarma = await context.LegacyKarma.FirstOrDefaultAsync(lk => lk.UserId == giverId && lk.Year == year);
+		var userKarma = legacyKarma == null ? new Dictionary<ReactionEmote, int>() : legacyKarma.ConvertEmotes();
+
+		return context.Reactions
+			.Include(r => r.Emote)
+			.Where(r => r.GiverId == giverId && r.GiverId != r.ReceiverId && r.Emote.CreatedAt.Year == year)
+			.GroupBy(r => r.EmoteId)
+			.AsEnumerable()
+			.Select(g => (g.First().Emote, Count: g.Count()))
+			.GroupJoin(userKarma, reactions => reactions.Emote.Id, uk => uk.Key.Id, (reactions, uk) => new
+			{
+				reactions.Emote,
+				Count = reactions.Count + uk.DefaultIfEmpty().First().Value
+			})
+			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
+	}
+
+	///<summary>Gets each reaction a user has given and the amount of each, excluding self-reactions (unless you mention yourself) and legacy karma.</summary>
+	///<remarks>Legacy karma is ignored as it's impossible to calculate this.</remarks>
+	public static async Task<Dictionary<ReactionEmote, int>> GetReactionsGivenToUsersForYear(ulong giverId, ulong[] receiverIds, int year)
+	{
+		await using BotDbContext context = new();
+
+		Expression<Func<Reaction, bool>> filter;
+		if (receiverIds.Length == 1 && receiverIds.First() == giverId)
+			filter = reaction => reaction.ReceiverId == giverId;
+		else
+			filter = reaction => reaction.ReceiverId != giverId;
+
+		return context.Reactions
+			.Include(r => r.Emote)
+			.Where(r => r.GiverId == giverId && receiverIds.Contains(r.ReceiverId) && r.Emote.CreatedAt.Year == year)
+			.Where(filter)
+			.GroupBy(r => r.EmoteId)
+			.AsEnumerable()
+			.Select(g => (g.First().Emote, Count: g.Count()))
+			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
+	}
 }
