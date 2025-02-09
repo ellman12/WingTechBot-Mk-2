@@ -107,4 +107,21 @@ public sealed partial class Reaction
 			.Select(g => (g.First().Emote, Count: g.Count()))
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
+
+	///<summary>Returns a selection of your messages that got the most reactions with this emote, excluding legacy karma and self-reactions.</summary>
+	///<remarks>Legacy karma is ignored as it's impossible to calculate this.</remarks>
+	public static async Task<(ulong messageId, ReactionEmote emote, int count)[]> GetTopMessagesForUser(ulong userId, string emoteName, int amount)
+	{
+		await using BotDbContext context = new();
+
+		return context.Reactions
+			.Include(r => r.Emote)
+			.Where(r => r.GiverId != userId && r.ReceiverId == userId && r.Emote.Name == emoteName)
+			.GroupBy(r => r.MessageId)
+			.AsEnumerable()
+			.Select(g => (g.First().MessageId, g.First().Emote, count: g.Count()))
+			.OrderByDescending(g => g.count)
+			.Take(amount)
+			.ToArray();
+	}
 }
