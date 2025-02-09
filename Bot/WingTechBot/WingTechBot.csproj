@@ -18,6 +18,7 @@
         <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
         <Using Include="System.ComponentModel.DataAnnotations"/>
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
+        <Using Include="System.Linq.Expressions"/>
 
         <Using Include="WingTechBot.Commands"/>
         <Using Include="WingTechBot.Commands.Reactions"/>
