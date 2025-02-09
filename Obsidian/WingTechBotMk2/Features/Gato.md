@@ -4,5 +4,5 @@ Gato is a silly little command for storing pictures and videos (<= 10 MB) of cat
 
 `/gato` is used to either show a random file, or a random file of a specific cat.
 
-`/gato-top` is similar to [[Reaction Tracking and Karma#/top]] and is used to show a leaderboard for which cats have the most files:
+`/top-gatos` is similar to [[Reaction Tracking and Karma#/top]] and is used to show a leaderboard for which cats have the most files:
 
