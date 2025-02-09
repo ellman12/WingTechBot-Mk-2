@@ -27,6 +27,7 @@ public sealed class WingTechBot
 	private readonly ReactionsFromCommand reactionsFromCommand = new();
 	private readonly ReactionsGivenCommand reactionsGivenCommand = new();
 	private readonly TopCommand topCommand = new();
+	private readonly TopEmotesCommand topEmotesCommand = new();
 
 	private readonly InfoCommand infoCommand = new();
 
@@ -82,6 +83,7 @@ public sealed class WingTechBot
 		await reactionsFromCommand.SetUp(this);
 		await reactionsGivenCommand.SetUp(this);
 		await topCommand.SetUp(this);
+		await topEmotesCommand.SetUp(this);
 		await infoCommand.SetUp(this);
 		await gatoCommand.SetUp(this);
 		await gatoAddCommand.SetUp(this);
