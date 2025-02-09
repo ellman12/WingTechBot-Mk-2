@@ -2,12 +2,11 @@ namespace WingTechBot.Commands.Reactions;
 
 public sealed class TopEmotesCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		await AddCommand(bot, new SlashCommandBuilder()
+		return new SlashCommandBuilder()
 			.WithName("top-emotes")
-			.WithDescription("Totals up how many reactions of each emote have been sent this year (including legacy karma)")
-		);
+			.WithDescription("Totals up how many reactions of each emote have been sent this year (including legacy karma)");
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

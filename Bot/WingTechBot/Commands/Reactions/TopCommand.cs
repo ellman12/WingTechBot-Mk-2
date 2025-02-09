@@ -2,13 +2,11 @@ namespace WingTechBot.Commands.Reactions;
 
 public sealed class TopCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		var topCommand = new SlashCommandBuilder()
+		return new SlashCommandBuilder()
 			.WithName("top")
 			.WithDescription("Shows the leaderboard for karma");
-
-		await AddCommand(bot, topCommand);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

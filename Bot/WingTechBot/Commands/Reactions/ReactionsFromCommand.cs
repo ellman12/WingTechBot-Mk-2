@@ -2,9 +2,9 @@ namespace WingTechBot.Commands.Reactions;
 
 public sealed class ReactionsFromCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		await AddCommand(bot, new SlashCommandBuilder()
+		return new SlashCommandBuilder()
 			.WithName("reactions-from")
 			.WithDescription("Shows all reactions you have received this year from a user or role (excluding legacy karma)")
 			.AddOption(new SlashCommandOptionBuilder()
@@ -12,8 +12,7 @@ public sealed class ReactionsFromCommand : SlashCommand
 				.WithDescription("The user or role")
 				.WithType(ApplicationCommandOptionType.Mentionable)
 				.WithRequired(true)
-			)
-		);
+			);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

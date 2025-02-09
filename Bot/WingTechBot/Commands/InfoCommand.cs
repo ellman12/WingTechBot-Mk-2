@@ -3,10 +3,9 @@ namespace WingTechBot.Commands;
 ///Displays various info about the bot.
 public sealed class InfoCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		var infoCommand = new SlashCommandBuilder().WithName("info").WithDescription("Displays various info about the bot.");
-		await AddCommand(bot, infoCommand);
+		return new SlashCommandBuilder().WithName("info").WithDescription("Displays various info about the bot.");
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

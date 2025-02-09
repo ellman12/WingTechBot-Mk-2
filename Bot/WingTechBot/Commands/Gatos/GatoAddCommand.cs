@@ -2,9 +2,9 @@ namespace WingTechBot.Commands.Gatos;
 
 public sealed class GatoAddCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		var gatoAddCommand = new SlashCommandBuilder()
+		return new SlashCommandBuilder()
 			.WithName("gato-add")
 			.WithDescription("Upload an image or video of a cat, optionally including a name.")
 			.AddOption(new SlashCommandOptionBuilder()
@@ -19,8 +19,6 @@ public sealed class GatoAddCommand : SlashCommand
 				.WithType(ApplicationCommandOptionType.String)
 				.WithRequired(false)
 			);
-
-		await AddCommand(bot, gatoAddCommand);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

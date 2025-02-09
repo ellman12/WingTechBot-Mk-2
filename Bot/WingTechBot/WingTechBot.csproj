@@ -16,6 +16,7 @@
         <Using Include="Discord.WebSocket"/>
         <Using Include="Microsoft.EntityFrameworkCore"/>
         <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
+        <Using Include="System.Collections.Concurrent"/>
         <Using Include="System.ComponentModel.DataAnnotations"/>
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
         <Using Include="System.Linq.Expressions"/>

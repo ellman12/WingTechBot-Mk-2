@@ -1,6 +1,3 @@
-using WingTechBot.Commands.Gatos;
-using WingTechBot.Commands.Reactions;
-
 namespace WingTechBot;
 
 public sealed class WingTechBot
@@ -22,19 +19,8 @@ public sealed class WingTechBot
 
 	private WingTechBot() {}
 
+	private readonly ConcurrentDictionary<string, SlashCommand> slashCommands = new();
 	private readonly ReactionTracker reactionTracker = new();
-	private readonly ReactionsCommand reactionsCommand = new();
-	private readonly ReactionsFromCommand reactionsFromCommand = new();
-	private readonly ReactionsGivenCommand reactionsGivenCommand = new();
-	private readonly TopCommand topCommand = new();
-	private readonly TopEmotesCommand topEmotesCommand = new();
-	private readonly TopMessagesCommand topMessagesCommand = new();
-
-	private readonly InfoCommand infoCommand = new();
-
-	private readonly GatoCommand gatoCommand = new();
-	private readonly GatoAddCommand gatoAddCommand = new();
-	private readonly TopGatosCommand topGatosCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
@@ -67,6 +53,8 @@ public sealed class WingTechBot
 
 	private async Task SetUpCommands()
 	{
+		Client.SlashCommandExecuted += HandleCommand;
+
 		if (SlashCommand.NoRecreateCommands)
 		{
 			Logger.LogLine("Commands will not be recreated");
@@ -78,18 +66,19 @@ public sealed class WingTechBot
 			Logger.LogLine("Setting up slash commands");
 		}
 
-		Client.SlashCommandExecuted += PreprocessCommand;
+		var commands = typeof(WingTechBot).Assembly
+			.GetTypes()
+			.Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(SlashCommand)))
+			.Select(Activator.CreateInstance)
+			.Cast<SlashCommand>();
 
-		await reactionsCommand.SetUp(this);
-		await reactionsFromCommand.SetUp(this);
-		await reactionsGivenCommand.SetUp(this);
-		await topCommand.SetUp(this);
-		await topEmotesCommand.SetUp(this);
-		await topMessagesCommand.SetUp(this);
-		await infoCommand.SetUp(this);
-		await gatoCommand.SetUp(this);
-		await gatoAddCommand.SetUp(this);
-		await topGatosCommand.SetUp(this);
+		await Parallel.ForEachAsync(commands, async (command, _) =>
+		{
+			await command.SetUp(this);
+
+			if (!slashCommands.TryAdd(command.Name, command))
+				await Logger.LogExceptionAsMessage(new Exception($"Error initializing {command.Name} command"), BotChannel);
+		});
 	}
 
 	///Removes all slash commands from the bot. However, because Discord is terrible this is unreliable and often does nothing.
@@ -99,9 +88,23 @@ public sealed class WingTechBot
 		await guild.DeleteApplicationCommandsAsync();
 	}
 
-	private async Task PreprocessCommand(SocketSlashCommand command)
+	private async Task HandleCommand(SocketSlashCommand command)
 	{
 		//Makes command timeout longer than 3 seconds. Essential for debug breakpoints.
 		await command.DeferAsync();
+
+		string name = command.CommandName;
+
+		try
+		{
+			if (slashCommands.TryGetValue(name, out var slashCommand))
+				await slashCommand.HandleCommand(command);
+			else
+				await Logger.LogExceptionAsMessage(new Exception($"Command {name} not found"), command.Channel);
+		}
+		catch (Exception e)
+		{
+			await Logger.LogExceptionAsMessage(e, command.Channel);
+		}
 	}
 }

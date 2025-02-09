@@ -2,13 +2,11 @@ namespace WingTechBot.Commands.Reactions;
 
 public sealed class ReactionsCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		var reactionsCommand = new SlashCommandBuilder()
-				.WithName("reactions")
-				.WithDescription("Shows totals for all reactions you have received this year")
-			;
-		await AddCommand(bot, reactionsCommand);
+		return new SlashCommandBuilder()
+			.WithName("reactions")
+			.WithDescription("Shows totals for all reactions you have received this year");
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

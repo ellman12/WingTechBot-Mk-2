@@ -2,9 +2,9 @@ namespace WingTechBot.Commands.Reactions;
 
 public sealed class TopMessagesCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		await AddCommand(bot, new SlashCommandBuilder()
+		return new SlashCommandBuilder()
 			.WithName("top-messages")
 			.WithDescription("Returns a selection of your messages that got the most reactions with this emote")
 			.AddOption(new SlashCommandOptionBuilder()
@@ -18,8 +18,7 @@ public sealed class TopMessagesCommand : SlashCommand
 				.WithDescription("How many messages")
 				.WithType(ApplicationCommandOptionType.Integer)
 				.WithRequired(false)
-			)
-		);
+			);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)

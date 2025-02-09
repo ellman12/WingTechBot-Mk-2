@@ -2,10 +2,9 @@ namespace WingTechBot.Commands.Gatos;
 
 public sealed class TopGatosCommand : SlashCommand
 {
-	public override async Task SetUp(WingTechBot bot)
+	protected override SlashCommandBuilder CreateCommand()
 	{
-		var gatoTopCommand = new SlashCommandBuilder().WithName("top-gatos").WithDescription("Shows a leaderboard for how many items each cat has.");
-		await AddCommand(bot, gatoTopCommand);
+		return new SlashCommandBuilder().WithName("top-gatos").WithDescription("Shows a leaderboard for how many items each cat has.");
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)
