@@ -1,7 +1,7 @@
 # WingTechBot
 ![Online](https://img.shields.io/discord/111588824525627392?label=Servicing%20Users%3A&style=for-the-badge)
 
-WingTech Bot is a Discord bot written in C# that provides a karma system, games, cute inside jokes, and more to my private Discord server.
+WingTech Bot is a Discord bot written in C# that provides a reaction tracker, karma system, games, cute inside jokes, and more to my private Discord server.
 
 ## Contribution
 
