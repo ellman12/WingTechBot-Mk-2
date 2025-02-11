@@ -29,7 +29,7 @@ public sealed class TopCommand : SlashCommand
 		}
 
 		var entries = karmaLeaderboard.Aggregate(
-			(rankings: new List<(int rank, string username, int karma)>(), lastKarma: 0, index: 1, lastRank: 0),
+			(rankings: new List<(int rank, string username, int karma)>(), lastKarma: null as int?, index: 1, lastRank: 0),
 			(current, entry) =>
 			{
 				var (rankings, lastKarma, index, lastRank) = current;
