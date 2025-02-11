@@ -6,7 +6,13 @@ public sealed class ReactionsCommand : SlashCommand
 	{
 		return new SlashCommandBuilder()
 			.WithName("reactions")
-			.WithDescription("Shows totals for all reactions you have received this year");
+			.WithDescription("Shows totals for all reactions you have received this year")
+			.AddOption(new SlashCommandOptionBuilder()
+				.WithName("user")
+				.WithDescription("An optional user to check the reactions of.")
+				.WithType(ApplicationCommandOptionType.User)
+				.WithRequired(false)
+			);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)
@@ -14,24 +20,19 @@ public sealed class ReactionsCommand : SlashCommand
 		if (command.CommandName != Name)
 			return;
 
-		var options = command.Data.Options;
-
-		if (options.Count == 0)
-		{
-			await UserReactionsForYear(command);
-			return;
-		}
+		await UserReactionsForYear(command);
 	}
 
 	private static async Task UserReactionsForYear(SocketSlashCommand command)
 	{
 		int year = DateTime.Now.Year;
-		var reactions = await Reaction.GetReactionsUserReceived(command.User.Id, year);
+		var user = command.Data.Options.FirstOrDefault(o => o.Name == "user")?.Value as SocketUser ?? command.User;
+		var reactions = await Reaction.GetReactionsUserReceived(user.Id, year);
 
 		string message;
 		if (reactions.Count > 0)
 		{
-			message = reactions.Aggregate($"{command.User.Username} received\n", (current, reaction) => current + $"* {reaction.Value} {reaction.Key}\n");
+			message = reactions.Aggregate($"{user.Username} received\n", (current, reaction) => current + $"* {reaction.Value} {reaction.Key}\n");
 			message += $"in {year}";
 		}
 		else

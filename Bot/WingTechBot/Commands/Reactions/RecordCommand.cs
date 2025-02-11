@@ -14,7 +14,13 @@ public sealed class RecordCommand : SlashCommand
 
 		return new SlashCommandBuilder()
 			.WithName("record")
-			.WithDescription("Shows your upvotes, downvotes, and awards.");
+			.WithDescription("Shows your upvotes, downvotes, and awards.")
+			.AddOption(new SlashCommandOptionBuilder()
+				.WithName("user")
+				.WithDescription("An optional user to check the record of.")
+				.WithType(ApplicationCommandOptionType.User)
+				.WithRequired(false)
+			);
 	}
 
 	public override async Task HandleCommand(SocketSlashCommand command)
@@ -28,7 +34,9 @@ public sealed class RecordCommand : SlashCommand
 	private async Task GetUserRecord(SocketSlashCommand command)
 	{
 		int year = DateTime.Now.Year;
-		var reactions = await Reaction.GetReactionsUserReceived(command.User.Id, year);
+		var user = command.Data.Options.FirstOrDefault(o => o.Name == "user")?.Value as SocketUser ?? command.User;
+
+		var reactions = await Reaction.GetReactionsUserReceived(user.Id, year);
 
 		var result = serverEmotes
 			.Where(r => emoteNames.Contains(r.Key.Name))
@@ -46,6 +54,6 @@ public sealed class RecordCommand : SlashCommand
 		var platinum = result["platinum"];
 
 		int karma = upvote.Count - downvote.Count;
-		await command.FollowupAsync($"{command.User.Mention} has {karma} karma ({upvote.Count} {upvote.Emote} {downvote.Count} {downvote.Emote}), and {silver.Count} {silver.Emote} {gold.Count} {gold.Emote} {platinum.Count} {platinum.Emote} for {year}");
+		await command.FollowupAsync($"{user.Mention} has {karma} karma ({upvote.Count} {upvote.Emote} {downvote.Count} {downvote.Emote}), and {silver.Count} {silver.Emote} {gold.Count} {gold.Emote} {platinum.Count} {platinum.Emote} for {year}");
 	}
 }
