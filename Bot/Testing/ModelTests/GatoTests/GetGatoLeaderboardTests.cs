@@ -6,7 +6,7 @@ public sealed class GetGatoLeaderboardTests : ModelTests
 	[
 		new("https://cdn.discordapp.com/attachments/this_isnt_a_real_image.jpg", "stormy", 123456ul),
 		new("https://cdn.discordapp.com/attachments/thisisanotherfile.png", "a cat name with spaces", 69420ul),
-		new("https://cdn.discordapp.com/attachments/thisisanotherfile.png", null, 3ul)
+		new("https://cdn.discordapp.com/attachments/thisisanotherfile.png", "cat1", 3ul)
 	];
 
 	[TestCase]

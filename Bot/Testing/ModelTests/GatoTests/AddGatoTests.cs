@@ -6,13 +6,14 @@ public sealed class AddGatoTests : ModelTests
 	[
 		new("stormy", 123456ul, "https://cdn.discordapp.com/attachments/this_isnt_a_real_image.jpg"),
 		new("a cat name with spaces", 69420ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.png"),
-		new(null, 3ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.mp4")
+		new("a name of a cat", 3ul, "https://cdn.discordapp.com/attachments/thisisanotherfile.mp4")
 	];
 
 	private static readonly TestCaseData[] InvalidGatos =
 	[
 		new("invalid gato 1", 123456ul, "kjafhjkasdhf"),
-		new("invalid gato 2", 0ul, "https://cdn.discordapp.com/attachments/thisisafile.png")
+		new("invalid gato 2", 0ul, "https://cdn.discordapp.com/attachments/thisisafile.png"),
+		new(null, 69420ul, "https://cdn.discordapp.com/attachments/thisisafile.png")
 	];
 
 	[TestCaseSource(nameof(ValidGatos))]

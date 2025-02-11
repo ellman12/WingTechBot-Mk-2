@@ -6,18 +6,18 @@ public sealed class GatoAddCommand : SlashCommand
 	{
 		return new SlashCommandBuilder()
 			.WithName("gato-add")
-			.WithDescription("Upload an image or video of a cat, optionally including a name.")
+			.WithDescription("Upload an image or video of a cat.")
+			.AddOption(new SlashCommandOptionBuilder()
+				.WithName("name")
+				.WithDescription("Name of the gato")
+				.WithType(ApplicationCommandOptionType.String)
+				.WithRequired(true)
+			)
 			.AddOption(new SlashCommandOptionBuilder()
 				.WithName("media")
 				.WithDescription("Media of the gato")
 				.WithType(ApplicationCommandOptionType.Attachment)
 				.WithRequired(true)
-			)
-			.AddOption(new SlashCommandOptionBuilder()
-				.WithName("name")
-				.WithDescription("Name of the gato")
-				.WithType(ApplicationCommandOptionType.String)
-				.WithRequired(false)
 			);
 	}
 
@@ -54,7 +54,7 @@ public sealed class GatoAddCommand : SlashCommand
 			return;
 		}
 
-		string name = (string)options.FirstOrDefault(o => o.Name == "name")?.Value;
-		await Gato.AddGato(media.Url, name?.Trim(), command.User.Id);
+		var name = options.First(o => o.Name == "name").Value.ToString() ?? throw new NullReferenceException("Missing gato name");
+		await Gato.AddGato(media.Url, name.Trim(), command.User.Id);
 	}
 }

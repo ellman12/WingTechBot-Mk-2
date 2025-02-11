@@ -13,13 +13,14 @@ public sealed partial class Gato
 	public static async Task<Gato> AddGato(string url, string name, ulong uploaderId)
 	{
 		if (!IsValidUrl(url)) throw new ArgumentException("Invalid url");
+		if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be empty");
 		if (uploaderId == 0) throw new ArgumentException("Invalid uploaderId");
 
 		if (await Find(url, name, uploaderId) != null)
 			throw new ArgumentException("Gato exists");
 
 		await using BotDbContext context = new();
-		Gato gato = new(url, name?.ToLower(), uploaderId);
+		Gato gato = new(url, name.ToLower(), uploaderId);
 		await context.Gatos.AddAsync(gato);
 		await context.SaveChangesAsync();
 		return gato;

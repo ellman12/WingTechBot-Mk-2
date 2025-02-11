@@ -11,6 +11,7 @@ public sealed partial class Gato(string url, string name, ulong uploaderId) : Mo
 	public string Url { get; private init; } = url;
 
 	///Name of the cat.
+	[Required]
 	public string Name { get; private init; } = name;
 
 	///Who uploaded the cat media.
