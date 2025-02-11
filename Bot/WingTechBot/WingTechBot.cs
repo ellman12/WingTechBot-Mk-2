@@ -62,7 +62,7 @@ public sealed class WingTechBot
 		else
 		{
 			Logger.LogLine("Clearing slash commands");
-			await ClearCommands();
+			await Client.BulkOverwriteGlobalApplicationCommandsAsync(Enumerable.Empty<ApplicationCommandProperties>().ToArray());
 			Logger.LogLine("Setting up slash commands");
 		}
 
@@ -79,13 +79,6 @@ public sealed class WingTechBot
 			if (!slashCommands.TryAdd(command.Name, command))
 				await Logger.LogExceptionAsMessage(new Exception($"Error initializing {command.Name} command"), BotChannel);
 		});
-	}
-
-	///Removes all slash commands from the bot. However, because Discord is terrible this is unreliable and often does nothing.
-	private async Task ClearCommands()
-	{
-		var guild = Client.GetGuild(Config.ServerId);
-		await guild.DeleteApplicationCommandsAsync();
 	}
 
 	private async Task HandleCommand(SocketSlashCommand command)
