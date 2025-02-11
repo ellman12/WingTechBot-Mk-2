@@ -21,7 +21,7 @@ public sealed class TopGatosCommand : SlashCommand
 		}
 
 		var entries = gatoLeaderboard.Aggregate(
-			(rankings: new List<(int rank, string name, int count)>(), lastCount: 0, index: 1, lastRank: 0),
+			(rankings: new List<(int rank, string name, int count)>(), lastCount: null as int?, index: 1, lastRank: 0),
 			(current, entry) =>
 			{
 				var (rankings, lastCount, index, lastRank) = current;
