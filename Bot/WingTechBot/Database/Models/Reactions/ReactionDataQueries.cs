@@ -94,7 +94,7 @@ public sealed partial class Reaction
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
-	///Calculates which emotes have been used the most in reactions.
+	///Calculates which emotes have been used the most in reactions, including self-reactions.
 	public static async Task<Dictionary<ReactionEmote, int>> GetEmoteLeaderboardForYear(int year)
 	{
 		await using BotDbContext context = new();
@@ -105,6 +105,7 @@ public sealed partial class Reaction
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, Count: g.Count()))
+			.OrderByDescending(g => g.Count)
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
