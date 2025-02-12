@@ -14,13 +14,19 @@ public sealed class WingTechBot
 	{
 		MessageCacheSize = 100,
 		AlwaysDownloadUsers = true,
-		GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+		GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildMembers
 	};
 
 	private WingTechBot() {}
 
 	private readonly ConcurrentDictionary<string, SlashCommand> slashCommands = new();
 	private readonly ReactionTracker reactionTracker = new();
+
+	public GameHandler GameHandler { get; private set; }
+	private readonly StartGameCommand startGameCommand = new();
+	private readonly ListGamesCommand listGamesCommand = new();
+	private readonly ActiveGamesCommand activeGamesCommand = new();
+	private readonly EndGamesCommand endGamesCommand = new();
 
 	public static async Task<WingTechBot> Create(string configPath = null)
 	{
@@ -35,6 +41,8 @@ public sealed class WingTechBot
 		await bot.Client.StartAsync();
 
 		bot.reactionTracker.SetUp(bot);
+
+		bot.GameHandler = new GameHandler(bot);
 
 		return bot;
 	}

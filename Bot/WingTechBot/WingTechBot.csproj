@@ -22,7 +22,11 @@
         <Using Include="System.Linq.Expressions"/>
 
         <Using Include="WingTechBot.Commands"/>
+        <Using Include="WingTechBot.Commands.Gatos"/>
         <Using Include="WingTechBot.Commands.Reactions"/>
+        <Using Include="WingTechBot.Games"/>
+        <Using Include="WingTechBot.Games.GameCommands"/>
+
         <Using Include="WingTechBot.Database"/>
         <Using Include="WingTechBot.Database.Models"/>
         <Using Include="WingTechBot.Database.Models.Gatos"/>
@@ -46,6 +50,14 @@
         <Content Include="wingtech_logo.ico"/>
 
         <Content Include="config.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+
+        <Content Include="Games/words.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </Content>
+
+        <Content Include="Games/banned.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
