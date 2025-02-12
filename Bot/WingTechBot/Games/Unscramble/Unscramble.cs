@@ -42,6 +42,4 @@ public sealed class Unscramble : Game
 			attempts++;
 		}
 	}
-
-	protected override async Task ProcessMessage(SocketMessage message) {}
 }

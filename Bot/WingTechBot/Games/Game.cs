@@ -38,11 +38,7 @@ public abstract class Game
 
 		if (!ValidMessage(message))
 			return;
-
-		await ProcessMessage(message);
 	}
-
-	protected abstract Task ProcessMessage(SocketMessage message);
 
 	protected async Task SendMessage(string message) => await ThreadChannel.SendMessageAsync(message);
 

@@ -384,6 +384,4 @@ public class Hangman : Game
 	
 		return true;
 	}
-
-	protected override async Task ProcessMessage(SocketMessage message) {}
 }
