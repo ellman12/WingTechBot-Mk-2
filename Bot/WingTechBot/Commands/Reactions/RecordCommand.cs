@@ -38,6 +38,12 @@ public sealed class RecordCommand : SlashCommand
 
 		var reactions = await Reaction.GetReactionsUserReceived(user.Id, year);
 
+		if (!reactions.Any())
+		{
+			await command.FollowupAsync($"No karma or awards for {year}");
+			return;
+		}
+
 		var result = serverEmotes
 			.Where(r => emoteNames.Contains(r.Key.Name))
 			.GroupJoin(reactions, s => s.Key.Name, r => r.Key.Name, (pair, pairs) => new

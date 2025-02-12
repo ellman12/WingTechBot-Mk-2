@@ -36,6 +36,7 @@ public static class Logger
 	public static async Task LogExceptionAsMessage(Exception e, IMessageChannel channel)
 	{
 		LogLine($"Exception raised: {e.Message}\n", LogSeverity.Error);
+		LogLine(e.StackTrace, LogSeverity.Error);
 		await channel.SendMessageAsync($"Exception raised: {e.Message}\n");
 	}
 

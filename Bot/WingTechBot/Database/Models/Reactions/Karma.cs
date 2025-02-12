@@ -6,16 +6,38 @@ public static class Karma
 	public static async Task<(ulong receiverId, int karma)[]> GetKarmaLeaderboard(int year)
 	{
 		await using BotDbContext context = new();
-		return await context.Reactions
+
+		//Performs an OUTER JOIN
+		//TODO: this is very ugly and if we have to do this again, this should go in a custom extension method
+
+		var reactionKarma = context.Reactions
 			.Include(r => r.Emote)
 			.Where(r => r.Emote.KarmaValue != 0 && r.GiverId != r.ReceiverId && r.CreatedAt.Year == year)
 			.GroupBy(r => r.ReceiverId)
-			.GroupJoin(context.LegacyKarma, reactions => reactions.Key, lk => lk.UserId, (reactions, legacyKarma) => new
+			.Select(reactions => new
 			{
 				id = reactions.Key,
-				karma = reactions.Sum(e => e.Emote.KarmaValue) + legacyKarma.Where(lk => lk.Year == year).Sum(lk => lk.Upvotes - lk.Downvotes)
+				karma = reactions.Sum(e => e.Emote.KarmaValue)
+			});
+
+		var legacyKarma = context.LegacyKarma
+			.Where(lk => lk.Year == year)
+			.GroupBy(lk => lk.UserId)
+			.Select(legacy => new
+			{
+				id = legacy.Key,
+				karma = legacy.Sum(lk => lk.Upvotes - lk.Downvotes)
+			});
+
+		return await reactionKarma
+			.Union(legacyKarma)
+			.GroupBy(k => k.id)
+			.Select(k => new
+			{
+				id = k.Key,
+				karma = k.Sum(x => x.karma)
 			})
-			.OrderByDescending(r => r.karma)
+			.OrderByDescending(k => k.karma)
 			.AsAsyncEnumerable()
 			.Select(k => (receiverId: k.id, k.karma))
 			.ToArrayAsync();
