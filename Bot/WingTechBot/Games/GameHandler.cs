@@ -31,8 +31,6 @@ public sealed class GameHandler
 		game.ThreadChannel = await Bot.BotChannel.CreateThreadAsync($"{gameName} {DateTime.Now:g}", autoArchiveDuration: ThreadArchiveDuration.OneHour);
 		game.AvailablePlayers = Bot.BotChannel.Users;
 
-		game.AvailablePlayers = Bot.Guild.GetChannel(1331075094570733568).Users; //TODO: this is temp
-
 		ActiveGames.Add(game);
 
 		Bot.Client.MessageReceived += game.MessageReceived;
