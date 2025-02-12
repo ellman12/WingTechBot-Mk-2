@@ -87,10 +87,23 @@ public sealed partial class Reaction
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
-	///Calculates which emotes have been used the most in reactions, including self-reactions.
+	///Calculates which emotes have been used the most in reactions, including legacy karma and self-reactions.
 	public static async Task<Dictionary<ReactionEmote, int>> GetEmoteLeaderboardForYear(int year)
 	{
 		await using BotDbContext context = new();
+		Dictionary<ReactionEmote, int> legacyKarma = new();
+
+		//Gets ALL legacy karma data (if any) and join with reactions below.
+		if (context.LegacyKarma.Any(lk => lk.Year == year))
+		{
+			legacyKarma = context.LegacyKarma
+				.Where(lk => lk.Year == year)
+				.GroupBy(k => k.Year)
+				.Select(g => new LegacyKarma(0, year, g.Sum(k => k.Upvotes), g.Sum(k => k.Downvotes), g.Sum(k => k.Silver), g.Sum(k => k.Gold), g.Sum(k => k.Platinum)))
+				.AsEnumerable()
+				.Single()
+				.ConvertEmotes();
+		}
 
 		return context.Reactions
 			.Include(r => r.Emote)
@@ -98,7 +111,12 @@ public sealed partial class Reaction
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, Count: g.Count()))
-			.OrderByDescending(g => g.Count)
+			.GroupJoin(legacyKarma, reactions => reactions.Emote.Id, uk => uk.Key.Id, (reactions, uk) => new
+			{
+				reactions.Emote,
+				Count = reactions.Count + uk.DefaultIfEmpty().First().Value
+			})
+			.OrderByDescending(e => e.Count)
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
