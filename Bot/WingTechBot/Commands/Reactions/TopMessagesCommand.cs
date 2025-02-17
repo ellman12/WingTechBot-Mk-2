@@ -44,7 +44,7 @@ public sealed class TopMessagesCommand : SlashCommand
 			return;
 		}
 
-		var entries = messages.Select(entry => $"{entry.count.ToString(),-4} {command.Channel.GetMessageAsync(entry.messageId).Result.GetJumpUrl()}");
+		var entries = messages.Select(entry => $"{entry.count.ToString(),-4} {Bot.Guild.GetTextChannel(entry.channelId).GetMessageAsync(entry.messageId).Result.GetJumpUrl()}");
 		await command.FollowupAsync($"Top messages for {messages.First().emote}\n\n{String.Join('\n', entries)}");
 	}
 }
