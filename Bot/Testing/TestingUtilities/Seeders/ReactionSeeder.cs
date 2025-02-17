@@ -37,7 +37,7 @@ public static class ReactionSeeder
 			var emotes = PickUniqueEmotes(random.Next(maxReactsPerMessage));
 			foreach (var emote in emotes)
 			{
-				await Reaction.AddReaction(giverId, receiverId, messageId, emote.Key, emote.Value);
+				await Reaction.AddReaction(giverId, receiverId, 1, messageId, emote.Key, emote.Value); //TODO: change this 1 to something random once everything else is working again.
 			}
 		}
 	}

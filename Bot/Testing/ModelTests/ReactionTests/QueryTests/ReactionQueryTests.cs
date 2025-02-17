@@ -10,7 +10,7 @@ public sealed class ReactionQueryTests : ReactionTests
 		await ReactionSeeder.Seed(420, 250, 400, 4, 20, 24);
 		await LegacyKarma.ImportFile(Path.Combine(KarmaTestsPath, "karma.txt"), year);
 		await LegacyKarma.ImportFile(Path.Combine(KarmaTestsPath, "karma.txt"), 2022); //If all works properly these will be ignored.
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.ModelTestDelay);
 
 		await using BotDbContext context = new();
 		var testUser = context.Reactions.First().ReceiverId;
