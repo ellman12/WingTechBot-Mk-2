@@ -6,6 +6,8 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <IsPackable>false</IsPackable>
+
+        <NoWarn>NUnit2005</NoWarn>
     </PropertyGroup>
     
     <!-- Global usings -->

@@ -18,8 +18,8 @@ public sealed class ReactionQueryTests : ReactionTests
 
 		Assert.NotZero(results.Count);
 		Assert.That(results.All(result => result.Value > 0));
-		Assert.AreEqual(results.First(r => r.Key.Name == "upvote").Value, 3);
-		Assert.AreEqual(results.First(r => r.Key.Name == "downvote").Value, 2);
-		Assert.AreEqual(results.First(r => r.Key.Name == "platinum").Value, 2);
+		Assert.AreEqual(3, results.First(r => r.Key.Name == "upvote").Value);
+		Assert.AreEqual(2, results.First(r => r.Key.Name == "downvote").Value);
+		Assert.AreEqual(2, results.First(r => r.Key.Name == "platinum").Value);
 	}
 }
