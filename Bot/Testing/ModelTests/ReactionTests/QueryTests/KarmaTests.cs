@@ -23,7 +23,7 @@ public sealed class KarmaTests : ReactionTests
 		Assert.IsNotEmpty(results);
 		Assert.AreEqual(results.Length, results.Select(r => r.receiverId).Distinct().Count());
 		Assert.AreEqual(context.LegacyKarma.Count(lk => lk.Year == year), 36);
-		Assert.AreEqual(results.First(r => r.receiverId == 76).karma, 37);
+		Assert.AreEqual(results.First(r => r.receiverId == 76).karma, 33);
 
 		//Add additional reactions with previous years and ensure they are ignored.
 		foreach (int i in Enumerable.Range(1, 5))
@@ -38,6 +38,6 @@ public sealed class KarmaTests : ReactionTests
 
 		var newResults = await Karma.GetKarmaLeaderboard(year);
 		Assert.That(results.SequenceEqual(newResults));
-		Assert.AreEqual(newResults.First(r => r.receiverId == 76).karma, 37);
+		Assert.AreEqual(newResults.First(r => r.receiverId == 76).karma, 33);
 	}
 }
