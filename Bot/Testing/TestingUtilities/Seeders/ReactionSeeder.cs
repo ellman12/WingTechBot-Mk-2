@@ -32,12 +32,13 @@ public static class ReactionSeeder
 		{
 			ulong giverId = userIds[random.Next(0, userIds.Length)];
 			ulong receiverId = userIds[random.Next(0, userIds.Length)];
+			ulong channelId = (ulong)random.NextInt64(0, MaxIdValue);
 			ulong messageId = (ulong)random.NextInt64(1, MaxIdValue);
 
 			var emotes = PickUniqueEmotes(random.Next(maxReactsPerMessage));
 			foreach (var emote in emotes)
 			{
-				await Reaction.AddReaction(giverId, receiverId, messageId, emote.Key, emote.Value);
+				await Reaction.AddReaction(giverId, receiverId, channelId, messageId, emote.Key, emote.Value);
 			}
 		}
 	}

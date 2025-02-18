@@ -13,7 +13,7 @@ public sealed class RemoveReactionsForEmoteTests : ReactionTrackerTests
 		await message.AddReactionAsync(ReactionEmotes.Last().Parsed);
 		expectedReactionRows++;
 
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.IntegrationTestDelay);
 
 		await using BotDbContext context = new();
 		Assert.AreEqual(await context.Reactions.CountAsync(), expectedReactionRows);
@@ -21,7 +21,7 @@ public sealed class RemoveReactionsForEmoteTests : ReactionTrackerTests
 		var firstReaction = (await WingTechBot.BotChannel.GetMessageAsync(messages.First().Id)).Reactions.First();
 		await messages.First().RemoveAllReactionsForEmoteAsync(firstReaction.Key);
 
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.IntegrationTestDelay);
 		
 		Assert.AreEqual(await context.Reactions.CountAsync(), expectedReactionRows - firstReaction.Value.ReactionCount);
 	}

@@ -23,7 +23,7 @@ public sealed class AddGatoTests : ModelTests
 		Assert.False(await context.Gatos.AnyAsync());
 
 		await Gato.AddGato(url, name, uploaderId);
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.ModelTestDelay);
 
 		Assert.AreEqual(await context.Gatos.CountAsync(), 1);
 		Assert.AreEqual((await Gato.Find(url, name, uploaderId)).Name, name);

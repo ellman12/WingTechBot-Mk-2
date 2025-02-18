@@ -12,6 +12,8 @@ public sealed class BotDbContext : DbContext
     ///Configures the database.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
+        EnvHelper.ReadEnvVariables(Environment.CurrentDirectory);
+
         string host = Environment.GetEnvironmentVariable("DATABASE_HOST");
         string dbName = Environment.GetEnvironmentVariable("DATABASE_NAME");
         string user = Environment.GetEnvironmentVariable("DATABASE_USER");

@@ -1,7 +1,7 @@
 namespace WingTechBot.Database.Models.Reactions;
 
 ///Represents a reaction to a Discord message.
-public sealed partial class Reaction(ulong giverId, ulong receiverId, ulong messageId, int emoteId) : Model
+public sealed partial class Reaction(ulong giverId, ulong receiverId, ulong channelId, ulong messageId, int emoteId) : Model
 {
 	[Key]
 	public int Id { get; private init; }
@@ -11,6 +11,9 @@ public sealed partial class Reaction(ulong giverId, ulong receiverId, ulong mess
 
 	[Required]
 	public ulong ReceiverId { get; private init; } = receiverId;
+
+	[Required]
+	public ulong ChannelId { get; private init; } = channelId;
 
 	[Required]
 	public ulong MessageId { get; private init; } = messageId;

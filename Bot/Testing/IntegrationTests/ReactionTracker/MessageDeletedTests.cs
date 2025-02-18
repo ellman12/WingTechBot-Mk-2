@@ -9,7 +9,7 @@ public sealed class MessageDeletedTests : ReactionTrackerTests
 
 		var messages = await CreateMessages(wtbMessages, reactionsPerMessage);
 
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.IntegrationTestDelay);
 
 		await using BotDbContext context = new();
 		Assert.AreEqual(await context.ReactionEmotes.CountAsync(), reactionsPerMessage);
@@ -19,7 +19,7 @@ public sealed class MessageDeletedTests : ReactionTrackerTests
 		var message = await BotTester.BotChannel.GetMessageAsync(messages.First().Id);
 		await message.DeleteAsync();
 
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.IntegrationTestDelay);
 
 		Assert.AreEqual(await context.Reactions.CountAsync(), expectedReactionRows - (reactionsPerMessage + 1));
 		Assert.That(await context.Reactions.AllAsync(r => r.MessageId != message.Id));

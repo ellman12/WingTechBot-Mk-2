@@ -18,10 +18,11 @@ public sealed class ReactionTracker
 
 	private async Task OnReactionAdded(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
+		var cachedMessage = await message.GetOrDownloadAsync();
+		var cachedChannel = await channel.GetOrDownloadAsync();
+
 		try
 		{
-			var cachedMessage = await message.GetOrDownloadAsync();
-
 			if (cachedMessage == null)
 			{
 				Logger.LogLine("Skipping reaction added to message without value");
@@ -46,7 +47,7 @@ public sealed class ReactionTracker
 			#if NOT_TESTING
 			if (reaction.UserId == cachedMessage.Author.Id)
 			{
-				await ReactionScolding.SendScold(name, await channel.GetOrDownloadAsync(), reaction.User.Value);
+				await ReactionScolding.SendScold(name, cachedChannel, reaction.User.Value);
 			}
 
 			//Bot downvotes itself if someone adds a downvote to one of its messages.
@@ -56,20 +57,21 @@ public sealed class ReactionTracker
 			}
 			#endif
 
-			await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
+			await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, channel.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 		}
 		catch (Exception e)
 		{
-			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
+			await Logger.LogExceptionAsMessage(e, cachedChannel);
 		}
 	}
 
 	private async Task OnReactionRemoved(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, SocketReaction reaction)
 	{
+		var cachedMessage = await message.GetOrDownloadAsync();
+		var cachedChannel = await channel.GetOrDownloadAsync();
+
 		try
 		{
-			var cachedMessage = await message.GetOrDownloadAsync();
-
 			if (cachedMessage == null)
 			{
 				Logger.LogLine("Skipping reaction removed from message without value");
@@ -82,20 +84,21 @@ public sealed class ReactionTracker
 				return;
 			}
 
-			await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
+			await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, cachedChannel.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
 		}
 		catch (Exception e)
 		{
-			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
+			await Logger.LogExceptionAsMessage(e, cachedChannel);
 		}
 	}
 
 	private async Task OnReactionsCleared(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
+		var cachedMessage = await message.GetOrDownloadAsync();
+		var cachedChannel = await channel.GetOrDownloadAsync();
+
 		try
 		{
-			var cachedMessage = await message.GetOrDownloadAsync();
-
 			if (cachedMessage == null)
 			{
 				Logger.LogLine("Skipping reactions removed from message without value");
@@ -112,16 +115,17 @@ public sealed class ReactionTracker
 		}
 		catch (Exception e)
 		{
-			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
+			await Logger.LogExceptionAsMessage(e, cachedChannel);
 		}
 	}
 
 	private async Task OnReactionsRemovedForEmote(Cacheable<IUserMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel, IEmote emote)
 	{
+		var cachedMessage = await message.GetOrDownloadAsync();
+		var cachedChannel = await channel.GetOrDownloadAsync();
+
 		try
 		{
-			var cachedMessage = await message.GetOrDownloadAsync();
-
 			if (cachedMessage == null)
 			{
 				Logger.LogLine("Skipping reactions removed from message without value");
@@ -138,12 +142,14 @@ public sealed class ReactionTracker
 		}
 		catch (Exception e)
 		{
-			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
+			await Logger.LogExceptionAsMessage(e, cachedChannel);
 		}
 	}
 
 	private async Task OnMessageDeleted(Cacheable<IMessage, ulong> message, Cacheable<IMessageChannel, ulong> channel)
 	{
+		var cachedChannel = await channel.GetOrDownloadAsync();
+
 		try
 		{
 			if (message.Value is not IUserMessage)
@@ -167,7 +173,7 @@ public sealed class ReactionTracker
 		}
 		catch (Exception e)
 		{
-			await Logger.LogExceptionAsMessage(e, await channel.GetOrDownloadAsync());
+			await Logger.LogExceptionAsMessage(e, cachedChannel);
 		}
 	}
 

@@ -18,7 +18,7 @@ public sealed class GetGatoLeaderboardTests : ModelTests
 		foreach (var gato in ValidGatos)
 			await Gato.AddGato(gato.Url, gato.Name, gato.UploaderId);
 
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.ModelTestDelay);
 
 		Assert.AreEqual(await context.Gatos.CountAsync(), ValidGatos.Length);
 		Assert.That(await context.Gatos.AsAsyncEnumerable().AllAsync(g => ValidGatos.FirstOrDefault(v => v.Name == g.Name) != null));

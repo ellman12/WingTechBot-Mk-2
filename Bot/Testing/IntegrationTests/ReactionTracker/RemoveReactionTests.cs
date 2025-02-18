@@ -10,7 +10,7 @@ public sealed class RemoveReactionTests : ReactionTrackerTests
 		
 		var messages = await CreateMessages(wtbMessages, reactionsPerMessage);
 
-		await Task.Delay(Constants.DatabaseDelay);
+		await Task.Delay(Constants.IntegrationTestDelay);
 
 		await using BotDbContext context = new();
 		Assert.AreEqual(await context.ReactionEmotes.CountAsync(), reactionsPerMessage);
@@ -26,7 +26,7 @@ public sealed class RemoveReactionTests : ReactionTrackerTests
 				await message.RemoveReactionAsync(ReactionEmotes[rpm].Parsed, BotTester.Config.UserId);
 				expectedReactionRows--;
 
-				await Task.Delay(Constants.DatabaseDelay);
+				await Task.Delay(Constants.IntegrationTestDelay);
 
 				Assert.AreEqual(await context.ReactionEmotes.CountAsync(), reactionsPerMessage);
 				Assert.AreEqual(await context.Reactions.CountAsync(), expectedReactionRows);
