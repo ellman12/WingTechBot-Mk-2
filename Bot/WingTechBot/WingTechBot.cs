@@ -10,6 +10,8 @@ public sealed class WingTechBot
 
 	public SocketTextChannel BotChannel { get; private set; }
 
+	public HttpClient HttpClient { get; } = new();
+
 	private static readonly DiscordSocketConfig DiscordConfig = new()
 	{
 		MessageCacheSize = 100,

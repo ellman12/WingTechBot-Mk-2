@@ -1,20 +1,20 @@
 namespace WingTechBot.Database.Models.Gatos;
 
 ///Represents a picture of a cat which can be displayed by invoking /gato.
-public sealed partial class Gato(string url, string name, ulong uploaderId) : Model
+public sealed partial class Gato(byte[] media, string filename, string name, ulong uploaderId) : Model
 {
 	[Key]
 	public int Id { get; private init; }
 
-	///URL to the media on Discord.
 	[Required]
-	public string Url { get; private init; } = url;
+	public byte[] Media { get; private init; } = media;
 
-	///Name of the cat.
+	[Required]
+	public string Filename { get; private init; } = filename;
+
 	[Required]
 	public string Name { get; private init; } = name;
 
-	///Who uploaded the cat media.
 	[Required]
 	public ulong UploaderId { get; private init; } = uploaderId;
 

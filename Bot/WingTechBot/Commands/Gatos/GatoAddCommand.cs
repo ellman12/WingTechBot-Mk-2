@@ -33,28 +33,20 @@ public sealed class GatoAddCommand : SlashCommand
 	private async Task SaveMedia(SocketSlashCommand command)
 	{
 		var options = command.Data.Options;
-		Attachment media = options.First(o => o.Name == "media").Value as Attachment;
 
-		if (media == null)
+		if (options.Single(o => o.Name == "media").Value is not Attachment media)
 		{
 			await Logger.LogExceptionAsMessage(new NullReferenceException("Missing attachment"), command.Channel);
 			return;
 		}
 
-		byte[] mediaBytes = await Gato.HttpClient.GetByteArrayAsync(media.Url);
+		var mediaBytes = await Bot.HttpClient.GetByteArrayAsync(media.Url);
 		await using MemoryStream mediaStream = new(mediaBytes);
-		FileAttachment file = new(mediaStream, media.Filename);
+		using FileAttachment file = new(mediaStream, media.Filename);
 
-		var message = await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded `{file.FileName}`:");
+		await command.FollowupWithFileAsync(file, $"{command.User.Username} uploaded `{file.FileName}`:");
 
-		media = message.Attachments.FirstOrDefault();
-		if (media == null)
-		{
-			await Logger.LogExceptionAsMessage(new NullReferenceException("Missing attachment"), command.Channel);
-			return;
-		}
-
-		var name = options.First(o => o.Name == "name").Value.ToString() ?? throw new NullReferenceException("Missing gato name");
-		await Gato.AddGato(media.Url, name.Trim(), command.User.Id);
+		var name = options.Single(o => o.Name == "name").Value.ToString() ?? throw new NullReferenceException("Missing gato name");
+		await Gato.AddGato(mediaBytes, media.Filename, name.Trim(), command.User.Id);
 	}
 }
