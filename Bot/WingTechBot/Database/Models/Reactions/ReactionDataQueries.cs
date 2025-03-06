@@ -20,6 +20,7 @@ public sealed partial class Reaction
 				reactions.Emote,
 				Count = reactions.Count + uk.DefaultIfEmpty().First().Value
 			})
+			.OrderByDescending(r => r.Count)
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
@@ -41,6 +42,7 @@ public sealed partial class Reaction
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, Count: g.Count()))
+			.OrderByDescending(r => r.Count)
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
@@ -62,6 +64,7 @@ public sealed partial class Reaction
 				reactions.Emote,
 				Count = reactions.Count + uk.DefaultIfEmpty().First().Value
 			})
+			.OrderByDescending(r => r.Count)
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
@@ -84,6 +87,7 @@ public sealed partial class Reaction
 			.GroupBy(r => r.EmoteId)
 			.AsEnumerable()
 			.Select(g => (g.First().Emote, Count: g.Count()))
+			.OrderByDescending(r => r.Count)
 			.ToDictionary(reactions => reactions.Emote, reactions => reactions.Count);
 	}
 
