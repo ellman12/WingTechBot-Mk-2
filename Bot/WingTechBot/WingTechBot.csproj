@@ -24,6 +24,7 @@
         <Using Include="WingTechBot.Commands"/>
         <Using Include="WingTechBot.Commands.Gatos"/>
         <Using Include="WingTechBot.Commands.Reactions"/>
+        <Using Include="WingTechBot.Commands.VC"/>
         <Using Include="WingTechBot.Games"/>
         <Using Include="WingTechBot.Games.GameCommands"/>
 

@@ -23,6 +23,7 @@ public sealed class WingTechBot
 
 	private readonly ConcurrentDictionary<string, SlashCommand> slashCommands = new();
 	private readonly ReactionTracker reactionTracker = new();
+	public VoiceChannelConnection VoiceChannelConnection { get; } = new();
 
 	public GameHandler GameHandler { get; private set; }
 
