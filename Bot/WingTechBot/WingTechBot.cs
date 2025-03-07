@@ -10,6 +10,8 @@ public sealed class WingTechBot
 
 	public SocketTextChannel BotChannel { get; private set; }
 
+	public SocketVoiceChannel DefaultVoiceChannel { get; private set; }
+
 	public HttpClient HttpClient { get; } = new();
 
 	private static readonly DiscordSocketConfig DiscordConfig = new()
@@ -50,6 +52,7 @@ public sealed class WingTechBot
 	{
 		Guild = Client.GetGuild(Config.ServerId) ?? throw new NullReferenceException("Could not find guild");
 		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
+		DefaultVoiceChannel = Client.GetChannel(Config.DefaultVoiceChannelId) as SocketVoiceChannel ?? throw new NullReferenceException("Could not find voice channel");
 
 		await VoiceChannelConnection.SetUp(this);
 
@@ -82,11 +85,13 @@ public sealed class WingTechBot
 			.Cast<SlashCommand>();
 
 		await Parallel.ForEachAsync(commands, async (command, _) =>
+		// foreach (var command in commands)
 		{
 			await command.SetUp(this);
 
 			if (!slashCommands.TryAdd(command.Name, command))
 				await Logger.LogExceptionAsMessage(new Exception($"Error initializing {command.Name} command"), BotChannel);
+		// }
 		});
 	}
 

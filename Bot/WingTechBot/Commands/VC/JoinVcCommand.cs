@@ -11,7 +11,7 @@ public sealed class JoinVcCommand : SlashCommand
 				.WithName("name")
 				.WithDescription("The name of the channel")
 				.WithType(ApplicationCommandOptionType.Channel)
-				.WithRequired(true)
+				.WithRequired(false)
 			);
 	}
 
@@ -20,12 +20,21 @@ public sealed class JoinVcCommand : SlashCommand
 		if (command.CommandName != Name)
 			return;
 
-		var channel = command.Data.Options.Single(o => o.Name == "name").Value;
-		if (channel is not SocketVoiceChannel voiceChannel)
+		SocketVoiceChannel voiceChannel;
+		if (command.Data.Options.SingleOrDefault(o => o.Name == "name")?.Value is not SocketChannel channel)
+		{
+			voiceChannel = Bot.DefaultVoiceChannel;
+		}
+		else if (channel is not SocketVoiceChannel socketVoiceChannel)
 		{
 			await command.FollowupAsync("Please provide a voice channel");
 			return;
 		}
+		else
+		{
+			voiceChannel = socketVoiceChannel;
+		}
+
 
 		await command.FollowupAsync($"Joining {voiceChannel.Mention}");
 		Bot.VoiceChannelConnection.Connect(voiceChannel);
