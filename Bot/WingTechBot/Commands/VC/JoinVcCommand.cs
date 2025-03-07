@@ -4,8 +4,6 @@ public sealed class JoinVcCommand : SlashCommand
 {
 	protected override SlashCommandBuilder CreateCommand()
 	{
-		Bot.VoiceChannelConnection.Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
-
 		return new SlashCommandBuilder()
 			.WithName("join-vc")
 			.WithDescription("Make WTB join a specific VC channel")

@@ -51,6 +51,8 @@ public sealed class WingTechBot
 		Guild = Client.GetGuild(Config.ServerId) ?? throw new NullReferenceException("Could not find guild");
 		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
 
+		await VoiceChannelConnection.SetUp(this);
+
 		await SetUpCommands();
 
 		#if RELEASE
