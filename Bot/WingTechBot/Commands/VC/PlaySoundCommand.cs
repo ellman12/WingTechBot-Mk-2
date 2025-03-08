@@ -42,7 +42,7 @@ public sealed class PlaySoundCommand : SlashCommand
 			return;
 		}
 
-		var sound = Bot.VoiceChannelConnection.Sounds.FirstOrDefault(s => s.Name.Contains(name, StringComparison.InvariantCultureIgnoreCase));
+		var sound = Bot.VoiceChannelConnection.Sounds.FirstOrDefault(s => String.Equals(s.Name, name, StringComparison.InvariantCultureIgnoreCase));
 		var amount = options.FirstOrDefault(o => o.Name == "amount")?.Value as long? ?? 1;
 		var delay = options.FirstOrDefault(o => o.Name == "delay")?.Value as long? ?? 1000;
 		if (sound == null)
