@@ -25,7 +25,7 @@ public sealed class PlaySoundCommand : SlashCommand
 				.WithDescription("Delay in ms between each sound. Only used if amount specified.")
 				.WithRequired(false)
 				.WithType(ApplicationCommandOptionType.Integer)
-				.WithMinValue(100)
+				.WithMinValue(20)
 			);
 	}
 
