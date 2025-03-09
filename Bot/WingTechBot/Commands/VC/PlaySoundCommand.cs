@@ -42,7 +42,8 @@ public sealed class PlaySoundCommand : SlashCommand
 			return;
 		}
 
-		var sound = Bot.VoiceChannelConnection.Sounds.FirstOrDefault(s => String.Equals(s.Name, name, StringComparison.InvariantCultureIgnoreCase));
+		var connection = Bot.VoiceChannelConnection;
+		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, name, StringComparison.InvariantCultureIgnoreCase));
 		var amount = options.FirstOrDefault(o => o.Name == "amount")?.Value as long? ?? 1;
 		var delay = options.FirstOrDefault(o => o.Name == "delay")?.Value as long? ?? 1000;
 		if (sound == null)
@@ -51,8 +52,7 @@ public sealed class PlaySoundCommand : SlashCommand
 			return;
 		}
 
-		var channel = Bot.VoiceChannelConnection.ConnectedChannel;
-		if (channel == null)
+		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
 		{
 			await command.FollowupAsync("Bot not in VC");
 		}
@@ -61,14 +61,17 @@ public sealed class PlaySoundCommand : SlashCommand
 			await command.FollowupAsync($"Playing sound \"{sound.Name}\" {(amount > 1 ? $"{amount} times, with delay of {delay} ms" : "")}");
 			var data = new {sound_id = sound.SoundId};
 
-			_ = Task.Run(async () =>
+			connection.PlayingSounds.Add(Task.Run(async () =>
 			{
 				for (int i = 0; i < amount; i++)
 				{
-					await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{channel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+					if (connection.SoundCancelToken.Token.IsCancellationRequested)
+						return;
+
+					await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
 					await Task.Delay(TimeSpan.FromMilliseconds(delay));
 				}
-			});
+			}, connection.SoundCancelToken.Token));
 		}
 	}
 }

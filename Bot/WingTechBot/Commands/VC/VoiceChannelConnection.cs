@@ -8,9 +8,13 @@ public sealed class VoiceChannelConnection
 
 	public HttpClient Client { get; } = new();
 
+	public CancellationTokenSource SoundCancelToken { get; private set; } = new();
+
 	public SocketVoiceChannel ConnectedChannel { get; private set; }
 
-	public SoundboardSound[] Sounds { get; private set; }
+	public SoundboardSound[] AvailableSounds { get; private set; }
+
+	public List<Task> PlayingSounds { get; } = [];
 
 	public async Task SetUp(WingTechBot bot)
 	{
@@ -18,7 +22,7 @@ public sealed class VoiceChannelConnection
 
 		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
-		Sounds = await GetSounds();
+		AvailableSounds = await GetSounds();
 	}
 
 	public void Connect(SocketVoiceChannel channel)
@@ -31,6 +35,15 @@ public sealed class VoiceChannelConnection
 	{
 		ConnectedChannel = null;
 		await channel.DisconnectAsync();
+	}
+
+	///Cancels all the currently-playing sounds and resets the cancellation token.
+	public async Task CancelSounds()
+	{
+		await SoundCancelToken.CancelAsync();
+		await Task.Delay(2000);
+		PlayingSounds.Clear();
+		SoundCancelToken = new CancellationTokenSource();
 	}
 
 	private async Task<SoundboardSound[]> GetSounds()
