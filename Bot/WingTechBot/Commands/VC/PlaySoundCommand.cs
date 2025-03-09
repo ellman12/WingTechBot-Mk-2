@@ -52,26 +52,28 @@ public sealed class PlaySoundCommand : SlashCommand
 			return;
 		}
 
+		string shared = $"sound \"{sound.Name}\" {(amount > 1 ? $"{amount} times, with delay of {delay} ms" : "")}";
 		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
 		{
-			await command.FollowupAsync("Bot not in VC");
+			await command.FollowupAsync($"Joining {Bot.DefaultVoiceChannel.Mention} and playing {shared}");
+			connection.Connect(Bot.DefaultVoiceChannel);
 		}
 		else
 		{
-			await command.FollowupAsync($"Playing sound \"{sound.Name}\" {(amount > 1 ? $"{amount} times, with delay of {delay} ms" : "")}");
-			var data = new {sound_id = sound.SoundId};
-
-			connection.PlayingSounds.Add(Task.Run(async () =>
-			{
-				for (int i = 0; i < amount; i++)
-				{
-					if (connection.SoundCancelToken.Token.IsCancellationRequested)
-						return;
-
-					await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
-					await Task.Delay(TimeSpan.FromMilliseconds(delay));
-				}
-			}, connection.SoundCancelToken.Token));
+			await command.FollowupAsync($"Playing {shared}");
 		}
+
+		var data = new {sound_id = sound.SoundId};
+		connection.PlayingSounds.Add(Task.Run(async () =>
+		{
+			for (int i = 0; i < amount; i++)
+			{
+				if (connection.SoundCancelToken.Token.IsCancellationRequested)
+					return;
+
+				await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				await Task.Delay(TimeSpan.FromMilliseconds(delay));
+			}
+		}, connection.SoundCancelToken.Token));
 	}
 }
