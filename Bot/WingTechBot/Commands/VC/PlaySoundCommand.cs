@@ -52,7 +52,7 @@ public sealed class PlaySoundCommand : SlashCommand
 			return;
 		}
 
-		string shared = $"sound \"{sound.Name}\" {(amount > 1 ? $"{amount} times, with delay of {delay} ms" : "")}";
+		string shared = $"sound \"{sound.Name}\" {(amount > 1 ? $"{amount} times, with a delay of {delay} ms" : "")}";
 		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
 		{
 			await command.FollowupAsync($"Joining {Bot.DefaultVoiceChannel.Mention} and playing {shared}");
