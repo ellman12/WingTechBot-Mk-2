@@ -20,10 +20,14 @@
         <Using Include="System.ComponentModel.DataAnnotations"/>
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
         <Using Include="System.Linq.Expressions"/>
+        <Using Include="System.Text"/>
+        <Using Include="System.Text.Json"/>
+        <Using Include="System.Text.Json.Serialization"/>
 
         <Using Include="WingTechBot.Commands"/>
         <Using Include="WingTechBot.Commands.Gatos"/>
         <Using Include="WingTechBot.Commands.Reactions"/>
+        <Using Include="WingTechBot.Commands.VC"/>
         <Using Include="WingTechBot.Games"/>
         <Using Include="WingTechBot.Games.GameCommands"/>
 

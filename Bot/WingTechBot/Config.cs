@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-
-namespace WingTechBot;
+﻿namespace WingTechBot;
 
 public sealed record Config
 {
@@ -11,6 +9,9 @@ public sealed record Config
 	public ulong ServerId { get; init; }
 
 	public ulong BotChannelId { get; init; }
+
+	///Default VC to join when /join-vc invoked and no other channel given.
+	public ulong DefaultVoiceChannelId { get; init; }
 
 	public ulong ModRoleId { get; init; }
 
