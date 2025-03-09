@@ -4,8 +4,6 @@ public sealed class VoiceChannelConnection
 {
 	public WingTechBot Bot { get; private set; }
 
-	public Task Connection { get; private set; }
-
 	public HttpClient Client { get; } = new();
 
 	public CancellationTokenSource SoundCancelToken { get; private set; } = new();
@@ -19,6 +17,7 @@ public sealed class VoiceChannelConnection
 	public async Task SetUp(WingTechBot bot)
 	{
 		Bot = bot;
+		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
 
 		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
@@ -28,7 +27,7 @@ public sealed class VoiceChannelConnection
 	public void Connect(SocketVoiceChannel channel)
 	{
 		ConnectedChannel = channel;
-		Connection = channel.ConnectAsync(disconnect: true);
+		_ = channel.ConnectAsync(disconnect: true);
 	}
 
 	public async Task Disconnect(SocketVoiceChannel channel)
@@ -58,5 +57,15 @@ public sealed class VoiceChannelConnection
 		var serverSounds = JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText());
 
 		return defaultSounds.Concat(serverSounds).ToArray();
+	}
+
+	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
+	{
+		if (user.Id != Bot.Client.CurrentUser.Id)
+			return;
+
+		ConnectedChannel = current.VoiceChannel;
+		if (ConnectedChannel == null)
+			await CancelSounds();
 	}
 }
