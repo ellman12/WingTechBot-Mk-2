@@ -97,15 +97,17 @@ public sealed class WingTechBot
 
 	private async Task HandleCommand(SocketSlashCommand command)
 	{
-		//Makes command timeout longer than 3 seconds. Essential for debug breakpoints.
-		await command.DeferAsync();
-
 		string name = command.CommandName;
 
 		try
 		{
 			if (slashCommands.TryGetValue(name, out var slashCommand))
+			{
+				if (slashCommand.Defer)
+					await command.DeferAsync();
+
 				await slashCommand.HandleCommand(command);
+			}
 			else
 				await Logger.LogExceptionAsMessage(new Exception($"Command {name} not found"), command.Channel);
 		}

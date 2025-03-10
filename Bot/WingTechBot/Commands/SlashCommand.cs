@@ -7,6 +7,9 @@ public abstract class SlashCommand
 
 	protected WingTechBot Bot { get; private set; }
 
+	///If the command should be deferred when handled. Only disable if using RespondAsync() instead of FollowupAsync().
+	public virtual bool Defer => true;
+
 	///<summary>If no slash commands have changed, pass --no-recreate-commands to skip that step in initialization.</summary>
 	///<remarks>This process takes a very long time to run when the bot starts, so don't recreate them unless needed.</remarks>
 	public static bool NoRecreateCommands { get; set; }
