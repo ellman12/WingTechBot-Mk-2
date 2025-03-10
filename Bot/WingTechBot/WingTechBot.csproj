@@ -20,6 +20,7 @@
         <Using Include="System.ComponentModel.DataAnnotations"/>
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
         <Using Include="System.Linq.Expressions"/>
+        <Using Include="System.Text.RegularExpressions"/>
         <Using Include="System.Text"/>
         <Using Include="System.Text.Json"/>
         <Using Include="System.Text.Json.Serialization"/>

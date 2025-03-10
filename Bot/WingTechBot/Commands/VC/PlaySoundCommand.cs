@@ -22,9 +22,9 @@ public sealed class PlaySoundCommand : SlashCommand
 			)
 			.AddOption(new SlashCommandOptionBuilder()
 				.WithName("delay")
-				.WithDescription("Delay in ms between each sound. Only used if amount specified.")
+				.WithDescription("Delay between each sound. Only used if amount specified.")
 				.WithRequired(false)
-				.WithType(ApplicationCommandOptionType.Integer)
+				.WithType(ApplicationCommandOptionType.String)
 				.WithMinValue(20)
 			);
 	}
@@ -45,14 +45,16 @@ public sealed class PlaySoundCommand : SlashCommand
 		var connection = Bot.VoiceChannelConnection;
 		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, name, StringComparison.InvariantCultureIgnoreCase));
 		var amount = options.FirstOrDefault(o => o.Name == "amount")?.Value as long? ?? 1;
-		var delay = options.FirstOrDefault(o => o.Name == "delay")?.Value as long? ?? 1000;
+		var delay = options.FirstOrDefault(o => o.Name == "delay")?.Value as string ?? "1 s";
 		if (sound == null)
 		{
 			await command.FollowupAsync("Invalid sound name");
 			return;
 		}
 
-		string shared = $"sound \"{sound.Name}\" {(amount > 1 ? $"{amount} times, with a delay of {delay} ms" : "")}";
+		var parsedDelay = ParseTimeSpan(delay);
+
+		string shared = $"\"{sound.Name}\" {(amount > 1 ? $"{amount} times, with a delay of {delay}" : "")}";
 		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
 		{
 			await command.FollowupAsync($"Joining {Bot.DefaultVoiceChannel.Mention} and playing {shared}");
@@ -63,17 +65,28 @@ public sealed class PlaySoundCommand : SlashCommand
 			await command.FollowupAsync($"Playing {shared}");
 		}
 
-		var data = new {sound_id = sound.SoundId};
-		connection.PlayingSounds.Add(Task.Run(async () =>
-		{
-			for (int i = 0; i < amount; i++)
-			{
-				if (connection.SoundCancelToken.Token.IsCancellationRequested)
-					return;
+		connection.PlaySound(sound.SoundId, amount, parsedDelay);
+	}
 
-				await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
-				await Task.Delay(TimeSpan.FromMilliseconds(delay));
-			}
-		}, connection.SoundCancelToken.Token));
+	private static TimeSpan ParseTimeSpan(string input)
+	{
+		if (String.IsNullOrWhiteSpace(input))
+			return TimeSpan.FromSeconds(1);
+
+		var match = Regex.Match(input, @"((?:\d\.)?\d+)\s*(ms?|s|secs?|seconds?|m|mins?|minutes?|h|hr|hours?)", RegexOptions.IgnoreCase);
+		if (!match.Success)
+			throw new ArgumentException("Invalid time format");
+
+		var value = double.Parse(match.Groups[1].Value);
+		string unit = match.Groups[2].Value.ToLower();
+
+		return unit switch
+		{
+			"ms" => TimeSpan.FromMilliseconds(value),
+			"s" or "sec" or "secs" or "second" or "seconds" => TimeSpan.FromSeconds(value),
+			"m" or "min" or "mins" or "minute" or "minutes" => TimeSpan.FromMinutes(value),
+			"h" or "hr" or "hrs" or "hour" or "hours" => TimeSpan.FromHours(value),
+			_ => throw new ArgumentException("Unsupported time unit")
+		};
 	}
 }

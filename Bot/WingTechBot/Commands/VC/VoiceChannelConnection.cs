@@ -26,6 +26,9 @@ public sealed class VoiceChannelConnection
 
 	public void Connect(SocketVoiceChannel channel)
 	{
+		if (SoundCancelToken.IsCancellationRequested)
+			SoundCancelToken = new CancellationTokenSource();
+
 		ConnectedChannel = channel;
 		_ = channel.ConnectAsync(disconnect: true);
 	}
@@ -36,13 +39,31 @@ public sealed class VoiceChannelConnection
 		await channel.DisconnectAsync();
 	}
 
+	public void PlaySound(string soundId, long amount, TimeSpan delay)
+	{
+		var data = new {sound_id = soundId};
+
+		if (SoundCancelToken.IsCancellationRequested)
+			SoundCancelToken = new CancellationTokenSource();
+
+		PlayingSounds.Add(Task.Run(async () =>
+		{
+			for (long i = 0; i < amount; i++)
+			{
+				if (SoundCancelToken.Token.IsCancellationRequested)
+					return;
+
+				await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				await Task.Delay(delay, SoundCancelToken.Token);
+			}
+		}, SoundCancelToken.Token));
+	}
+
 	///Cancels all the currently-playing sounds and resets the cancellation token.
 	public async Task CancelSounds()
 	{
 		await SoundCancelToken.CancelAsync();
-		await Task.Delay(2000);
 		PlayingSounds.Clear();
-		SoundCancelToken = new CancellationTokenSource();
 	}
 
 	private async Task<SoundboardSound[]> GetSounds()
