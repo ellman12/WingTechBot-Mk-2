@@ -10,6 +10,9 @@ public sealed class VoiceChannelConnection
 
 	public SocketVoiceChannel ConnectedChannel { get; private set; }
 
+	///All users connected to <see cref="ConnectedChannel"/> (except the bot).
+	public SocketGuildUser[] ConnectedUsers => ConnectedChannel.ConnectedUsers.Where(u => u.Id != Bot.Client.CurrentUser.Id).ToArray();
+
 	public SoundboardSound[] AvailableSounds { get; private set; }
 
 	public List<Task> PlayingSounds { get; } = [];
@@ -82,6 +85,12 @@ public sealed class VoiceChannelConnection
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
 	{
+		if (ConnectedChannel != null && !ConnectedUsers.Any())
+		{
+			await Disconnect(ConnectedChannel);
+			return;
+		}
+
 		if (user.Id != Bot.Client.CurrentUser.Id)
 			return;
 
