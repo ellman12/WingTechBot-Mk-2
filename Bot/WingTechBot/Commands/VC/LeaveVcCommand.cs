@@ -20,7 +20,7 @@ public sealed class LeaveVcCommand : SlashCommand
 		else
 		{
 			await command.FollowupAsync($"Leaving {channel.Mention}");
-			await Bot.VoiceChannelConnection.Disconnect(channel);
+			await Bot.VoiceChannelConnection.Disconnect();
 		}
 	}
 }

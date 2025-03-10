@@ -36,10 +36,10 @@ public sealed class VoiceChannelConnection
 		_ = channel.ConnectAsync(disconnect: true);
 	}
 
-	public async Task Disconnect(SocketVoiceChannel channel)
+	public async Task Disconnect()
 	{
+		await ConnectedChannel.DisconnectAsync();
 		ConnectedChannel = null;
-		await channel.DisconnectAsync();
 	}
 
 	public void PlaySound(string soundId, long amount, TimeSpan delay)
@@ -87,7 +87,7 @@ public sealed class VoiceChannelConnection
 	{
 		if (ConnectedChannel != null && !ConnectedUsers.Any())
 		{
-			await Disconnect(ConnectedChannel);
+			await Disconnect();
 			return;
 		}
 
