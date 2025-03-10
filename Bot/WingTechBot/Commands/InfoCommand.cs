@@ -3,6 +3,8 @@ namespace WingTechBot.Commands;
 ///Displays various info about the bot.
 public sealed class InfoCommand : SlashCommand
 {
+	public override bool Defer => false;
+
 	protected override SlashCommandBuilder CreateCommand()
 	{
 		return new SlashCommandBuilder().WithName("info").WithDescription("Displays various info about the bot.");
@@ -21,6 +23,6 @@ WingTech Bot will track every reaction added to every message sent after the cut
 Karma is calculated based on the amount of reactions you receive with the upvote and downvote emotes. Giving yourself up/down votes will be ignored and you will be scolded for doing so.
 		";
 
-		await command.FollowupAsync(message, ephemeral: true);
+		await command.RespondAsync(message, ephemeral: true);
 	}
 }
