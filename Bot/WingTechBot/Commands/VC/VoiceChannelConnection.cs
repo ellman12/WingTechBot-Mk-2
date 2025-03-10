@@ -42,9 +42,9 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = null;
 	}
 
-	public void PlaySound(string soundId, long amount, TimeSpan delay)
+	public void PlaySound(string guildId, string soundId, long amount, TimeSpan delay)
 	{
-		var data = new {sound_id = soundId};
+		var data = new {source_guild_id = guildId, sound_id = soundId};
 
 		if (SoundCancelToken.IsCancellationRequested)
 			SoundCancelToken = new CancellationTokenSource();
@@ -72,15 +72,18 @@ public sealed class VoiceChannelConnection
 	private async Task<SoundboardSound[]> GetSounds()
 	{
 		var response = await Client.GetAsync("https://discord.com/api/v10/soundboard-default-sounds");
-		var defaultSounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync());
+		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync()).ToList();
 
-		response = await Client.GetAsync($"https://discord.com/api/v10/guilds/{Bot.Guild.Id}/soundboard-sounds");
-		string json = await response.Content.ReadAsStringAsync();
+		foreach (var guild in Bot.Client.Guilds)
+		{
+			response = await Client.GetAsync($"https://discord.com/api/v10/guilds/{guild.Id}/soundboard-sounds");
+			string json = await response.Content.ReadAsStringAsync();
 
-		var items = JsonDocument.Parse(json).RootElement.GetProperty("items");
-		var serverSounds = JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText());
+			var items = JsonDocument.Parse(json).RootElement.GetProperty("items");
+			sounds.AddRange(JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText()));
+		}
 
-		return defaultSounds.Concat(serverSounds).ToArray();
+		return sounds.ToArray();
 	}
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)

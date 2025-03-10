@@ -17,8 +17,8 @@ public sealed class SoundboardSound
 	// [JsonPropertyName("emoji_name")]
 	// public string EmojiName { get; set; }
 	//
-	// [JsonPropertyName("guild_id")]
-	// public string GuildId { get; set; }
+	[JsonPropertyName("guild_id")]
+	public string GuildId { get; set; }
 	//
 	// [JsonPropertyName("available")]
 	// public bool Available { get; set; }

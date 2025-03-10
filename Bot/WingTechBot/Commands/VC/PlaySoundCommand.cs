@@ -65,7 +65,7 @@ public sealed class PlaySoundCommand : SlashCommand
 			await command.FollowupAsync($"Playing {shared}");
 		}
 
-		connection.PlaySound(sound.SoundId, amount, parsedDelay);
+		connection.PlaySound(sound.GuildId, sound.SoundId, amount, parsedDelay);
 	}
 
 	private static TimeSpan ParseTimeSpan(string input)
