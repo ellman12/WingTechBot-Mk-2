@@ -17,9 +17,6 @@ public sealed class ReactionsGivenCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		await ReactionsGivenToMentionableForYear(command);
 	}
 

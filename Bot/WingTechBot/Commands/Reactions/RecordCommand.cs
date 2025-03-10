@@ -25,9 +25,6 @@ public sealed class RecordCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		await GetUserRecord(command);
 	}
 

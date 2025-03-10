@@ -11,9 +11,6 @@ public sealed class EndGamesCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		int count = Bot.GameHandler.ActiveGames.Count;
 
 		if (count == 0)

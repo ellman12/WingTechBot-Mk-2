@@ -17,9 +17,6 @@ public sealed class JoinVcCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		SocketVoiceChannel voiceChannel;
 		if (command.Data.Options.SingleOrDefault(o => o.Name == "name")?.Value is not SocketChannel channel)
 		{

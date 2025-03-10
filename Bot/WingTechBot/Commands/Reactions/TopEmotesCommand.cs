@@ -11,9 +11,6 @@ public sealed class TopEmotesCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		await TopEmotesForYear(command);
 	}
 

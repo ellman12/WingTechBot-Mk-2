@@ -9,9 +9,6 @@ public sealed class TopGatosCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		var gatoLeaderboard = await Gato.GetGatoLeaderboard();
 
 		if (!gatoLeaderboard.Any())

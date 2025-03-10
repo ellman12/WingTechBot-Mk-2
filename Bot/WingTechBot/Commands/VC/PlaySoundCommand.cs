@@ -31,9 +31,6 @@ public sealed class PlaySoundCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		var options = command.Data.Options;
 		var name = options.Single(o => o.Name == "name").Value as string;
 		if (String.IsNullOrWhiteSpace(name))

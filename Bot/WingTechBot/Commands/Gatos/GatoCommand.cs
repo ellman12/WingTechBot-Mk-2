@@ -19,9 +19,6 @@ public sealed class GatoCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		await SendRandomMedia(command);
 	}
 

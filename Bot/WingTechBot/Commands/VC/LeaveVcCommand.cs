@@ -9,9 +9,6 @@ public sealed class LeaveVcCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		var channel = Bot.VoiceChannelConnection.ConnectedChannel;
 		if (channel == null)
 		{

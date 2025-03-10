@@ -17,9 +17,6 @@ public sealed class StartGameCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		var options = command.Data.Options;
 		var gameName = (string)options.First().Value;
 

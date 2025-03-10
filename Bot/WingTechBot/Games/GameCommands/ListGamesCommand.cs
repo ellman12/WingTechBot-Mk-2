@@ -12,9 +12,6 @@ public sealed class ListGamesCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		var games = Bot.GameHandler.AvailableGames;
 
 		if (games.Any())

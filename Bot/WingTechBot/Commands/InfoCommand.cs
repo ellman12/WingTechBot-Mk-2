@@ -12,9 +12,6 @@ public sealed class InfoCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		if (command.CommandName != Name)
-			return;
-
 		string message = $@"
 WingTech Bot is used for various actions, like tracking reactions, calculating karma, and other silly shenanigans and antics.
 ### Reaction Tracking and Karma
