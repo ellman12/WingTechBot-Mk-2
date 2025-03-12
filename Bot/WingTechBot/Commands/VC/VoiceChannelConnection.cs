@@ -10,6 +10,9 @@ public sealed class VoiceChannelConnection
 
 	public SocketVoiceChannel ConnectedChannel { get; private set; }
 
+	///Where uses can send soundboard sounds to play. Faster than invoking one-off commands.
+	public SocketThreadChannel SoundboardThread { get; private set; }
+
 	///All users connected to <see cref="ConnectedChannel"/> (except the bot).
 	public SocketGuildUser[] ConnectedUsers => ConnectedChannel.ConnectedUsers.Where(u => u.Id != Bot.Client.CurrentUser.Id).ToArray();
 
@@ -21,6 +24,14 @@ public sealed class VoiceChannelConnection
 	{
 		Bot = bot;
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
+
+		SoundboardThread = Bot.Guild.ThreadChannels.FirstOrDefault(t => t.Name == "WTB Soundboard");
+		if (SoundboardThread == null)
+		{
+			SoundboardThread = await Bot.BotChannel.CreateThreadAsync("WTB Soundboard", autoArchiveDuration: ThreadArchiveDuration.OneWeek);
+			await SoundboardThread.SendMessageAsync("Send the names of soundboard sounds here to hear them in VC");
+		}
+		Bot.Client.MessageReceived += OnMessageReceived;
 
 		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
@@ -100,5 +111,22 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = current.VoiceChannel;
 		if (ConnectedChannel == null)
 			await CancelSounds();
+	}
+
+	private Task OnMessageReceived(SocketMessage message)
+	{
+		if (message.Channel.Id != SoundboardThread.Id)
+			return Task.CompletedTask;
+
+		var connection = Bot.VoiceChannelConnection;
+		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, message.Content, StringComparison.InvariantCultureIgnoreCase));
+		if (sound == null)
+			return Task.CompletedTask;
+
+		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
+			connection.Connect(Bot.DefaultVoiceChannel);
+
+		connection.PlaySound(sound.GuildId, sound.SoundId, 1, TimeSpan.FromSeconds(1));
+		return Task.CompletedTask;
 	}
 }
