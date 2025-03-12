@@ -1,11 +1,11 @@
 namespace WingTechBot.Commands.VC;
 
-public sealed class PlaySoundCommand : SlashCommand
+public sealed class SoundCommand : SlashCommand
 {
 	protected override SlashCommandBuilder CreateCommand()
 	{
 		return new SlashCommandBuilder()
-			.WithName("play-sound")
+			.WithName("sound")
 			.WithDescription("Make WTB play a sound from the soundboard.")
 			.AddOption(new SlashCommandOptionBuilder()
 				.WithName("name")
