@@ -53,21 +53,23 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = null;
 	}
 
-	public void PlaySound(string guildId, string soundId, long amount, TimeSpan delay)
+	public void PlaySound(long amount, TimeSpan delay, SoundboardSound sound)
 	{
-		var data = new {source_guild_id = guildId, sound_id = soundId};
-
 		if (SoundCancelToken.IsCancellationRequested)
 			SoundCancelToken = new CancellationTokenSource();
 
 		PlayingSounds.Add(Task.Run(async () =>
 		{
+			var connection = Bot.VoiceChannelConnection;
+			var available = connection.AvailableSounds;
+
 			for (long i = 0; i < amount; i++)
 			{
 				if (SoundCancelToken.Token.IsCancellationRequested)
 					return;
 
-				await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				var data = new SoundPostData(sound ?? available[Random.Shared.Next(0, available.Length)]);
+				await connection.Client.PostAsync($"https://discord.com/api/v10/channels/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
 				await Task.Delay(delay, SoundCancelToken.Token);
 			}
 		}, SoundCancelToken.Token));
@@ -78,6 +80,13 @@ public sealed class VoiceChannelConnection
 	{
 		await SoundCancelToken.CancelAsync();
 		PlayingSounds.Clear();
+	}
+
+	private sealed class SoundPostData(SoundboardSound sound)
+	{
+		public string source_guild_id { get; set; } = sound.GuildId;
+
+		public string sound_id { get; set; } = sound.SoundId;
 	}
 
 	private async Task<SoundboardSound[]> GetSounds()
@@ -126,7 +135,7 @@ public sealed class VoiceChannelConnection
 		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
 			connection.Connect(Bot.DefaultVoiceChannel);
 
-		connection.PlaySound(sound.GuildId, sound.SoundId, 1, TimeSpan.FromSeconds(1));
+		connection.PlaySound(1, TimeSpan.FromSeconds(1), sound);
 		return Task.CompletedTask;
 	}
 }
