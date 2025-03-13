@@ -35,7 +35,7 @@ public sealed class VoiceChannelConnection
 
 		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
-		AvailableSounds = await GetSounds();
+		await GetSounds();
 	}
 
 	public void Connect(SocketVoiceChannel channel)
@@ -90,7 +90,8 @@ public sealed class VoiceChannelConnection
 		public string sound_id { get; set; } = sound.SoundId;
 	}
 
-	private async Task<SoundboardSound[]> GetSounds()
+	///Gets or refreshes the list of available sounds.
+	public async Task GetSounds()
 	{
 		var response = await Client.GetAsync("https://discord.com/api/v10/soundboard-default-sounds");
 		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync()).ToList();
@@ -104,7 +105,7 @@ public sealed class VoiceChannelConnection
 			sounds.AddRange(JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText()));
 		}
 
-		return sounds.ToArray();
+		AvailableSounds = sounds.ToArray();
 	}
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
