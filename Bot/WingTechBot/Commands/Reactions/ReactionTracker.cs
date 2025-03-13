@@ -78,13 +78,21 @@ public sealed class ReactionTracker
 				return;
 			}
 
-			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			var name = reaction.Emote.Name;
+
+			if (!IsSupportedEmote(reaction))
 			{
-				Logger.LogLine($"Message too old, ignoring removal of reaction {reaction.Emote.Name}");
+				Logger.LogLine($"Ignoring unsupported reaction emote {name}");
 				return;
 			}
 
-			await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, cachedChannel.Id, message.Id, reaction.Emote.Name, reaction.Emote is Emote e ? e.Id : null);
+			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
+			{
+				Logger.LogLine($"Message too old, ignoring removal of reaction {name}");
+				return;
+			}
+
+			await Reaction.RemoveReaction(reaction.UserId, cachedMessage.Author.Id, cachedChannel.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 		}
 		catch (Exception e)
 		{
