@@ -10,6 +10,9 @@ public sealed class VoiceChannelConnection
 
 	public SocketVoiceChannel ConnectedChannel { get; private set; }
 
+	///Where uses can send soundboard sounds to play. Faster than invoking one-off commands.
+	public SocketThreadChannel SoundboardThread { get; private set; }
+
 	///All users connected to <see cref="ConnectedChannel"/> (except the bot).
 	public SocketGuildUser[] ConnectedUsers => ConnectedChannel.ConnectedUsers.Where(u => u.Id != Bot.Client.CurrentUser.Id).ToArray();
 
@@ -21,6 +24,14 @@ public sealed class VoiceChannelConnection
 	{
 		Bot = bot;
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
+
+		SoundboardThread = Bot.Guild.ThreadChannels.FirstOrDefault(t => t.Name == "WTB Soundboard");
+		if (SoundboardThread == null)
+		{
+			SoundboardThread = await Bot.BotChannel.CreateThreadAsync("WTB Soundboard", autoArchiveDuration: ThreadArchiveDuration.OneWeek);
+			await SoundboardThread.SendMessageAsync("Send the names of soundboard sounds here to hear them in VC");
+		}
+		Bot.Client.MessageReceived += OnMessageReceived;
 
 		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
@@ -42,21 +53,24 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = null;
 	}
 
-	public void PlaySound(string guildId, string soundId, long amount, TimeSpan delay)
+	public void PlaySound(long amount, TimeSpan minDelay, TimeSpan maxDelay, SoundboardSound sound)
 	{
-		var data = new {source_guild_id = guildId, sound_id = soundId};
-
 		if (SoundCancelToken.IsCancellationRequested)
 			SoundCancelToken = new CancellationTokenSource();
 
 		PlayingSounds.Add(Task.Run(async () =>
 		{
+			var connection = Bot.VoiceChannelConnection;
+			var available = connection.AvailableSounds;
+
 			for (long i = 0; i < amount; i++)
 			{
 				if (SoundCancelToken.Token.IsCancellationRequested)
 					return;
 
-				await Bot.VoiceChannelConnection.Client.PostAsync($"https://discord.com/api/v10/channels/{Bot.VoiceChannelConnection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				var data = new SoundPostData(sound ?? available[Random.Shared.Next(0, available.Length)]);
+				await connection.Client.PostAsync($"https://discord.com/api/v10/channels/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				var delay = GetRandomTimeSpan(minDelay, maxDelay);
 				await Task.Delay(delay, SoundCancelToken.Token);
 			}
 		}, SoundCancelToken.Token));
@@ -67,6 +81,13 @@ public sealed class VoiceChannelConnection
 	{
 		await SoundCancelToken.CancelAsync();
 		PlayingSounds.Clear();
+	}
+
+	private sealed class SoundPostData(SoundboardSound sound)
+	{
+		public string source_guild_id { get; set; } = sound.GuildId;
+
+		public string sound_id { get; set; } = sound.SoundId;
 	}
 
 	private async Task<SoundboardSound[]> GetSounds()
@@ -88,7 +109,7 @@ public sealed class VoiceChannelConnection
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
 	{
-		if (ConnectedChannel != null && !ConnectedUsers.Any())
+		if (current.VoiceChannel != ConnectedChannel && ConnectedChannel != null && !ConnectedUsers.Any())
 		{
 			await Disconnect();
 			return;
@@ -100,5 +121,30 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = current.VoiceChannel;
 		if (ConnectedChannel == null)
 			await CancelSounds();
+	}
+
+	private Task OnMessageReceived(SocketMessage message)
+	{
+		if (message.Channel.Id != SoundboardThread.Id)
+			return Task.CompletedTask;
+
+		var connection = Bot.VoiceChannelConnection;
+		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, message.Content, StringComparison.InvariantCultureIgnoreCase));
+		if (sound == null && !message.Content.ToLower().StartsWith("rand"))
+			return Task.CompletedTask;
+
+		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
+			connection.Connect(Bot.DefaultVoiceChannel);
+
+		var delay = TimeSpan.FromSeconds(1);
+		connection.PlaySound(1, delay, delay, sound);
+		return Task.CompletedTask;
+	}
+
+	private static TimeSpan GetRandomTimeSpan(TimeSpan min, TimeSpan max)
+	{
+		long minTicks = min.Ticks;
+		long maxTicks = max.Ticks;
+		return new TimeSpan(Random.Shared.NextInt64(minTicks, maxTicks));
 	}
 }
