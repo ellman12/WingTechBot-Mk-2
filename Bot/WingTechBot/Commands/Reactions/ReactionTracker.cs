@@ -30,6 +30,8 @@ public sealed class ReactionTracker
 			}
 
 			var name = reaction.Emote.Name;
+			var authorId = cachedMessage.Author.Id;
+			var wtbId = wingTechBot.Config.UserId;
 
 			if (!IsSupportedEmote(reaction))
 			{
@@ -51,13 +53,19 @@ public sealed class ReactionTracker
 			}
 
 			//Bot downvotes itself if someone adds a downvote to one of its messages.
-			if (cachedMessage.Author.Id == wingTechBot.Config.UserId && name == "downvote")
+			if (authorId == wtbId && name == "downvote")
 			{
 				await cachedMessage.AddReactionAsync(reaction.Emote);
 			}
 			#endif
 
-			await Reaction.AddReaction(reaction.UserId, cachedMessage.Author.Id, channel.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
+			//If someone downvotes themselves, the bot will also downvote them.
+			if (authorId != wtbId && authorId == reaction.UserId && name == "downvote")
+			{
+				await cachedMessage.AddReactionAsync(reaction.Emote);
+			}
+
+			await Reaction.AddReaction(reaction.UserId, authorId, channel.Id, message.Id, name, reaction.Emote is Emote e ? e.Id : null);
 		}
 		catch (Exception e)
 		{
