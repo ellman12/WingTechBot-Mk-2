@@ -130,7 +130,7 @@ public sealed class VoiceChannelConnection
 
 		var connection = Bot.VoiceChannelConnection;
 		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, message.Content, StringComparison.InvariantCultureIgnoreCase));
-		if (sound == null)
+		if (sound == null && !message.Content.ToLower().StartsWith("rand"))
 			return Task.CompletedTask;
 
 		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
