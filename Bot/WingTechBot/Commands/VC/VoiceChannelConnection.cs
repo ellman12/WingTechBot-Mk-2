@@ -53,7 +53,7 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = null;
 	}
 
-	public void PlaySound(long amount, TimeSpan delay, SoundboardSound sound)
+	public void PlaySound(long amount, TimeSpan minDelay, TimeSpan maxDelay, SoundboardSound sound)
 	{
 		if (SoundCancelToken.IsCancellationRequested)
 			SoundCancelToken = new CancellationTokenSource();
@@ -70,6 +70,7 @@ public sealed class VoiceChannelConnection
 
 				var data = new SoundPostData(sound ?? available[Random.Shared.Next(0, available.Length)]);
 				await connection.Client.PostAsync($"https://discord.com/api/v10/channels/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				var delay = GetRandomTimeSpan(minDelay, maxDelay);
 				await Task.Delay(delay, SoundCancelToken.Token);
 			}
 		}, SoundCancelToken.Token));
@@ -135,7 +136,15 @@ public sealed class VoiceChannelConnection
 		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
 			connection.Connect(Bot.DefaultVoiceChannel);
 
-		connection.PlaySound(1, TimeSpan.FromSeconds(1), sound);
+		var delay = TimeSpan.FromSeconds(1);
+		connection.PlaySound(1, delay, delay, sound);
 		return Task.CompletedTask;
+	}
+
+	private static TimeSpan GetRandomTimeSpan(TimeSpan min, TimeSpan max)
+	{
+		long minTicks = min.Ticks;
+		long maxTicks = max.Ticks;
+		return new TimeSpan(Random.Shared.NextInt64(minTicks, maxTicks));
 	}
 }

@@ -22,7 +22,19 @@ public sealed class SoundCommand : SlashCommand
 			)
 			.AddOption(new SlashCommandOptionBuilder()
 				.WithName("delay")
-				.WithDescription("Delay between each sound. Only used if amount specified.")
+				.WithDescription("Constant delay between each sound. Only used if amount specified.")
+				.WithRequired(false)
+				.WithType(ApplicationCommandOptionType.String)
+			)
+			.AddOption(new SlashCommandOptionBuilder()
+				.WithName("min-delay")
+				.WithDescription("Min delay between each sound. Only used if amount specified.")
+				.WithRequired(false)
+				.WithType(ApplicationCommandOptionType.String)
+			)
+			.AddOption(new SlashCommandOptionBuilder()
+				.WithName("max-delay")
+				.WithDescription("Max delay between each sound. Only used if amount specified.")
 				.WithRequired(false)
 				.WithType(ApplicationCommandOptionType.String)
 			);
@@ -31,11 +43,33 @@ public sealed class SoundCommand : SlashCommand
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
 		var connection = Bot.VoiceChannelConnection;
+		TimeSpan parsedMin, parsedMax;
 
 		var options = command.Data.Options;
 		var amount = options.SingleOrDefault(o => o.Name == "amount")?.Value as long? ?? 1;
-		var delay = options.SingleOrDefault(o => o.Name == "delay")?.Value as string ?? "1 s";
-		var parsedDelay = ParseTimeSpan(delay);
+		var delay = options.SingleOrDefault(o => o.Name == "delay")?.Value as string;
+		var minDelay = options.SingleOrDefault(o => o.Name == "min-delay")?.Value as string;
+		var maxDelay = options.SingleOrDefault(o => o.Name == "max-delay")?.Value as string;
+
+		if (!String.IsNullOrWhiteSpace(delay))
+		{
+			parsedMin = parsedMax = ParseTimeSpan(delay);
+		}
+		else if (!String.IsNullOrWhiteSpace(minDelay) && !String.IsNullOrWhiteSpace(maxDelay))
+		{
+			parsedMin = ParseTimeSpan(minDelay);
+			parsedMax = ParseTimeSpan(maxDelay);
+			if (parsedMin > parsedMax)
+			{
+				await command.FollowupAsync("Min delay cannot be greater than max delay");
+				return;
+			}
+		}
+		else
+		{
+			delay = "1 s";
+			parsedMin = parsedMax = TimeSpan.FromSeconds(1);
+		}
 
 		var name = options.SingleOrDefault(o => o.Name == "name")?.Value as string;
 		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, name, StringComparison.InvariantCultureIgnoreCase));
@@ -45,7 +79,8 @@ public sealed class SoundCommand : SlashCommand
 			return;
 		}
 
-		string shared = $"{(sound == null ? "a random sound" : $"\"{sound.Name}\"")} {(amount > 1 ? $"{amount} times, with a delay of {delay}" : "")}";
+		string delayMsg = $"with a {(String.IsNullOrWhiteSpace(delay) ? $"random delay between {minDelay} and {maxDelay}" : $"delay of {delay}")}";
+		string shared = $"{(sound == null ? "a random sound" : $"\"{sound.Name}\"")} {(amount > 1 ? $"{amount} times, {delayMsg}" : "")}";
 		if (connection.ConnectedChannel == null)
 		{
 			await command.FollowupAsync($"Joining {Bot.DefaultVoiceChannel.Mention} and playing {shared}");
@@ -56,7 +91,7 @@ public sealed class SoundCommand : SlashCommand
 			await command.FollowupAsync($"Playing {shared}");
 		}
 
-		connection.PlaySound(amount, parsedDelay, sound);
+		connection.PlaySound(amount, parsedMin, parsedMax, sound);
 	}
 
 	private static TimeSpan ParseTimeSpan(string input)
