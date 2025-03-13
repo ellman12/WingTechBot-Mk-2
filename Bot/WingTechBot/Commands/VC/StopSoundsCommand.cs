@@ -10,7 +10,7 @@ public sealed class StopSoundsCommand: SlashCommand
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
 		var sounds = Bot.VoiceChannelConnection.PlayingSounds;
-		await command.FollowupAsync(sounds.Any() ? $"Stopping all {sounds.Count} sounds" : "No sounds to stop");
+		await command.FollowupAsync(sounds.Any() ? "Stopping all sounds" : "No sounds to stop");
 		await Bot.VoiceChannelConnection.CancelSounds();
 	}
 }
