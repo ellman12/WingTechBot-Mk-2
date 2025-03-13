@@ -99,7 +99,7 @@ public sealed class VoiceChannelConnection
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
 	{
-		if (ConnectedChannel != null && !ConnectedUsers.Any())
+		if (current.VoiceChannel != ConnectedChannel && ConnectedChannel != null && !ConnectedUsers.Any())
 		{
 			await Disconnect();
 			return;
