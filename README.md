@@ -3,12 +3,15 @@
 
 WingTech Bot is a Discord bot written in C# that provides a reaction tracker, karma system, games, cute inside jokes, and more to my private Discord server.
 
+![WTB 1](https://github.com/user-attachments/assets/4b4ee9ce-ef60-4688-8003-6c9cbec47a7b)
+
+![WTB 2](https://github.com/user-attachments/assets/de08d885-22ee-4045-804d-6e2b94b8a4d0)
+
+![WTB 3](https://github.com/user-attachments/assets/6fbe8a5e-bb78-434a-9db5-ebcf6080a738)
+
 ## Contribution
-
 ### Forking
-
 To contribute to WingTechBot, follow these steps:
-
 1. Fork this repository.
 2. Create a branch: `git checkout -b <branch_name>`.
 3. Make your changes and commit them: `git commit -m '<commit_message>'`
@@ -18,7 +21,6 @@ To contribute to WingTechBot, follow these steps:
 Alternatively see the GitHub documentation on [creating a pull request](https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/creating-a-pull-request).
 
 ### Using Your Fork of WingTechBot
-
 1. Create a new empty Discord server (or test it on your own).
 2. Using a web browser, visit the [Discord Developer Portal](https://discord.com/developers/applications) and create a new Application.
 3. Add a Bot to your application.
@@ -34,10 +36,5 @@ Alternatively see the GitHub documentation on [creating a pull request](https://
 13. Run your fork of the repo again. WingTech Bot should deploy to your server.
 14. Modify your fork of the repo at your leisure.
 
-If you're looking for how to implement a game for WingTech Bot, I'd recommend looking at the file "Counting.cs". It's a pretty simple game that shows of the basics of the WingTechBot game platform.
-
-My code uses reflection to create the game pool. Any class deriving from the abstract class **Game** will be automatically added to the available games. However, to add games to the my version of WingTech Bot, you'll have to submit a pull request as explained above.
-
 ## License
-
 ![License](https://img.shields.io/github/license/winggar/WingTechBot?style=for-the-badge)
