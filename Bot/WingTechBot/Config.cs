@@ -26,6 +26,9 @@ public sealed record Config
 	///Used to interface with an LLM API.
 	public string LLMToken { get; init; }
 
+	///Used to tell the LLM how to behave.
+	public string LLMBehavior { get; init; }
+
 	///Read in config.json from project root and parse it.
 	public static Config FromJson()
 	{

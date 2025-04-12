@@ -17,7 +17,8 @@ public sealed class Communication
 
 	public async Task<string> SendMessageToAi(string message)
 	{
-		string json = $$"""{"contents": [{"parts": [{"text": "{{message}}"}]}]}""";
+		var data = new MessagePostData(message, Bot.Config.LLMBehavior);
+		var json = JsonSerializer.Serialize(data);
 		var content = new StringContent(json);
 		var response = await httpClient.PostAsync($"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={Bot.Config.LLMToken}", content);
 
@@ -38,25 +39,46 @@ public sealed class Communication
 		}
 	}
 
-	private sealed record MessageResponse
+	private readonly struct MessagePostData(string message, string behavior)
 	{
-		[JsonPropertyName("candidates")]
-		public List<Candidate> Candidates { get; init; }
+		[JsonPropertyName("system_instruction")]
+		public SystemInstruction SystemInstruction { get; init; } = new()
+		{
+			Parts = [new Part {Text = behavior}]
+		};
+
+		[JsonPropertyName("contents")]
+		public Content Content { get; init; } = new()
+		{
+			Parts = [new Part {Text = message}]
+		};
 	}
 
-	private sealed record Candidate
-	{
-		[JsonPropertyName("content")]
-		public Content Content { get; init; }
-	}
-
-	private sealed record Content
+	private readonly struct SystemInstruction
 	{
 		[JsonPropertyName("parts")]
 		public List<Part> Parts { get; init; }
 	}
 
-	private sealed record Part
+	private readonly struct MessageResponse
+	{
+		[JsonPropertyName("candidates")]
+		public List<Candidate> Candidates { get; init; }
+	}
+
+	private readonly struct Candidate
+	{
+		[JsonPropertyName("content")]
+		public Content Content { get; init; }
+	}
+
+	private readonly struct Content
+	{
+		[JsonPropertyName("parts")]
+		public List<Part> Parts { get; init; }
+	}
+
+	private readonly struct Part
 	{
 		[JsonPropertyName("text")]
 		public string Text { get; init; }
