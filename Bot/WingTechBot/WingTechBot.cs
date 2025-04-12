@@ -12,6 +12,8 @@ public sealed class WingTechBot
 
 	public SocketVoiceChannel DefaultVoiceChannel { get; private set; }
 
+	public Communication Communication { get; private set; }
+
 	public HttpClient HttpClient { get; } = new();
 
 	private static readonly DiscordSocketConfig DiscordConfig = new()
@@ -53,6 +55,7 @@ public sealed class WingTechBot
 		Guild = Client.GetGuild(Config.ServerId) ?? throw new NullReferenceException("Could not find guild");
 		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
 		DefaultVoiceChannel = Client.GetChannel(Config.DefaultVoiceChannelId) as SocketVoiceChannel ?? throw new NullReferenceException("Could not find voice channel");
+		Communication = new Communication(this);
 
 		await VoiceChannelConnection.SetUp(this);
 

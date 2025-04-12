@@ -7,5 +7,7 @@
 	"ModRoleId": 0,
 	"BotAdmins": ["", ""],
 	"StartDate": "1970-01-01T00:00:00Z",
-	"StatusMessage": ""
+	"StatusMessage": "",
+	"LLMToken": "",
+	"LLMBehavior": ""
 }
