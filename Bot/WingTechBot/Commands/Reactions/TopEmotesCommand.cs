@@ -2,6 +2,8 @@ namespace WingTechBot.Commands.Reactions;
 
 public sealed class TopEmotesCommand : SlashCommand
 {
+	public override bool Defer => false;
+
 	protected override SlashCommandBuilder CreateCommand()
 	{
 		return new SlashCommandBuilder()
@@ -21,7 +23,7 @@ public sealed class TopEmotesCommand : SlashCommand
 
 		if (!emoteLeaderboard.Any())
 		{
-			await command.FollowupAsync($"No reactions for {year}");
+			await command.RespondAsync($"No reactions for {year}", ephemeral: true);
 			return;
 		}
 
@@ -38,6 +40,6 @@ public sealed class TopEmotesCommand : SlashCommand
 			result => result.rankings)
 			.Select(entry => $"{entry.rank.ToString(),-6} {entry.count.ToString(),-7} {entry.name}");
 
-		await command.FollowupAsync($"```{year} Emote Leaderboard\n----------------------\nRank   Count   Emote\n{String.Join('\n', entries)}```");
+		await command.RespondAsync($"```{year} Emote Leaderboard\n----------------------\nRank   Count   Emote\n{String.Join('\n', entries)}```", ephemeral: true);
 	}
 }
