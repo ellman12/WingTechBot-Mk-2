@@ -7,13 +7,15 @@ public sealed class Communication
 
 	private readonly HttpClient httpClient = new();
 
+	private DateTime lastPingTime = DateTime.MinValue, lastMessageSentTime = DateTime.MinValue;
+
 	public Communication(WingTechBot bot)
 	{
 		Bot = bot;
 		Bot.Client.MessageReceived += OnMessageReceived;
 	}
 
-	public async Task<string> SendMessage(string message)
+	public async Task<string> SendMessageToAi(string message)
 	{
 		string json = $$"""{"contents": [{"parts": [{"text": "{{message}}"}]}]}""";
 		var content = new StringContent(json);
@@ -25,9 +27,14 @@ public sealed class Communication
 
 	private async Task OnMessageReceived(SocketMessage message)
 	{
+		if (message.Author.Id == Bot.Config.UserId || message.Author.IsBot)
+			return;
+
 		if (message.MentionedUsers.Any(u => u.Id == Bot.Config.UserId) || message.MentionedRoles.Any(r => r.Members.Any(u => u.Id == Bot.Config.UserId)) || message.MentionedEveryone)
 		{
-			await message.Channel.SendMessageAsync("Whomst has summoned the almighty one?");
+			string filtered = Regex.Replace(message.Content, @"<@(\d+)>", "");
+			var response = await SendMessageToAi(filtered);
+			await message.Channel.SendMessageAsync(response);
 		}
 	}
 
