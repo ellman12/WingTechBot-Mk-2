@@ -31,7 +31,7 @@ public sealed class Communication
 		if (message.Author.Id == Bot.Config.UserId || message.Author.IsBot)
 			return;
 
-		if (message.MentionedUsers.Any(u => u.Id == Bot.Config.UserId) || message.MentionedRoles.Any(r => r.Members.Any(u => u.Id == Bot.Config.UserId)) || message.MentionedEveryone)
+		if (message.MentionedUsers.Any(u => u.Id == Bot.Config.UserId) || message.MentionedRoles.Any(r => r.Members.Any(u => u.Id == Bot.Config.UserId)))
 		{
 			var filtered = Regex.Replace(message.Content, @"<@(\d+)>", "");
 			var response = await SendMessageToAi(filtered);
