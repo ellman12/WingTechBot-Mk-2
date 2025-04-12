@@ -23,6 +23,9 @@ public sealed record Config
 
 	public string StatusMessage { get; init; }
 
+	///Used to interface with an LLM API.
+	public string LLMToken { get; init; }
+
 	///Read in config.json from project root and parse it.
 	public static Config FromJson()
 	{
