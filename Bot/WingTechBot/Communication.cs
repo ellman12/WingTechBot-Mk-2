@@ -33,10 +33,43 @@ public sealed class Communication
 
 		if (message.MentionedUsers.Any(u => u.Id == Bot.Config.UserId) || message.MentionedRoles.Any(r => r.Members.Any(u => u.Id == Bot.Config.UserId)) || message.MentionedEveryone)
 		{
-			string filtered = Regex.Replace(message.Content, @"<@(\d+)>", "");
+			var filtered = Regex.Replace(message.Content, @"<@(\d+)>", "");
 			var response = await SendMessageToAi(filtered);
-			await message.Channel.SendMessageAsync(response);
+			var messages = SplitMessage(response);
+
+			foreach (var m in messages)
+				await message.Channel.SendMessageAsync(m);
 		}
+	}
+
+	///<summary>Splits a message that exceeds 2000 characters into multiple messages.</summary>
+	///<remarks>Discord messages can't exceed 2000.</remarks>
+	private static List<string> SplitMessage(string message)
+	{
+		var parts = new List<string>();
+		var sentences = Regex.Matches(message, @"(.*?[\.!\?](?:\s|\r?\n|$)|.+?$)", RegexOptions.Singleline);
+
+		string currentPart = "";
+		foreach (Match match in sentences)
+		{
+			string sentence = match.Value;
+			if (currentPart.Length + sentence.Length <= 2000)
+			{
+				currentPart += sentence;
+			}
+			else
+			{
+				if (!string.IsNullOrWhiteSpace(currentPart))
+					parts.Add(currentPart);
+
+				currentPart = sentence;
+			}
+		}
+
+		if (!string.IsNullOrWhiteSpace(currentPart))
+			parts.Add(currentPart);
+
+		return parts;
 	}
 
 	private readonly struct MessagePostData(string message, string behavior)
