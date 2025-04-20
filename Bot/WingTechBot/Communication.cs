@@ -7,8 +7,6 @@ public sealed class Communication
 
 	private readonly HttpClient httpClient = new();
 
-	private DateTime lastPingTime = DateTime.MinValue, lastMessageSentTime = DateTime.MinValue;
-
 	public Communication(WingTechBot bot)
 	{
 		Bot = bot;
