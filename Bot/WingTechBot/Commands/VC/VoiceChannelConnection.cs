@@ -53,7 +53,12 @@ public sealed class VoiceChannelConnection
 		ConnectedChannel = null;
 	}
 
-	public void PlaySound(long amount, TimeSpan minDelay, TimeSpan maxDelay, SoundboardSound sound)
+	public void PlaySound(SoundboardSound sound)
+	{
+		PlaySound(sound, 1, TimeSpan.Zero, TimeSpan.Zero);
+	}
+
+	public void PlaySound(SoundboardSound sound, long amount, TimeSpan minDelay, TimeSpan maxDelay)
 	{
 		if (SoundCancelToken.IsCancellationRequested)
 			SoundCancelToken = new CancellationTokenSource();
@@ -138,7 +143,7 @@ public sealed class VoiceChannelConnection
 			connection.Connect(Bot.DefaultVoiceChannel);
 
 		var delay = TimeSpan.FromSeconds(1);
-		connection.PlaySound(1, delay, delay, sound);
+		connection.PlaySound(sound, 1, delay, delay);
 		return Task.CompletedTask;
 	}
 

@@ -91,7 +91,7 @@ public sealed class SoundCommand : SlashCommand
 			await command.FollowupAsync($"Playing {shared}");
 		}
 
-		connection.PlaySound(amount, parsedMin, parsedMax, sound);
+		connection.PlaySound(sound, amount, parsedMin, parsedMax);
 	}
 
 	private static TimeSpan ParseTimeSpan(string input)
