@@ -90,9 +90,9 @@ public sealed class VoiceChannelConnection
 
 	private sealed class SoundPostData(SoundboardSound sound)
 	{
-		public string source_guild_id { get; set; } = sound.GuildId;
+		public ulong? source_guild_id { get; set; } = sound.GuildId;
 
-		public string sound_id { get; set; } = sound.SoundId;
+		public ulong sound_id { get; set; } = sound.SoundId;
 	}
 
 	///Gets or refreshes the list of available sounds.

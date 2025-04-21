@@ -38,6 +38,9 @@
         <Using Include="WingTechBot.Database.Models"/>
         <Using Include="WingTechBot.Database.Models.Gatos"/>
         <Using Include="WingTechBot.Database.Models.Reactions"/>
+
+        <Using Include="WingTechBot.Extensions"/>
+        <Using Include="WingTechBot.Extensions.Json"/>
     </ItemGroup>
 
     <ItemGroup>

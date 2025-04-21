@@ -27,7 +27,7 @@ public sealed class AvailableSoundsCommand : SlashCommand
 			var groups = Bot.VoiceChannelConnection.AvailableSounds.GroupBy(s => s.GuildId);
 			foreach (var group in groups)
 			{
-				message += $"### {(group.Key == null ? "Default" : Bot.Client.GetGuild(ulong.Parse(group.Key)).Name)}\n";
+				message += $"### {(group.Key == null ? "Default" : Bot.Client.GetGuild((ulong)group.Key).Name)}\n";
 				message += $"{String.Join("\n", group.Select(s => $"* {s.Name}"))}\n";
 			}
 		}
