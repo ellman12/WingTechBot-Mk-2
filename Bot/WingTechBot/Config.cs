@@ -29,6 +29,9 @@ public sealed record Config
 	///Used to tell the LLM how to behave.
 	public string LLMBehavior { get; init; }
 
+	///Sound events for <see cref="Commands.VC.AutoSounds"/>. Event name > user IDs > sound IDs.
+	public IReadOnlyDictionary<string, IReadOnlyDictionary<ulong, ulong[]>> AutoSounds { get; init; }
+
 	///Read in config.json from project root and parse it.
 	public static Config FromJson()
 	{

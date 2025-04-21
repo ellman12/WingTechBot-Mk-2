@@ -20,6 +20,8 @@ public sealed class VoiceChannelConnection
 
 	public List<Task> PlayingSounds { get; } = [];
 
+	private AutoSounds AutoSounds { get; set; }
+
 	public async Task SetUp(WingTechBot bot)
 	{
 		Bot = bot;
@@ -36,6 +38,8 @@ public sealed class VoiceChannelConnection
 		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
 		await GetSounds();
+
+		AutoSounds = new AutoSounds(Bot, this);
 	}
 
 	public void Connect(SocketVoiceChannel channel)

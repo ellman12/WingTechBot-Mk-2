@@ -17,7 +17,23 @@ public sealed class LeaveVcCommand : SlashCommand
 		else
 		{
 			await command.FollowupAsync($"Leaving {channel.Mention}");
+			await PlayLeaveSound();
 			await Bot.VoiceChannelConnection.Disconnect();
 		}
+	}
+
+	private async Task PlayLeaveSound()
+	{
+		if (!Bot.Config.AutoSounds.TryGetValue("UserLeave", out var eventGroup))
+			return;
+
+		if (!eventGroup.TryGetValue(Bot.Config.UserId, out var soundIds))
+			return;
+
+		var soundId = soundIds.GetRandom();
+		var sound = Bot.VoiceChannelConnection.AvailableSounds.Single(s => s.SoundId == soundId);
+		Bot.VoiceChannelConnection.PlaySound(sound);
+
+		await Task.Delay(1000);
 	}
 }
