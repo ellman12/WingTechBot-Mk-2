@@ -28,12 +28,12 @@ public sealed class AvailableSoundsCommand : SlashCommand
 			foreach (var group in groups)
 			{
 				message += $"### {(group.Key == null ? "Default" : Bot.Client.GetGuild((ulong)group.Key).Name)}\n";
-				message += $"{String.Join("\n", group.Select(s => $"* {s.Name}"))}\n";
+				message += $"{String.Join("\n", group.Select(s => $"* {s.Name}").Order())}\n";
 			}
 		}
 		else
 		{
-			message = String.Join('\n', Bot.VoiceChannelConnection.AvailableSounds.Select(s => s.Name));
+			message = String.Join('\n', Bot.VoiceChannelConnection.AvailableSounds.Select(s => s.Name).Order());
 		}
 
 		await command.RespondAsync(message, ephemeral: true);
