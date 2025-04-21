@@ -38,10 +38,13 @@ public sealed class AutoSounds
 
 	private string GetEventName(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
 	{
-		if (current.VoiceChannel != null)
+		if (Connection.ConnectedChannel == null)
+			return "";
+
+		if (current.VoiceChannel?.Id == Connection.ConnectedChannel.Id)
 			return "UserJoin";
 
-		if (previous.VoiceChannel != null && user.Id != Bot.Config.UserId)
+		if (previous.VoiceChannel?.Id == Connection.ConnectedChannel.Id && user.Id != Bot.Config.UserId)
 			return "UserLeave";
 
 		return "";
