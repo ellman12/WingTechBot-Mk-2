@@ -5,7 +5,7 @@ public sealed class SoundboardSound
 	[JsonPropertyName("name")]
 	public string Name { get; set; }
 
-	[JsonPropertyName("sound_id"), JsonConverter(typeof(StringToInt64Converter))]
+	[JsonPropertyName("sound_id"), JsonConverter(typeof(StringUInt64Converter))]
 	public ulong SoundId { get; set; }
 
 	// [JsonPropertyName("volume")]
@@ -17,7 +17,7 @@ public sealed class SoundboardSound
 	// [JsonPropertyName("emoji_name")]
 	// public string EmojiName { get; set; }
 
-	[JsonPropertyName("guild_id"), JsonConverter(typeof(StringToInt64Converter))]
+	[JsonPropertyName("guild_id"), JsonConverter(typeof(StringUInt64Converter))]
 	public ulong? GuildId { get; set; }
 
 	// [JsonPropertyName("available")]

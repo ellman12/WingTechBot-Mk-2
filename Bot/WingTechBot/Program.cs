@@ -8,6 +8,8 @@ public static class Program
 	public const string ProjectRoot = "/app";
 	#endif
 
+	public static WingTechBot Bot { get; private set; }
+
 	public static Config Config { get; } = Config.FromJson();
 
 	public static void Main(string[] args)
@@ -43,7 +45,7 @@ public static class Program
 	private static async Task MainAsync()
 	{
 		await WingSounds.Create(Config);
-		await WingTechBot.Create(Config);
+		Bot = await WingTechBot.Create(Config);
 
 		await Task.Delay(Timeout.Infinite);
 	}

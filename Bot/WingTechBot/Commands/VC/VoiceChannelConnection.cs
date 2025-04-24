@@ -78,7 +78,7 @@ public sealed class VoiceChannelConnection
 					return;
 
 				var data = sound ?? available[Random.Shared.Next(0, available.Length)];
-				await connection.Client.PostAsync($"soundboard/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				await connection.Client.PostAsync("soundboard/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
 				var delay = GetRandomTimeSpan(minDelay, maxDelay);
 				await Task.Delay(delay, SoundCancelToken.Token);
 			}

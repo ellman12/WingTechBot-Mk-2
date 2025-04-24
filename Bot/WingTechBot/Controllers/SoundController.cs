@@ -29,15 +29,21 @@ public sealed class SoundController : ControllerBase
 		return Ok(sounds);
 	}
 
-	[HttpPost, Route("{id}/send-soundboard-sound")]
-	public async Task<IActionResult> SendSound(ulong id, SoundboardSound sound)
+	[HttpPost, Route("send-soundboard-sound")]
+	public async Task<IActionResult> SendSound(SoundboardSound sound)
 	{
 		var soundData = new SoundPostData(sound);
 		var content = new StringContent(JsonSerializer.Serialize(soundData), Encoding.UTF8, "application/json");
 
 		try
 		{
-			var response = await httpClient.PostAsync($"channels/{Program.Config.DefaultVoiceChannelId}/send-soundboard-sound", content);
+			var connection = Program.Bot.VoiceChannelConnection;
+			if (connection.ConnectedChannel == null)
+			{
+				Program.Bot.VoiceChannelConnection.Connect(Program.Bot.DefaultVoiceChannel);
+			}
+
+			var response = await httpClient.PostAsync($"channels/{connection.ConnectedChannel!.Id}/send-soundboard-sound", content);
 
 			if (response.IsSuccessStatusCode)
 				return Ok();

@@ -1,6 +1,7 @@
 namespace WingTechBot.Extensions.Json;
 
-public sealed class StringToInt64Converter : JsonConverter<ulong>
+///Converts json string values to ulong on read, and back to string on write.
+public sealed class StringUInt64Converter : JsonConverter<ulong>
 {
 	public override ulong Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
@@ -19,6 +20,6 @@ public sealed class StringToInt64Converter : JsonConverter<ulong>
 
 	public override void Write(Utf8JsonWriter writer, ulong value, JsonSerializerOptions options)
 	{
-		writer.WriteNumberValue(value);
+		writer.WriteStringValue(value.ToString());
 	}
 }

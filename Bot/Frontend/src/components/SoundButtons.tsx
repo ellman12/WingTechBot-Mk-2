@@ -8,7 +8,7 @@ export default function SoundButtons() {
 
     useEffect(() => {
         http.get("soundboard/available-sounds")
-            .then(e => setSounds(e.data.sounds as SoundboardSound[]))
+            .then(e => setSounds(e.data as SoundboardSound[]))
             .catch(e => console.error(e));
     }, []);
 
