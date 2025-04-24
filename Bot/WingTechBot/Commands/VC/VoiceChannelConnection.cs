@@ -77,8 +77,8 @@ public sealed class VoiceChannelConnection
 				if (SoundCancelToken.Token.IsCancellationRequested)
 					return;
 
-				var data = new SoundPostData(sound ?? available[Random.Shared.Next(0, available.Length)]);
-				await connection.Client.PostAsync($"https://discord.com/api/v10/channels/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				var data = sound ?? available[Random.Shared.Next(0, available.Length)];
+				await connection.Client.PostAsync($"soundboard/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
 				var delay = GetRandomTimeSpan(minDelay, maxDelay);
 				await Task.Delay(delay, SoundCancelToken.Token);
 			}
@@ -90,13 +90,6 @@ public sealed class VoiceChannelConnection
 	{
 		await SoundCancelToken.CancelAsync();
 		PlayingSounds.Clear();
-	}
-
-	private sealed class SoundPostData(SoundboardSound sound)
-	{
-		public ulong? source_guild_id { get; set; } = sound.GuildId;
-
-		public ulong sound_id { get; set; } = sound.SoundId;
 	}
 
 	///Gets or refreshes the list of available sounds.

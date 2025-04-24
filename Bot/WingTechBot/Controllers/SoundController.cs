@@ -28,4 +28,33 @@ public sealed class SoundController : ControllerBase
 
 		return Ok(sounds);
 	}
+
+	[HttpPost, Route("{id}/send-soundboard-sound")]
+	public async Task<IActionResult> SendSound(ulong id, SoundboardSound sound)
+	{
+		var soundData = new SoundPostData(sound);
+		var content = new StringContent(JsonSerializer.Serialize(soundData), Encoding.UTF8, "application/json");
+
+		try
+		{
+			var response = await httpClient.PostAsync($"channels/{Program.Config.DefaultVoiceChannelId}/send-soundboard-sound", content);
+
+			if (response.IsSuccessStatusCode)
+				return Ok();
+
+			var errorMessage = await response.Content.ReadAsStringAsync();
+			return StatusCode((int)response.StatusCode, new { Error = errorMessage });
+		}
+		catch (Exception e)
+		{
+			return StatusCode(500, new { Error = e.Message });
+		}
+	}
+
+	private readonly record struct SoundPostData(SoundboardSound sound)
+	{
+		public ulong? source_guild_id { get; } = sound.GuildId;
+
+		public ulong sound_id { get; } = sound.SoundId;
+	}
 }
