@@ -5,7 +5,7 @@ public static class Program
 	public static WingTechBot Bot { get; private set; }
 
 	#if DEBUG
-	public static readonly string ProjectRoot = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+	public static readonly string ProjectRoot = Environment.CurrentDirectory;
 	#elif RELEASE
 	public const string ProjectRoot = "/app";
 	#endif
