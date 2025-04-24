@@ -1,6 +1,9 @@
 services:
   wingtech-bot:
     image: wingtech-bot
+    build:
+      context: ./WingTechBot
+      dockerfile: Dockerfile
     container_name: wingtech-bot
     restart: unless-stopped
     ports:
@@ -14,9 +17,9 @@ services:
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
 
-  postgres:
+  wingtech-bot-postgres:
     image: postgres:15
-    container_name: postgres
+    container_name: wingtech-bot-postgres
     restart: unless-stopped
     profiles: [dev]
     ports:
@@ -27,6 +30,17 @@ services:
       - POSTGRES_DB=${DATABASE_NAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    container_name: wingtech-bot-frontend
+    ports:
+      - "80:80"
+    # depends_on:
+      # - wingtech-bot
+      # - wingtech-bot-postgres
 
 volumes:
   postgres_data:
