@@ -42,7 +42,9 @@ public static class Program
 
 	private static async Task MainAsync()
 	{
+		await WingSounds.Create(Config);
 		await WingTechBot.Create(Config);
+
 		await Task.Delay(Timeout.Infinite);
 	}
 }

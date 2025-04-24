@@ -27,6 +27,8 @@ public sealed class VoiceChannelConnection
 		Bot = bot;
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
 
+		Client.BaseAddress = new Uri($"{Bot.Config.ServerUrl}:5000/api/");
+
 		SoundboardThread = Bot.Guild.ThreadChannels.FirstOrDefault(t => t.Name == "WTB Soundboard");
 		if (SoundboardThread == null)
 		{
@@ -34,8 +36,6 @@ public sealed class VoiceChannelConnection
 			await SoundboardThread.SendMessageAsync("Send the names of soundboard sounds here to hear them in VC");
 		}
 		Bot.Client.MessageReceived += OnMessageReceived;
-
-		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
 		await GetSounds();
 
@@ -102,18 +102,8 @@ public sealed class VoiceChannelConnection
 	///Gets or refreshes the list of available sounds.
 	public async Task GetSounds()
 	{
-		var response = await Client.GetAsync("https://discord.com/api/v10/soundboard-default-sounds");
-		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync()).ToList();
-
-		foreach (var guild in Bot.Client.Guilds)
-		{
-			response = await Client.GetAsync($"https://discord.com/api/v10/guilds/{guild.Id}/soundboard-sounds");
-			string json = await response.Content.ReadAsStringAsync();
-
-			var items = JsonDocument.Parse(json).RootElement.GetProperty("items");
-			sounds.AddRange(JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText()));
-		}
-
+		var response = await Client.GetAsync("soundboard/available-sounds");
+		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync());
 		AvailableSounds = sounds.ToArray();
 	}
 
