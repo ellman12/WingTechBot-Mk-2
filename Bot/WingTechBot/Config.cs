@@ -10,6 +10,8 @@ public sealed record Config
 
 	public ulong BotChannelId { get; init; }
 
+	public string ServerUrl { get; init; }
+
 	///Default VC to join when /join-vc invoked and no other channel given.
 	public ulong DefaultVoiceChannelId { get; init; }
 
