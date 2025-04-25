@@ -13,7 +13,7 @@ public sealed partial class SoundboardSound(string name, byte[] audio) : Model
 	public ulong? GuildId { get; init; }
 
 	///What is sent through FFmpeg to be heard in the <see cref="SocketVoiceChannel"/>.
-	[Required, JsonConverter(typeof(ByteArrayBase64Converter))]
+	[JsonConverter(typeof(ByteArrayBase64Converter))]
 	public byte[] Audio { get; init; } = audio;
 
 	[Required, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -25,6 +25,7 @@ public sealed class SoundboardSoundConfiguration : IEntityTypeConfiguration<Soun
 	public void Configure(EntityTypeBuilder<SoundboardSound> builder)
 	{
 		builder.Property(e => e.Id).ValueGeneratedOnAdd();
+		builder.Property(e => e.Audio).IsRequired();
 		builder.Property(e => e.CreatedAt).HasDefaultValueSql("timezone('utc', now())");
 	}
 }

@@ -13,6 +13,7 @@
     <!-- Global usings -->
     <ItemGroup>
         <Using Include="Discord"/>
+        <Using Include="Discord.Audio"/>
         <Using Include="Discord.WebSocket"/>
         <Using Include="Microsoft.AspNetCore.Mvc"/>
         <Using Include="Microsoft.EntityFrameworkCore"/>
@@ -20,6 +21,7 @@
         <Using Include="System.Collections.Concurrent"/>
         <Using Include="System.ComponentModel.DataAnnotations"/>
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
+        <Using Include="System.Diagnostics"/>
         <Using Include="System.Net"/>
         <Using Include="System.Net.Http.Headers"/>
         <Using Include="System.Linq.Expressions"/>

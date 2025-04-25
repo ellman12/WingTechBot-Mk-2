@@ -84,7 +84,6 @@ public sealed class SoundCommand : SlashCommand
 		if (connection.ConnectedChannel == null)
 		{
 			await command.FollowupAsync($"Joining {Bot.DefaultVoiceChannel.Mention} and playing {shared}");
-			connection.Connect(Bot.DefaultVoiceChannel);
 		}
 		else
 		{

@@ -10,6 +10,8 @@ public sealed class VoiceChannelConnection
 
 	public SocketVoiceChannel ConnectedChannel { get; private set; }
 
+	public IAudioClient AudioClient { get; private set; }
+
 	///Where uses can send soundboard sounds to play. Faster than invoking one-off commands.
 	public SocketThreadChannel SoundboardThread { get; private set; }
 
@@ -48,7 +50,11 @@ public sealed class VoiceChannelConnection
 			SoundCancelToken = new CancellationTokenSource();
 
 		ConnectedChannel = channel;
-		_ = channel.ConnectAsync(disconnect: true);
+
+		Task.Run(async () =>
+		{
+			AudioClient = await channel.ConnectAsync(disconnect: true);
+		});
 	}
 
 	public async Task Disconnect()
@@ -100,6 +106,52 @@ public sealed class VoiceChannelConnection
 		AvailableSounds = sounds.ToArray();
 	}
 
+	private static async Task<Process> CreateStreamFromBytes(byte[] audio)
+	{
+		var process = new Process
+		{
+			StartInfo = new ProcessStartInfo
+			{
+				FileName = "ffmpeg",
+				Arguments = "-hide_banner -loglevel panic -i pipe:0 -ac 2 -f s16le -ar 48000 pipe:1",
+				UseShellExecute = false,
+				RedirectStandardInput = true,
+				RedirectStandardOutput = true,
+				CreateNoWindow = true
+			}
+		};
+
+		process.Start();
+
+		//This is almost certainly terrible, but it hangs forever without being wrapped in Task.Run
+		_ = Task.Run(async () =>
+		{
+			await using var stdin = process.StandardInput.BaseStream;
+			await stdin.WriteAsync(audio, 0, audio.Length);
+			await stdin.FlushAsync();
+			stdin.Close();
+		});
+
+		return process;
+	}
+
+	//https://docs.discordnet.dev/guides/voice/sending-voice.html
+	public async Task SendAudio(byte[] audio)
+	{
+		using var ffmpeg = await CreateStreamFromBytes(audio);
+		await using var output = ffmpeg.StandardOutput.BaseStream;
+		await using var discord = AudioClient.CreatePCMStream(AudioApplication.Mixed);
+
+		try
+		{
+			await output.CopyToAsync(discord);
+		}
+		finally
+		{
+			await discord.FlushAsync();
+		}
+	}
+
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
 	{
 		if (current.VoiceChannel != ConnectedChannel && ConnectedChannel != null && !ConnectedUsers.Any())
@@ -125,9 +177,6 @@ public sealed class VoiceChannelConnection
 		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, message.Content, StringComparison.InvariantCultureIgnoreCase));
 		if (sound == null && !message.Content.ToLower().StartsWith("rand"))
 			return Task.CompletedTask;
-
-		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
-			connection.Connect(Bot.DefaultVoiceChannel);
 
 		var delay = TimeSpan.FromSeconds(1);
 		connection.PlaySound(sound, 1, delay, delay);

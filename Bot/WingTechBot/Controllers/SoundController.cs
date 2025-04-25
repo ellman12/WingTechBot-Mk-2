@@ -36,28 +36,33 @@ public sealed class SoundController : ControllerBase
 	[HttpPost, Route("send-soundboard-sound")]
 	public async Task<IActionResult> SendSound(SoundboardSound sound)
 	{
-		var soundData = new SoundPostData(sound);
-		var content = new StringContent(JsonSerializer.Serialize(soundData), Encoding.UTF8, "application/json");
-
 		try
 		{
-			var connection = Program.Bot.VoiceChannelConnection;
-			if (connection.ConnectedChannel == null)
+			if (Program.Bot.VoiceChannelConnection.ConnectedChannel == null)
 			{
 				Program.Bot.VoiceChannelConnection.Connect(Program.Bot.DefaultVoiceChannel);
+				await Task.Delay(1250); //Ensures AudioClient has enough time to get a value.
 			}
 
-			var response = await httpClient.PostAsync($"channels/{connection.ConnectedChannel!.Id}/send-soundboard-sound", content);
+			if (sound.Audio == null)
+			{
+				var soundData = new SoundPostData(sound);
+				var content = new StringContent(JsonSerializer.Serialize(soundData), Encoding.UTF8, "application/json");
+				var response = await httpClient.PostAsync($"channels/{Program.Bot.VoiceChannelConnection.ConnectedChannel!.Id}/send-soundboard-sound", content);
 
-			if (response.IsSuccessStatusCode)
-				return Ok();
+				if (response.IsSuccessStatusCode)
+					return Ok();
 
-			var errorMessage = await response.Content.ReadAsStringAsync();
-			return StatusCode((int)response.StatusCode, new { Error = errorMessage });
+				var errorMessage = await response.Content.ReadAsStringAsync();
+				return StatusCode((int) response.StatusCode, new {Error = errorMessage});
+			}
+
+			await Program.Bot.VoiceChannelConnection.SendAudio(sound.Audio);
+			return Ok();
 		}
 		catch (Exception e)
 		{
-			return StatusCode(500, new { Error = e.Message });
+			return StatusCode(500, new {Error = e.Message});
 		}
 	}
 
