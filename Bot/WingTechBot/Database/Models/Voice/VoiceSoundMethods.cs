@@ -1,32 +1,32 @@
 namespace WingTechBot.Database.Models.Voice;
 
-public sealed partial class VoiceSound
+public sealed partial class SoundboardSound
 {
-	public static async Task<VoiceSound> Find(ulong id)
+	public static async Task<SoundboardSound> Find(ulong id)
 	{
 		await using BotDbContext context = new();
-		return await context.VoiceSounds.FirstOrDefaultAsync(r => r.Id == id);
+		return await context.SoundboardSounds.FirstOrDefaultAsync(r => r.Id == id);
 	}
 
-	public static async Task<VoiceSound> AddVoiceSound(string name, byte[] audio)
+	public static async Task<SoundboardSound> AddSoundboardSound(string name, byte[] audio)
 	{
 		if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or whitespace");
 		if (audio.Length == 0) throw new ArgumentException("Audio cannot be empty");
 
-		var newSound = new VoiceSound(name, audio);
+		var newSound = new SoundboardSound(name, audio);
 		await using BotDbContext context = new();
-		await context.VoiceSounds.AddAsync(newSound);
+		await context.SoundboardSounds.AddAsync(newSound);
 		await context.SaveChangesAsync();
 		return newSound;
 	}
 
-	public static async Task RemoveVoiceSound(ulong id)
+	public static async Task RemoveSoundboardSound(ulong id)
 	{
-		if (id == 0) throw new ArgumentException("Invalid VoiceSound id");
+		if (id == 0) throw new ArgumentException("Invalid SoundboardSound id");
 
 		await using BotDbContext context = new();
 		var sound = await Find(id);
-		context.VoiceSounds.Remove(sound);
+		context.SoundboardSounds.Remove(sound);
 		await context.SaveChangesAsync();
 	}
 }

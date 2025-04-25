@@ -61,6 +61,6 @@ public sealed class SoundController : ControllerBase
 	{
 		public ulong? source_guild_id { get; } = sound.GuildId;
 
-		public ulong sound_id { get; } = sound.SoundId;
+		public ulong sound_id { get; } = sound.Id;
 	}
 }

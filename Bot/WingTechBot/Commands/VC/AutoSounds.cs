@@ -32,7 +32,7 @@ public sealed class AutoSounds
 		await Task.Delay(300);
 
 		var soundId = soundIds.GetRandom();
-		var sound = Bot.VoiceChannelConnection.AvailableSounds.Single(s => s.SoundId == soundId);
+		var sound = Bot.VoiceChannelConnection.AvailableSounds.Single(s => s.Id == soundId);
 		Connection.PlaySound(sound);
 	}
 
