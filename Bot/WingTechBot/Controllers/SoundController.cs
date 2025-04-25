@@ -16,6 +16,7 @@ public sealed class SoundController : ControllerBase
 	public async Task<IActionResult> AvailableSounds()
 	{
 		var sounds = new List<SoundboardSound>();
+		await using BotDbContext context = new();
 
 		foreach (var id in Program.Config.SoundboardServerIds)
 		{
@@ -26,7 +27,10 @@ public sealed class SoundController : ControllerBase
 			sounds.AddRange(JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText()));
 		}
 
-		return Ok(sounds);
+		sounds.AddRange(context.SoundboardSounds);
+
+		//Explicit JSON serialize to ensure the audio byte[] arrays are serialized properly.
+		return Ok(JsonSerializer.Serialize(sounds));
 	}
 
 	[HttpPost, Route("send-soundboard-sound")]

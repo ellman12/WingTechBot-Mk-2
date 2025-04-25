@@ -4,20 +4,20 @@ namespace WingTechBot.Database.Models.Voice;
 public sealed partial class SoundboardSound(string name, byte[] audio) : Model
 {
 	[Key, JsonPropertyName("sound_id"), JsonConverter(typeof(StringUInt64Converter))]
-	public ulong Id { get; private init; }
+	public ulong Id { get; init; }
 
 	[Required, JsonPropertyName("name")]
-	public string Name { get; private init; } = name;
+	public string Name { get; init; } = name;
 
 	[NotMapped, JsonPropertyName("guild_id"), JsonConverter(typeof(StringUInt64Converter))]
-	public ulong? GuildId { get; private init; }
+	public ulong? GuildId { get; init; }
 
 	///What is sent through FFmpeg to be heard in the <see cref="SocketVoiceChannel"/>.
-	[Required]
-	public byte[] Audio { get; private init; } = audio;
+	[Required, JsonConverter(typeof(ByteArrayBase64Converter))]
+	public byte[] Audio { get; init; } = audio;
 
 	[Required, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-	public DateTime CreatedAt { get; private init; }
+	public DateTime CreatedAt { get; init; }
 }
 
 public sealed class SoundboardSoundConfiguration : IEntityTypeConfiguration<SoundboardSound>
