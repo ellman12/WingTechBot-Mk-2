@@ -111,6 +111,12 @@ public sealed class WingTechBot
 		{
 			if (slashCommands.TryGetValue(name, out var slashCommand))
 			{
+				if (slashCommand.Admin && !Program.Config.BotAdmins.Contains(command.User.Id))
+				{
+					await command.FollowupAsync("You are not authorized to use this command");
+					return;
+				}
+
 				if (slashCommand.Defer)
 					await command.DeferAsync();
 

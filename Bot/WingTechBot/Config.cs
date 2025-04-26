@@ -20,8 +20,8 @@ public sealed record Config
 
 	public ulong ModRoleId { get; init; }
 
-	///Usernames of people who can run bot admin commands.
-	public string[] BotAdmins { get; init; }
+	///IDs of users who can run bot admin commands.
+	public ulong[] BotAdmins { get; init; }
 
 	///Any attempt to give karma before this date is ignored.
 	public DateTime StartDate { get; init; }
