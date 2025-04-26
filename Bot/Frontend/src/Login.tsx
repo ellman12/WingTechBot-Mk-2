@@ -1,5 +1,6 @@
 import {FC, useState} from "react";
 import http from "./api/http.ts";
+import TextField from "./components/TextField.tsx";
 
 interface Props {
     setAuthenticated: (auth: boolean) => void;
@@ -22,7 +23,7 @@ const Login: FC<Props> = ({setAuthenticated}) => {
 
     return (
         <div className="flex flex-col w-64 gap-4 text-white">
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} placeholder="Enter password" className="border p-2"/>
+            <TextField type="password" value={password} valueChanged={setPassword} placeholder="Enter password"/>
             <button onClick={handleLogin} className="bg-blue-500 text-white p-2">Login</button>
         </div>
     );
