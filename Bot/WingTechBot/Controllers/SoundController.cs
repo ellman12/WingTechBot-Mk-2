@@ -47,7 +47,7 @@ public sealed class SoundController : ControllerBase
 				await Task.Delay(1250); //Ensures AudioClient has enough time to get a value.
 			}
 
-			if (sound.Audio == null)
+			if (sound.Type == "soundboard")
 			{
 				var soundData = new SoundPostData(sound);
 				var content = new StringContent(JsonSerializer.Serialize(soundData), Encoding.UTF8, "application/json");

@@ -12,7 +12,7 @@ const SoundButton: FC<Props> = ({sound}) => {
     }
 
     async function sendSound() {
-        await http.post("soundboard/send-soundboard-sound", {guild_id: sound.guild_id, sound_id: sound.sound_id});
+        await http.post("soundboard/send-soundboard-sound", sound);
     }
 
     return (

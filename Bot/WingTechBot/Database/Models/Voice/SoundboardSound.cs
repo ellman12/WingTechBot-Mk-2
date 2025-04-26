@@ -13,11 +13,14 @@ public sealed partial class SoundboardSound(string name, byte[] audio) : Model
 	public ulong? GuildId { get; init; }
 
 	///What is sent through FFmpeg to be heard in the <see cref="SocketVoiceChannel"/>.
-	[JsonConverter(typeof(ByteArrayBase64Converter))]
+	[JsonPropertyName("audio"), JsonConverter(typeof(ByteArrayBase64Converter))]
 	public byte[] Audio { get; init; } = audio;
 
 	[Required, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public DateTime CreatedAt { get; init; }
+
+	[NotMapped, JsonPropertyName("type")]
+	public string Type => GuildId == null && Audio != null ? "voice" : "soundboard";
 }
 
 public sealed class SoundboardSoundConfiguration : IEntityTypeConfiguration<SoundboardSound>
