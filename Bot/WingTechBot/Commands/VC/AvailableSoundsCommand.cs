@@ -13,7 +13,7 @@ public sealed class AvailableSoundsCommand : SlashCommand
 
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
-		string message = String.Join('\n', Bot.VoiceChannelConnection.AvailableSounds.Select(s => s.Name).Order());
+		string message = String.Join('\n', Bot.VoiceChannelConnection.AvailableSounds.Select(s => s.Name));
 		await command.RespondAsync(message, ephemeral: true);
 	}
 }

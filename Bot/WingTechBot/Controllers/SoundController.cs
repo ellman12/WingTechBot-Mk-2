@@ -33,7 +33,7 @@ public sealed class SoundController : ControllerBase
 		sounds.AddRange(context.SoundboardSounds);
 
 		//Explicit JSON serialize to ensure the audio byte[] arrays are serialized properly.
-		return Ok(JsonSerializer.Serialize(sounds));
+		return Ok(JsonSerializer.Serialize(sounds.OrderBy(s => s.Name).ToArray()));
 	}
 
 	[HttpPost, Route("send-soundboard-sound")]
