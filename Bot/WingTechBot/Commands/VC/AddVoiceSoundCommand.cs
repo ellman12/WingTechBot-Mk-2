@@ -43,5 +43,6 @@ public sealed class AddVoiceSoundCommand : SlashCommand
 		await command.FollowupAsync($"{command.User.Username} uploaded `{name}`");
 
 		await SoundboardSound.AddSoundboardSound(name, audioBytes);
+		await Bot.VoiceChannelConnection.GetSounds();
 	}
 }
