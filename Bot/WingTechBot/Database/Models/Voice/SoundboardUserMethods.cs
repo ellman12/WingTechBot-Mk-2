@@ -21,4 +21,18 @@ public sealed partial class SoundboardUser
 		await context.SoundboardUsers.AddAsync(newUser);
 		await context.SaveChangesAsync();
 	}
+
+	public static async Task RevokeUser(ulong id)
+	{
+		await using BotDbContext context = new();
+
+		var user = await Find(id);
+		if (user == null)
+		{
+			return;
+		}
+
+		context.SoundboardUsers.Remove(user);
+		await context.SaveChangesAsync();
+	}
 }
