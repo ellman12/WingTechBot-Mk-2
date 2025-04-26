@@ -1,24 +1,28 @@
-<Project Sdk="Microsoft.NET.Sdk">
-
+<!-- Using the Web SDK allows us to use ASP.NET for things like the soundboard -->
+<Project Sdk="Microsoft.NET.Sdk.Web">
     <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net9.0</TargetFramework>
         <ApplicationIcon>wingtech_logo.ico</ApplicationIcon>
         <ImplicitUsings>enable</ImplicitUsings>
-
-        <!-- Disables certain features that break tests. -->
+        
+        <!-- Disables certain features that break tests -->
         <DefineConstants>NOT_TESTING</DefineConstants>
     </PropertyGroup>
 
     <!-- Global usings -->
     <ItemGroup>
         <Using Include="Discord"/>
+        <Using Include="Discord.Audio"/>
         <Using Include="Discord.WebSocket"/>
+        <Using Include="Microsoft.AspNetCore.Mvc"/>
         <Using Include="Microsoft.EntityFrameworkCore"/>
         <Using Include="Microsoft.EntityFrameworkCore.Metadata.Builders"/>
         <Using Include="System.Collections.Concurrent"/>
         <Using Include="System.ComponentModel.DataAnnotations"/>
         <Using Include="System.ComponentModel.DataAnnotations.Schema"/>
+        <Using Include="System.Diagnostics"/>
+        <Using Include="System.Net"/>
         <Using Include="System.Net.Http.Headers"/>
         <Using Include="System.Linq.Expressions"/>
         <Using Include="System.Text.RegularExpressions"/>
@@ -38,6 +42,7 @@
         <Using Include="WingTechBot.Database.Models"/>
         <Using Include="WingTechBot.Database.Models.Gatos"/>
         <Using Include="WingTechBot.Database.Models.Reactions"/>
+        <Using Include="WingTechBot.Database.Models.Voice"/>
 
         <Using Include="WingTechBot.Extensions"/>
         <Using Include="WingTechBot.Extensions.Json"/>
@@ -59,10 +64,6 @@
     <ItemGroup>
         <Content Include="wingtech_logo.ico"/>
 
-        <Content Include="config.json">
-            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-        </Content>
-
         <Content Include="Games/words.txt">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
@@ -71,5 +72,4 @@
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
-
 </Project>

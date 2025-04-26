@@ -31,7 +31,7 @@ public sealed class LeaveVcCommand : SlashCommand
 			return;
 
 		var soundId = soundIds.GetRandom();
-		var sound = Bot.VoiceChannelConnection.AvailableSounds.Single(s => s.SoundId == soundId);
+		var sound = Bot.VoiceChannelConnection.AvailableSounds.Single(s => s.Id == soundId);
 		Bot.VoiceChannelConnection.PlaySound(sound);
 
 		await Task.Delay(1000);

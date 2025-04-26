@@ -10,6 +10,8 @@ public sealed class VoiceChannelConnection
 
 	public SocketVoiceChannel ConnectedChannel { get; private set; }
 
+	public IAudioClient AudioClient { get; private set; }
+
 	///Where uses can send soundboard sounds to play. Faster than invoking one-off commands.
 	public SocketThreadChannel SoundboardThread { get; private set; }
 
@@ -27,6 +29,8 @@ public sealed class VoiceChannelConnection
 		Bot = bot;
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
 
+		Client.BaseAddress = new Uri($"{Bot.Config.ServerUrl}/api/");
+
 		SoundboardThread = Bot.Guild.ThreadChannels.FirstOrDefault(t => t.Name == "WTB Soundboard");
 		if (SoundboardThread == null)
 		{
@@ -34,8 +38,6 @@ public sealed class VoiceChannelConnection
 			await SoundboardThread.SendMessageAsync("Send the names of soundboard sounds here to hear them in VC");
 		}
 		Bot.Client.MessageReceived += OnMessageReceived;
-
-		Client.DefaultRequestHeaders.Add("Authorization", $"Bot {Bot.Config.LoginToken}");
 
 		await GetSounds();
 
@@ -48,7 +50,11 @@ public sealed class VoiceChannelConnection
 			SoundCancelToken = new CancellationTokenSource();
 
 		ConnectedChannel = channel;
-		_ = channel.ConnectAsync(disconnect: true);
+
+		Task.Run(async () =>
+		{
+			AudioClient = await channel.ConnectAsync(disconnect: true);
+		});
 	}
 
 	public async Task Disconnect()
@@ -77,8 +83,8 @@ public sealed class VoiceChannelConnection
 				if (SoundCancelToken.Token.IsCancellationRequested)
 					return;
 
-				var data = new SoundPostData(sound ?? available[Random.Shared.Next(0, available.Length)]);
-				await connection.Client.PostAsync($"https://discord.com/api/v10/channels/{connection.ConnectedChannel.Id}/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
+				var data = sound ?? available[Random.Shared.Next(0, available.Length)];
+				await connection.Client.PostAsync("soundboard/send-soundboard-sound", new StringContent(JsonSerializer.Serialize(data), Encoding.UTF8, "application/json"));
 				var delay = GetRandomTimeSpan(minDelay, maxDelay);
 				await Task.Delay(delay, SoundCancelToken.Token);
 			}
@@ -92,29 +98,58 @@ public sealed class VoiceChannelConnection
 		PlayingSounds.Clear();
 	}
 
-	private sealed class SoundPostData(SoundboardSound sound)
-	{
-		public ulong? source_guild_id { get; set; } = sound.GuildId;
-
-		public ulong sound_id { get; set; } = sound.SoundId;
-	}
-
 	///Gets or refreshes the list of available sounds.
 	public async Task GetSounds()
 	{
-		var response = await Client.GetAsync("https://discord.com/api/v10/soundboard-default-sounds");
-		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync()).ToList();
-
-		foreach (var guild in Bot.Client.Guilds)
-		{
-			response = await Client.GetAsync($"https://discord.com/api/v10/guilds/{guild.Id}/soundboard-sounds");
-			string json = await response.Content.ReadAsStringAsync();
-
-			var items = JsonDocument.Parse(json).RootElement.GetProperty("items");
-			sounds.AddRange(JsonSerializer.Deserialize<SoundboardSound[]>(items.GetRawText()));
-		}
-
+		var response = await Client.GetAsync("soundboard/available-sounds");
+		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync());
 		AvailableSounds = sounds.ToArray();
+	}
+
+	private async Task<Process> CreateStreamFromBytes(byte[] audio)
+	{
+		var process = new Process
+		{
+			StartInfo = new ProcessStartInfo
+			{
+				FileName = "ffmpeg",
+				Arguments = "-hide_banner -loglevel panic -i pipe:0 -ac 2 -f s16le -ar 48000 pipe:1",
+				UseShellExecute = false,
+				RedirectStandardInput = true,
+				RedirectStandardOutput = true,
+				CreateNoWindow = true
+			}
+		};
+
+		process.Start();
+
+		//This is almost certainly terrible, but it hangs forever without being wrapped in Task.Run
+		_ = Task.Run(async () =>
+		{
+			await using var stdin = process.StandardInput.BaseStream;
+			await stdin.WriteAsync(audio, 0, audio.Length, SoundCancelToken.Token);
+			await stdin.FlushAsync(SoundCancelToken.Token);
+			stdin.Close();
+		}, SoundCancelToken.Token);
+
+		return process;
+	}
+
+	//https://docs.discordnet.dev/guides/voice/sending-voice.html
+	public async Task SendAudio(byte[] audio)
+	{
+		using var ffmpeg = await CreateStreamFromBytes(audio);
+		await using var output = ffmpeg.StandardOutput.BaseStream;
+		await using var discord = AudioClient.CreatePCMStream(AudioApplication.Mixed);
+
+		try
+		{
+			await output.CopyToAsync(discord, SoundCancelToken.Token);
+		}
+		finally
+		{
+			await discord.FlushAsync(SoundCancelToken.Token);
+		}
 	}
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
@@ -142,9 +177,6 @@ public sealed class VoiceChannelConnection
 		var sound = connection.AvailableSounds.FirstOrDefault(s => String.Equals(s.Name, message.Content, StringComparison.InvariantCultureIgnoreCase));
 		if (sound == null && !message.Content.ToLower().StartsWith("rand"))
 			return Task.CompletedTask;
-
-		if (Bot.VoiceChannelConnection.ConnectedChannel == null)
-			connection.Connect(Bot.DefaultVoiceChannel);
 
 		var delay = TimeSpan.FromSeconds(1);
 		connection.PlaySound(sound, 1, delay, delay);

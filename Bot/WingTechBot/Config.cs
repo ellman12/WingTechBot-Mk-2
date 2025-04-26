@@ -10,6 +10,13 @@ public sealed record Config
 
 	public ulong BotChannelId { get; init; }
 
+	public string ServerUrl { get; init; }
+
+	public string SoundboardPassword { get; init; }
+
+	///The IDs of Discord servers the bot can get sounds from.
+	public ulong[] SoundboardServerIds { get; init; }
+
 	///Default VC to join when /join-vc invoked and no other channel given.
 	public ulong DefaultVoiceChannelId { get; init; }
 

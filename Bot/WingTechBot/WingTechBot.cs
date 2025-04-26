@@ -4,7 +4,7 @@ public sealed class WingTechBot
 {
 	public DiscordSocketClient Client { get; } = new(DiscordConfig);
 
-	public Config Config { get; private set; }
+	public Config Config { get; private init; }
 
 	public SocketGuild Guild { get; private set; }
 
@@ -31,10 +31,9 @@ public sealed class WingTechBot
 
 	public GameHandler GameHandler { get; private set; }
 
-	public static async Task<WingTechBot> Create(string configPath = null)
+	public static async Task<WingTechBot> Create(Config config)
 	{
-		WingTechBot bot = new();
-		bot.Config = String.IsNullOrWhiteSpace(configPath) ? Config.FromJson() : Config.FromJson(configPath);
+		WingTechBot bot = new() {Config = config};
 
 		bot.Client.Log += Logger.LogLine;
 		bot.Client.Ready += bot.OnClientReady;
@@ -48,6 +47,12 @@ public sealed class WingTechBot
 		bot.GameHandler = new GameHandler(bot);
 
 		return bot;
+	}
+
+	public static async Task<WingTechBot> Create(string configPath = null)
+	{
+		var config = String.IsNullOrWhiteSpace(configPath) ? Config.FromJson() : Config.FromJson(configPath);
+		return await Create(config);
 	}
 
 	private async Task OnClientReady()
@@ -87,15 +92,15 @@ public sealed class WingTechBot
 			.Select(Activator.CreateInstance)
 			.Cast<SlashCommand>();
 
-		await Parallel.ForEachAsync(commands, async (command, _) =>
-		// foreach (var command in commands)
+		// await Parallel.ForEachAsync(commands, async (command, _) =>
+		foreach (var command in commands)
 		{
 			await command.SetUp(this);
 
 			if (!slashCommands.TryAdd(command.Name, command))
 				await Logger.LogExceptionAsMessage(new Exception($"Error initializing {command.Name} command"), BotChannel);
-		// }
-		});
+		}
+		// });
 	}
 
 	private async Task HandleCommand(SocketSlashCommand command)

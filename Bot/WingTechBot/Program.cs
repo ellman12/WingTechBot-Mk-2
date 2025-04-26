@@ -2,13 +2,15 @@
 
 public static class Program
 {
-	public static WingTechBot Bot { get; private set; }
-
 	#if DEBUG
-	public static readonly string ProjectRoot = Directory.GetParent(Environment.CurrentDirectory)!.Parent!.Parent!.FullName;
+	public static readonly string ProjectRoot = Environment.CurrentDirectory;
 	#elif RELEASE
 	public const string ProjectRoot = "/app";
 	#endif
+
+	public static WingTechBot Bot { get; private set; }
+
+	public static Config Config { get; } = Config.FromJson();
 
 	public static void Main(string[] args)
 	{
@@ -42,7 +44,9 @@ public static class Program
 
 	private static async Task MainAsync()
 	{
-		Bot = await WingTechBot.Create();
+		await WingSounds.Create(Config);
+		Bot = await WingTechBot.Create(Config);
+
 		await Task.Delay(Timeout.Infinite);
 	}
 }
