@@ -17,7 +17,7 @@ const SoundButton: FC<Props> = ({sound}) => {
 
     return (
         <button className="flex items-center justify-center bg-[#2B2D31] text-white px-4 py-4 text-nowrap text-sm rounded-lg hover:cursor-pointer" onClick={onClick}>
-            {sound.name}
+            <p className="max-w-40 truncate">{sound.name}</p>
         </button>
     );
 };
