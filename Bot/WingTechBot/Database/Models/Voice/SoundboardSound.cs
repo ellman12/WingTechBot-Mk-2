@@ -22,6 +22,9 @@ public sealed partial class SoundboardSound(ulong id, string name, byte[] audio)
 
 	[NotMapped, JsonPropertyName("type")]
 	public string Type => GuildId == null && Audio != null ? "voice" : "soundboard";
+
+	[JsonIgnore]
+	public ICollection<PlayedSound> PlayedSounds { get; init; } = new List<PlayedSound>();
 }
 
 public sealed class SoundboardSoundConfiguration : IEntityTypeConfiguration<SoundboardSound>
