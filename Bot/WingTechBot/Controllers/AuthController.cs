@@ -1,7 +1,7 @@
 namespace WingTechBot.Controllers;
 
 [ApiController, Route("api/auth")]
-public class AuthController : ControllerBase
+public sealed class AuthController : ControllerBase
 {
 	[HttpPost("login")]
 	public IActionResult Login(LoginRequest request)

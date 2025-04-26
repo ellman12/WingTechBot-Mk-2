@@ -1,4 +1,4 @@
-import {FC, useState} from "react";
+import { FC, useEffect, useState } from "react";
 import http from "./api/http.ts";
 import TextField from "./components/TextField.tsx";
 
@@ -14,12 +14,20 @@ const Login: FC<Props> = ({setAuthenticated}) => {
             .then(e => {
                 if (e.statusText === "OK") {
                     setAuthenticated(true);
+                    localStorage.setItem("userId", userId);
                 } else {
                     setAuthenticated(false);
                 }
             })
             .catch(e => console.error(e));
     }
+
+    useEffect(() => {
+        const cachedId = localStorage.getItem("userId");
+        if (cachedId !== null) {
+            setUserId(cachedId);
+        }
+    }, []);
 
     return (
         <div className="flex flex-col w-64 gap-6 text-white">
