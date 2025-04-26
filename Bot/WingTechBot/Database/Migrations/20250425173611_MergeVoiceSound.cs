@@ -18,7 +18,7 @@ namespace WingTechBot.Database.Migrations
                 name: "SoundboardSounds",
                 columns: table => new
                 {
-                    Id = table.Column<decimal>(type: "bigserial", nullable: false),
+                    Id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Audio = table.Column<byte[]>(type: "bytea", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())")
@@ -39,7 +39,7 @@ namespace WingTechBot.Database.Migrations
                 name: "VoiceSounds",
                 columns: table => new
                 {
-                    Id = table.Column<decimal>(type: "bigserial", nullable: false),
+                    Id = table.Column<decimal>(type: "numeric(20,0)", nullable: false),
                     Audio = table.Column<byte[]>(type: "bytea", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false, defaultValueSql: "timezone('utc', now())"),
                     Name = table.Column<string>(type: "text", nullable: false)

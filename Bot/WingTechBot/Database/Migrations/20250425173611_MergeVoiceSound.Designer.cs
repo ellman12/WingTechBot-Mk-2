@@ -192,7 +192,7 @@ namespace WingTechBot.Database.Migrations
                 {
                     b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigserial")
+                        .HasColumnType("numeric(20,0)")
                         .HasAnnotation("Relational:JsonPropertyName", "sound_id");
 
                     b.Property<byte[]>("Audio")

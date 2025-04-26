@@ -13,8 +13,9 @@ public sealed partial class SoundboardSound
 		if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or whitespace");
 		if (audio.Length == 0) throw new ArgumentException("Audio cannot be empty");
 
-		var newSound = new SoundboardSound(name, audio);
 		await using BotDbContext context = new();
+		ulong id = await context.SoundboardSounds.MaxAsync(s => s.Id) + 1;
+		var newSound = new SoundboardSound(id, name, audio);
 		await context.SoundboardSounds.AddAsync(newSound);
 		await context.SaveChangesAsync();
 		return newSound;

@@ -187,9 +187,9 @@ namespace WingTechBot.Database.Migrations
 
             modelBuilder.Entity("WingTechBot.Database.Models.Voice.SoundboardSound", b =>
                 {
-                    b.Property<ulong>("Id")
+                    b.Property<decimal>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("bigserial")
+                        .HasColumnType("numeric(20,0)")
                         .HasAnnotation("Relational:JsonPropertyName", "sound_id");
 
                     b.Property<byte[]>("Audio")
