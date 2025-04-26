@@ -15,17 +15,24 @@ export default function SoundButtons() {
     }, []);
 
     const lower = searchText.trim().toLowerCase();
+    const filteredSounds = sounds.filter(filter);
+
     function filter(s: SoundboardSound) {
         if (lower === "")
             return true;
 
         return s.name.trim().toLowerCase().includes(lower);
     }
-    const filteredSounds = sounds.filter(filter);
+
+    async function tryPlayFirstSound() {
+        if (searchText !== "" && filteredSounds.length > 0) {
+            await http.post("soundboard/send-soundboard-sound", filteredSounds[0]);
+        }
+    }
 
     return (
         <div className="flex flex-col items-center gap-6">
-            <TextField value={searchText} valueChanged={setSearchText} placeholder="Search Sounds" className="w-72"/>
+            <TextField value={searchText} valueChanged={setSearchText} onEnter={tryPlayFirstSound} placeholder="Search Sounds" className="w-72"/>
 
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 {sounds?.length > 0 && filteredSounds.map(sound => <SoundButton key={sound.name} sound={sound}/>)}
