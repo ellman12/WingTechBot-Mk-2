@@ -14,6 +14,6 @@ public abstract class ModelTests
 	{
 		await using BotDbContext context = new();
 		await context.Database.EnsureDeletedAsync();
-		await context.Database.EnsureCreatedAsync();
+		await context.Database.MigrateAsync();
 	}
 }
