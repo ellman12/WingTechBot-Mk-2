@@ -12,8 +12,6 @@ public sealed record Config
 
 	public string ServerUrl { get; init; }
 
-	public string SoundboardPassword { get; init; }
-
 	///The IDs of Discord servers the bot can get sounds from.
 	public ulong[] SoundboardServerIds { get; init; }
 
@@ -22,8 +20,8 @@ public sealed record Config
 
 	public ulong ModRoleId { get; init; }
 
-	///Usernames of people who can run bot admin commands.
-	public string[] BotAdmins { get; init; }
+	///IDs of users who can run bot admin commands.
+	public ulong[] BotAdmins { get; init; }
 
 	///Any attempt to give karma before this date is ignored.
 	public DateTime StartDate { get; init; }

@@ -10,6 +10,7 @@ public sealed class BotDbContext : DbContext
     public DbSet<LegacyKarma> LegacyKarma { get; set; }
     public DbSet<Neko> Nekos { get; set; }
     public DbSet<SoundboardSound> SoundboardSounds { get; set; }
+    public DbSet<SoundboardUser> SoundboardUsers { get; set; }
 
     ///Configures the database.
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

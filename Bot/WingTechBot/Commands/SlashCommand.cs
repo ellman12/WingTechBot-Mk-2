@@ -10,6 +10,9 @@ public abstract class SlashCommand
 	///If the command should be deferred when handled. Only disable if using RespondAsync() instead of FollowupAsync().
 	public virtual bool Defer => true;
 
+	///Override to true if only admins can run this command.
+	public virtual bool Admin => false;
+
 	///<summary>If no slash commands have changed, pass --no-recreate-commands to skip that step in initialization.</summary>
 	///<remarks>This process takes a very long time to run when the bot starts, so don't recreate them unless needed.</remarks>
 	public static bool NoRecreateCommands { get; set; }

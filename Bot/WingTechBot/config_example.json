@@ -4,11 +4,12 @@
 	"ServerId": 0,
 	"BotChannelId": 0,
 	"ServerUrl": "",
-	"SoundboardPassword": "",
 	"SoundboardServerIds": [],
 	"DefaultVoiceChannelId": 0,
 	"ModRoleId": 0,
-	"BotAdmins": ["", ""],
+	"BotAdmins": [
+		0
+	],
 	"StartDate": "1970-01-01T00:00:00Z",
 	"StatusMessage": "",
 	"LLMToken": "",
