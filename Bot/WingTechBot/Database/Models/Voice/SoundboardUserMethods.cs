@@ -8,6 +8,12 @@ public sealed partial class SoundboardUser
 		return await context.SoundboardUsers.FirstOrDefaultAsync(r => r.Id == id);
 	}
 
+	public static async Task<SoundboardUser[]> GetAll()
+	{
+		await using BotDbContext context = new();
+		return context.SoundboardUsers.ToArray();
+	}
+
 	public static async Task AuthenticateUser(ulong id, ulong authenticatorId)
 	{
 		await using BotDbContext context = new();
