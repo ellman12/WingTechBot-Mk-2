@@ -12,8 +12,6 @@ public sealed record Config
 
 	public string ServerUrl { get; init; }
 
-	public string SoundboardPassword { get; init; }
-
 	///The IDs of Discord servers the bot can get sounds from.
 	public ulong[] SoundboardServerIds { get; init; }
 
