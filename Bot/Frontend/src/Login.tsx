@@ -7,10 +7,10 @@ interface Props {
 }
 
 const Login: FC<Props> = ({setAuthenticated}) => {
-    const [password, setPassword] = useState("");
+    const [userId, setUserId] = useState("");
 
     function handleLogin() {
-        http.post("/auth/login", {password})
+        http.post("/auth/login", {user_id: userId})
             .then(e => {
                 if (e.statusText === "OK") {
                     setAuthenticated(true);
@@ -23,7 +23,7 @@ const Login: FC<Props> = ({setAuthenticated}) => {
 
     return (
         <div className="flex flex-col w-64 gap-6 text-white">
-            <TextField type="password" value={password} valueChanged={setPassword} onEnter={handleLogin} placeholder="Enter password"/>
+            <TextField value={userId} valueChanged={setUserId} onEnter={handleLogin} placeholder="Enter user ID"/>
             <button onClick={handleLogin} className="bg-blue-500 text-white p-2">Login</button>
         </div>
     );
