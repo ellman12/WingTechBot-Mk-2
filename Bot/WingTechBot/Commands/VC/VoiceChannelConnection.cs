@@ -106,7 +106,7 @@ public sealed class VoiceChannelConnection
 		AvailableSounds = sounds.ToArray();
 	}
 
-	private static async Task<Process> CreateStreamFromBytes(byte[] audio)
+	private async Task<Process> CreateStreamFromBytes(byte[] audio)
 	{
 		var process = new Process
 		{
@@ -127,10 +127,10 @@ public sealed class VoiceChannelConnection
 		_ = Task.Run(async () =>
 		{
 			await using var stdin = process.StandardInput.BaseStream;
-			await stdin.WriteAsync(audio, 0, audio.Length);
-			await stdin.FlushAsync();
+			await stdin.WriteAsync(audio, 0, audio.Length, SoundCancelToken.Token);
+			await stdin.FlushAsync(SoundCancelToken.Token);
 			stdin.Close();
-		});
+		}, SoundCancelToken.Token);
 
 		return process;
 	}
@@ -144,11 +144,11 @@ public sealed class VoiceChannelConnection
 
 		try
 		{
-			await output.CopyToAsync(discord);
+			await output.CopyToAsync(discord, SoundCancelToken.Token);
 		}
 		finally
 		{
-			await discord.FlushAsync();
+			await discord.FlushAsync(SoundCancelToken.Token);
 		}
 	}
 
