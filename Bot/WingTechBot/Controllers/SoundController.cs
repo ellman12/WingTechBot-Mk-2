@@ -18,9 +18,12 @@ public sealed class SoundController : ControllerBase
 		var sounds = new List<SoundboardSound>();
 		await using BotDbContext context = new();
 
+		var response = await httpClient.GetAsync("soundboard-default-sounds");
+		sounds.AddRange(JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync()));
+
 		foreach (var id in Program.Config.SoundboardServerIds)
 		{
-			var response = await httpClient.GetAsync($"guilds/{id}/soundboard-sounds");
+			response = await httpClient.GetAsync($"guilds/{id}/soundboard-sounds");
 			string json = await response.Content.ReadAsStringAsync();
 
 			var items = JsonDocument.Parse(json).RootElement.GetProperty("items");
