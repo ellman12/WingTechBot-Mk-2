@@ -20,7 +20,7 @@ public sealed class WingTechBot
 	{
 		MessageCacheSize = 100,
 		AlwaysDownloadUsers = true,
-		GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildMembers
+		GatewayIntents = (GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent | GatewayIntents.GuildMembers) & ~(GatewayIntents.GuildScheduledEvents | GatewayIntents.GuildInvites)
 	};
 
 	private WingTechBot() {}
