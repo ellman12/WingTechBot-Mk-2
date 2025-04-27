@@ -14,7 +14,7 @@ public sealed partial class SoundboardSound
 		if (audio.Length == 0) throw new ArgumentException("Audio cannot be empty");
 
 		await using BotDbContext context = new();
-		ulong id = await context.SoundboardSounds.MaxAsync(s => s.Id) + 1;
+		ulong id = context.SoundboardSounds.Any() ? context.SoundboardSounds.Max(s => s.Id) + 1 : 1;
 		var newSound = new SoundboardSound(id, name, audio);
 		await context.SoundboardSounds.AddAsync(newSound);
 		await context.SaveChangesAsync();
