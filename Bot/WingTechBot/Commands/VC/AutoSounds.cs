@@ -38,7 +38,7 @@ public sealed class AutoSounds
 
 	private string GetEventName(SocketUser user, SocketVoiceState previous, SocketVoiceState current)
 	{
-		if (Connection.ConnectedChannel == null)
+		if (Connection.ConnectedChannel == null || current.VoiceChannel == previous.VoiceChannel)
 			return "";
 
 		if (current.VoiceChannel?.Id == Connection.ConnectedChannel.Id)
