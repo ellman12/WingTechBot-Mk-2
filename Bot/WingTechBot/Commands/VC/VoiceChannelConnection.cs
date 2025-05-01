@@ -116,6 +116,8 @@ public sealed class VoiceChannelConnection
 
 	private async Task<Process> CreateStreamFromBytes(byte[] audio)
 	{
+		Logger.LogLine("Begin CreateStreamFromBytes, starting FFmpeg process", LogSeverity.Debug);
+
 		var process = new Process
 		{
 			StartInfo = new ProcessStartInfo
@@ -131,31 +133,51 @@ public sealed class VoiceChannelConnection
 
 		process.Start();
 
+		Logger.LogLine("FFmpeg process started", LogSeverity.Debug);
+
 		//This is almost certainly terrible, but it hangs forever without being wrapped in Task.Run
 		_ = Task.Run(async () =>
 		{
+			Logger.LogLine("Opening FFmpeg stream", LogSeverity.Debug);
 			await using var stdin = process.StandardInput.BaseStream;
+
+			Logger.LogLine("Opening FFmpeg stream", LogSeverity.Debug);
 			await stdin.WriteAsync(audio, 0, audio.Length, SoundCancelToken.Token);
+
+			Logger.LogLine("Closing FFmpeg stream", LogSeverity.Debug);
 			await stdin.FlushAsync(SoundCancelToken.Token);
 			stdin.Close();
+
+			Logger.LogLine("FFmpeg stream closed", LogSeverity.Debug);
 		}, SoundCancelToken.Token);
 
+		Logger.LogLine("Finish CreateStreamFromBytes", LogSeverity.Debug);
 		return process;
 	}
 
 	//https://docs.discordnet.dev/guides/voice/sending-voice.html
 	public async Task SendAudio(byte[] audio)
 	{
+		Logger.LogLine("Begin SendAudio", LogSeverity.Debug);
+
 		using var ffmpeg = await CreateStreamFromBytes(audio);
 		await using var output = ffmpeg.StandardOutput.BaseStream;
 		await using var discord = AudioClient.CreatePCMStream(AudioApplication.Mixed);
 
+		Logger.LogLine("PCM stream created", LogSeverity.Debug);
+
 		try
 		{
+			Logger.LogLine("Begin sending audio to Discord", LogSeverity.Debug);
 			await output.CopyToAsync(discord, SoundCancelToken.Token);
+		}
+		catch (Exception e)
+		{
+			await Logger.LogExceptionAsMessage(e, Bot.BotChannel);
 		}
 		finally
 		{
+			Logger.LogLine("Flushing audio stream", LogSeverity.Debug);
 			await discord.FlushAsync(SoundCancelToken.Token);
 		}
 	}
