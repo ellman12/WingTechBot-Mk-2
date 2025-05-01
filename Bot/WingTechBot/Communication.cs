@@ -35,13 +35,26 @@ public sealed class Communication
 
 		if (message.MentionedUsers.Any(u => u.Id == Bot.Config.UserId) || message.MentionedRoles.Any(r => r.Members.Any(u => u.Id == Bot.Config.UserId)))
 		{
-			var filtered = Regex.Replace(message.Content, @"<@(\d+)>", "");
+			var filtered = PreprocessMessage(message.Content);
 			var response = await SendMessageToAi(filtered);
 			var messages = SplitMessage(response);
 
 			foreach (var m in messages)
 				await message.Channel.SendMessageAsync(m);
 		}
+	}
+
+	private string PreprocessMessage(string message)
+	{
+		//Remove bot name and role
+		message = Regex.Replace(message, $"<@{Bot.Config.UserId}>", "");
+		message = Regex.Replace(message, $"<@&{Bot.Config.BotRoleId}>", "");
+
+		//Convert user and role pings to their actual names
+		message = Regex.Replace(message, @"<@(\d+)>", match => Bot.Guild.GetUser(ulong.Parse(match.Groups[1].Value)).DisplayName);
+		message = Regex.Replace(message, @"<@&(\d+)>", match => Bot.Guild.GetRole(ulong.Parse(match.Groups[1].Value)).Name);
+
+		return message;
 	}
 
 	///<summary>Splits a message that exceeds 2000 characters into multiple messages.</summary>
