@@ -29,7 +29,7 @@ public sealed class VoiceChannelConnection
 		Bot = bot;
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
 
-		Client.BaseAddress = new Uri($"{Bot.Config.ServerUrl}/api/");
+		Client.BaseAddress = new Uri("http://localhost:5000/api/");
 
 		SoundboardThread = Bot.Guild.ThreadChannels.FirstOrDefault(t => t.Name == "WTB Soundboard");
 		if (SoundboardThread == null)

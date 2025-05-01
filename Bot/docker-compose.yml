@@ -7,8 +7,7 @@ services:
     container_name: wingtech-bot
     restart: unless-stopped
     ports:
-      - 5000:5000
-      - 8080:80
+      - ${WTB_PORT}:5000
 
     # These values come from .env
     environment:
@@ -23,7 +22,7 @@ services:
     container_name: wingtech-bot-postgres
     restart: unless-stopped
     ports:
-      - 5432:5432
+      - ${DATABASE_HOST_PORT}:5432
     environment:
       - POSTGRES_USER=${DATABASE_USER}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
