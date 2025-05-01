@@ -2,6 +2,9 @@
 
 public sealed record Config
 {
+	[JsonConverter(typeof(JsonStringEnumConverter))]
+	public LogSeverity LogLevel { get; init; }
+
 	public string LoginToken { get; init; }
 	
 	public ulong UserId { get; init; }

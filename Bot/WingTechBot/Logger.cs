@@ -1,12 +1,13 @@
-﻿using System.Diagnostics;
-
-namespace WingTechBot;
+﻿namespace WingTechBot;
 
 ///<summary>Used for printing messages of variable importance to the terminal.</summary>
 public static class Logger
 {
 	public static void LogLine(object value, LogSeverity itemImportance = LogSeverity.Info)
 	{
+		if (Program.Config.LogLevel < itemImportance)
+			return;
+
 		SetConsoleColor(itemImportance);
 		Console.WriteLine($"{DateTime.Now} {value}");
 		Console.ResetColor();

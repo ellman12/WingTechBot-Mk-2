@@ -4,6 +4,8 @@ public sealed class WingSounds
 {
 	public static async Task Create(Config config)
 	{
+		Logger.LogLine("Setting up WingSounds");
+
 		var builder = WebApplication.CreateBuilder();
 
 		builder.Services.AddCors(options =>
@@ -22,5 +24,7 @@ public sealed class WingSounds
 		app.UseCors("FrontendOrigin");
 		app.MapControllers();
 		await app.StartAsync();
+
+		Logger.LogLine("Finish setting up WingSounds");
 	}
 }

@@ -5,6 +5,8 @@ public sealed class ReactionTracker
 {
 	public void SetUp(WingTechBot bot)
 	{
+		Logger.LogLine("Setting up ReactionTracker");
+
 		wingTechBot = bot;
 		wingTechBot.Client.ReactionAdded += OnReactionAdded;
 		wingTechBot.Client.ReactionRemoved += OnReactionRemoved;
@@ -12,6 +14,8 @@ public sealed class ReactionTracker
 		wingTechBot.Client.ReactionsRemovedForEmote += OnReactionsRemovedForEmote;
 		wingTechBot.Client.MessageDeleted += OnMessageDeleted;
 		//Note, some events, like channel deleted and messages bulk deleted I haven't implemented because they never happen.
+
+		Logger.LogLine("Finish setting up ReactionTracker");
 	}
 
 	private WingTechBot wingTechBot;
@@ -25,7 +29,7 @@ public sealed class ReactionTracker
 		{
 			if (cachedMessage == null)
 			{
-				Logger.LogLine("Skipping reaction added to message without value");
+				Logger.LogLine("Skipping reaction added to message without value", LogSeverity.Warning);
 				return;
 			}
 
@@ -35,7 +39,7 @@ public sealed class ReactionTracker
 
 			if (!IsSupportedEmote(reaction))
 			{
-				Logger.LogLine($"Ignoring unsupported reaction emote {name}");
+				Logger.LogLine($"Ignoring unsupported reaction emote {name}", LogSeverity.Verbose);
 				return;
 			}
 
@@ -82,7 +86,7 @@ public sealed class ReactionTracker
 		{
 			if (cachedMessage == null)
 			{
-				Logger.LogLine("Skipping reaction removed from message without value");
+				Logger.LogLine("Skipping reaction removed from message without value", LogSeverity.Warning);
 				return;
 			}
 
@@ -117,7 +121,7 @@ public sealed class ReactionTracker
 		{
 			if (cachedMessage == null)
 			{
-				Logger.LogLine("Skipping reactions removed from message without value");
+				Logger.LogLine("Skipping reactions removed from message without value", LogSeverity.Warning);
 				return;
 			}
 
@@ -144,7 +148,7 @@ public sealed class ReactionTracker
 		{
 			if (cachedMessage == null)
 			{
-				Logger.LogLine("Skipping reactions removed from message without value");
+				Logger.LogLine("Skipping reactions removed from message without value", LogSeverity.Warning);
 				return;
 			}
 
@@ -181,7 +185,7 @@ public sealed class ReactionTracker
 
 			if (!cachedMessage.Reactions.Any())
 			{
-				Logger.LogLine($"No reactions to remove from message {cachedMessage.Id}", LogSeverity.Debug);
+				Logger.LogLine($"No reactions to remove from message {cachedMessage.Id}", LogSeverity.Verbose);
 				return;
 			}
 

@@ -33,6 +33,8 @@ public sealed class WingTechBot
 
 	public static async Task<WingTechBot> Create(Config config)
 	{
+		Logger.LogLine("Setting up WingTechBot");
+
 		WingTechBot bot = new() {Config = config};
 
 		bot.Client.Log += Logger.LogLine;
@@ -46,6 +48,8 @@ public sealed class WingTechBot
 
 		bot.GameHandler = new GameHandler(bot);
 
+		Logger.LogLine("Finish setting up WingTechBot");
+
 		return bot;
 	}
 
@@ -57,9 +61,12 @@ public sealed class WingTechBot
 
 	private async Task OnClientReady()
 	{
+		Logger.LogLine("Finding server and channels");
 		Guild = Client.GetGuild(Config.ServerId) ?? throw new NullReferenceException("Could not find guild");
 		BotChannel = Client.GetChannel(Config.BotChannelId) as SocketTextChannel ?? throw new NullReferenceException("Could not find bot channel");
 		DefaultVoiceChannel = Client.GetChannel(Config.DefaultVoiceChannelId) as SocketVoiceChannel ?? throw new NullReferenceException("Could not find voice channel");
+		Logger.LogLine("Found server and channels");
+
 		Communication = new Communication(this);
 
 		await VoiceChannelConnection.SetUp(this);

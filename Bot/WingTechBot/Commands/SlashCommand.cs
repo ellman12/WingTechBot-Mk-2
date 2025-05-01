@@ -23,10 +23,10 @@ public abstract class SlashCommand
 		var built = CreateCommand().Build();
 		Name = built.Name.Value;
 
-		if (NoRecreateCommands)
-			return;
+		if (!NoRecreateCommands)
+			await Bot.Client.CreateGlobalApplicationCommandAsync(built);
 
-		await Bot.Client.CreateGlobalApplicationCommandAsync(built);
+		Logger.LogLine($"Finish setting up command /{Name}", LogSeverity.Verbose);
 	}
 
 	protected abstract SlashCommandBuilder CreateCommand();

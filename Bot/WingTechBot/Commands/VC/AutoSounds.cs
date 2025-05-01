@@ -9,10 +9,14 @@ public sealed class AutoSounds
 
 	public AutoSounds(WingTechBot bot, VoiceChannelConnection connection)
 	{
+		Logger.LogLine("Setting up AutoSounds");
+
 		Bot = bot;
 		Connection = connection;
 
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
+
+		Logger.LogLine("Finish setting up AutoSounds");
 	}
 
 	private async Task VoiceStateUpdated(SocketUser user, SocketVoiceState previous, SocketVoiceState current)

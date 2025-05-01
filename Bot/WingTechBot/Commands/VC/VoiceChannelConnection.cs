@@ -26,6 +26,8 @@ public sealed class VoiceChannelConnection
 
 	public async Task SetUp(WingTechBot bot)
 	{
+		Logger.LogLine("Setting up VoiceChannelConnection");
+
 		Bot = bot;
 		Bot.Client.UserVoiceStateUpdated += VoiceStateUpdated;
 
@@ -42,6 +44,8 @@ public sealed class VoiceChannelConnection
 		await GetSounds();
 
 		AutoSounds = new AutoSounds(Bot, this);
+
+		Logger.LogLine("Finish setting up VoiceChannelConnection");
 	}
 
 	public void Connect(SocketVoiceChannel channel)
@@ -101,9 +105,13 @@ public sealed class VoiceChannelConnection
 	///Gets or refreshes the list of available sounds.
 	public async Task GetSounds()
 	{
+		Logger.LogLine("Refreshing available soundboard sounds", LogSeverity.Verbose);
+
 		var response = await Client.GetAsync("soundboard/available-sounds");
 		var sounds = JsonSerializer.Deserialize<SoundboardSound[]>(await response.Content.ReadAsStringAsync());
 		AvailableSounds = sounds.ToArray();
+
+		Logger.LogLine("Finish refreshing available soundboard sounds", LogSeverity.Verbose);
 	}
 
 	private async Task<Process> CreateStreamFromBytes(byte[] audio)

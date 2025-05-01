@@ -10,10 +10,14 @@ public sealed class GameHandler
 
 	public GameHandler(WingTechBot bot)
 	{
+		Logger.LogLine("Setting up GameHandler");
+
 		Bot = bot;
 
 		var gameType = typeof(Game);
 		AvailableGames = gameType.Assembly.GetTypes().Where(t => t.IsSubclassOf(gameType)).ToArray();
+
+		Logger.LogLine("Finish setting up GameHandler");
 	}
 
 	public async Task CreateGame(SocketSlashCommand command, string gameName)

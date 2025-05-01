@@ -9,8 +9,12 @@ public sealed class Communication
 
 	public Communication(WingTechBot bot)
 	{
+		Logger.LogLine("Setting up Communication");
+
 		Bot = bot;
 		Bot.Client.MessageReceived += OnMessageReceived;
+
+		Logger.LogLine("Finish setting up Communication");
 	}
 
 	public async Task<string> SendMessageToAi(string message)

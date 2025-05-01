@@ -1,4 +1,5 @@
 ﻿{
+	"LogLevel": "Verbose",
 	"LoginToken": "",
 	"UserId": 0,
 	"ServerId": 0,
