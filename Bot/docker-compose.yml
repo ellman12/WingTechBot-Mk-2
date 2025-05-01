@@ -6,6 +6,7 @@ services:
       dockerfile: Dockerfile
     container_name: wingtech-bot
     restart: unless-stopped
+    tty: true # Essential for colored text output
     ports:
       - ${WTB_PORT}:5000
 
