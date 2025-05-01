@@ -7,6 +7,7 @@
 	"ServerUrl": "",
 	"SoundboardServerIds": [],
 	"DefaultVoiceChannelId": 0,
+	"BotRoleId": 0,
 	"ModRoleId": 0,
 	"BotAdmins": [
 		0

@@ -21,6 +21,9 @@ public sealed record Config
 	///Default VC to join when /join-vc invoked and no other channel given.
 	public ulong DefaultVoiceChannelId { get; init; }
 
+	///The ID of the role for the bot.
+	public ulong BotRoleId { get; init; }
+
 	public ulong ModRoleId { get; init; }
 
 	///IDs of users who can run bot admin commands.
