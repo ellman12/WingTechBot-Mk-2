@@ -37,12 +37,6 @@ public sealed class ReactionTracker
 			var authorId = cachedMessage.Author.Id;
 			var wtbId = wingTechBot.Config.UserId;
 
-			if (!IsSupportedEmote(reaction))
-			{
-				Logger.LogLine($"Ignoring unsupported reaction emote {name}", LogSeverity.Verbose);
-				return;
-			}
-
 			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 			{
 				Logger.LogLine($"Ignoring new reaction {name} added to message before start date");
@@ -91,12 +85,6 @@ public sealed class ReactionTracker
 			}
 
 			var name = reaction.Emote.Name;
-
-			if (!IsSupportedEmote(reaction))
-			{
-				Logger.LogLine($"Ignoring unsupported reaction emote {name}");
-				return;
-			}
 
 			if (cachedMessage.CreatedAt.Date < wingTechBot.Config.StartDate)
 			{
@@ -195,13 +183,5 @@ public sealed class ReactionTracker
 		{
 			await Logger.LogExceptionAsMessage(e, cachedChannel);
 		}
-	}
-
-	private bool IsSupportedEmote(SocketReaction reaction)
-	{
-		if (Emoji.TryParse(reaction.Emote.Name, out Emoji _))
-			return true;
-
-		return reaction.Emote is Emote emote && wingTechBot.Guild.Emotes.Any(e => e.Id == emote.Id);
 	}
 }
