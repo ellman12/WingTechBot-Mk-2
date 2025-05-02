@@ -12,7 +12,7 @@ const Login: FC<Props> = ({setAuthenticated}) => {
     function handleLogin() {
         http.post("/auth/login", {user_id: userId})
             .then(e => {
-                if (e.statusText === "OK") {
+                if (e.status === 200) {
                     setAuthenticated(true);
                     localStorage.setItem("userId", userId);
                 } else {

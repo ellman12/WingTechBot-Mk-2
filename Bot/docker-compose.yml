@@ -1,4 +1,21 @@
 services:
+  traefik:
+    image: traefik:v3
+    container_name: traefik
+    restart: unless-stopped
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--entryPoints.web.address=:80"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./acme.json:/acme.json"
+    labels:
+      - "traefik.enable=true"
+
   wingtech-bot:
     image: wingtech-bot
     build:
@@ -25,6 +42,10 @@ services:
       - DATABASE_USER=${DATABASE_USER}
       - DATABASE_PASSWORD=${DATABASE_PASSWORD}
       - DATABASE_NAME=${DATABASE_NAME}
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wingtech-bot.rule=Host(`elliott.nullpt3r.com`) && PathPrefix(`/api`)"
 
   wingtech-bot-postgres:
     image: postgres:15
@@ -59,7 +80,11 @@ services:
         max-file: "3"
 
     ports:
-      - "80:80"
+      - "420:80"
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.wingtech-frontend.rule=Host(`elliott.nullpt3r.com`)"
 
 volumes:
   postgres_data:
