@@ -46,7 +46,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
-  frontend:
+  wingtech-bot-frontend:
     build:
       context: ./Frontend
       dockerfile: Dockerfile
