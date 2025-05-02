@@ -15,7 +15,7 @@ public sealed partial class SoundboardSound(ulong id, string name, byte[] audio)
 
 	///What is sent through FFmpeg to be heard in the <see cref="SocketVoiceChannel"/>.
 	[JsonPropertyName("audio"), JsonConverter(typeof(ByteArrayBase64Converter))]
-	public byte[] Audio { get; init; } = audio;
+	public byte[] Audio { get; set; } = audio;
 
 	[Required, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
 	public DateTime CreatedAt { get; init; }

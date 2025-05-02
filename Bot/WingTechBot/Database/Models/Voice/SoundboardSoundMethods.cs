@@ -21,6 +21,21 @@ public sealed partial class SoundboardSound
 		return newSound;
 	}
 
+	public static async Task OverwriteSoundAudio(string name, byte[] newAudio)
+	{
+		if (String.IsNullOrWhiteSpace(name)) throw new ArgumentException("Name cannot be null or whitespace");
+		if (newAudio.Length == 0) throw new ArgumentException("Audio cannot be empty");
+
+		await using BotDbContext context = new();
+		var sound = await context.SoundboardSounds.SingleOrDefaultAsync(s => EF.Functions.ILike(s.Name, name));
+
+		if (sound == null)
+			throw new ArgumentException($"Sound with name {name} could not be found");
+
+		sound.Audio = newAudio;
+		await context.SaveChangesAsync();
+	}
+
 	public static async Task RemoveSoundboardSound(ulong id)
 	{
 		if (id == 0) throw new ArgumentException("Invalid SoundboardSound id");

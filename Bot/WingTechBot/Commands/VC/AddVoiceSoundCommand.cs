@@ -24,10 +24,11 @@ public sealed class AddVoiceSoundCommand : SlashCommand
 	public override async Task HandleCommand(SocketSlashCommand command)
 	{
 		var options = command.Data.Options;
+		var connection = Bot.VoiceChannelConnection;
 
 		if (options.Single(o => o.Name == "audio").Value is not Attachment audio)
 		{
-			await Logger.LogExceptionAsMessage(new NullReferenceException("Missing attachment"), command.Channel);
+			await command.FollowupAsync("Missing attachment");
 			return;
 		}
 
@@ -40,9 +41,26 @@ public sealed class AddVoiceSoundCommand : SlashCommand
 		var name = options.Single(o => o.Name == "name").Value.ToString() ?? throw new NullReferenceException("Missing sound name");
 		var audioBytes = await Bot.HttpClient.GetByteArrayAsync(audio.Url);
 
-		await command.FollowupAsync($"{command.User.Username} uploaded `{name}`");
+		var existing = connection.AvailableSounds.FirstOrDefault(s => string.Equals(s.Name, name, StringComparison.OrdinalIgnoreCase));
+		if (existing != null)
+		{
+			if (existing.Type == "voice")
+			{
+				await command.FollowupAsync($"A sound with the name `{name}` already exists, and will be overwritten");
+				await SoundboardSound.OverwriteSoundAudio(name, audioBytes);
+			}
+			else
+			{
+				await command.FollowupAsync($"A Discord soundboard sound with the name `{name}` already exists, and will *not* be overwritten");
+				return;
+			}
+		}
+		else
+		{
+			await command.FollowupAsync($"{command.User.Username} uploaded `{name}`");
+			await SoundboardSound.AddSoundboardSound(name, audioBytes);
+		}
 
-		await SoundboardSound.AddSoundboardSound(name, audioBytes);
-		await Bot.VoiceChannelConnection.GetSounds();
+		await connection.GetSounds();
 	}
 }
