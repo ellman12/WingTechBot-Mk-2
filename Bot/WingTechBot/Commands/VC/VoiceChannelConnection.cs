@@ -171,6 +171,7 @@ public sealed class VoiceChannelConnection
 			Logger.LogLine("Begin sending audio to Discord", LogSeverity.Debug);
 			await output.CopyToAsync(discord, SoundCancelToken.Token);
 		}
+		catch (OperationCanceledException) {}
 		catch (Exception e)
 		{
 			await Logger.LogExceptionAsMessage(e, Bot.BotChannel);
