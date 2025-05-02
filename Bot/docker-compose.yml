@@ -67,6 +67,21 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
+  wingtech-bot-backup:
+    build:
+      context: ./Backup
+      dockerfile: Dockerfile
+    container_name: wingtech-bot-backup
+    depends_on:
+      - wingtech-bot-postgres
+    environment:
+      - DATABASE_HOST=${DATABASE_HOST}
+      - DATABASE_USER=${DATABASE_USER}
+      - PGPASSWORD=${DATABASE_PASSWORD}
+      - DATABASE_NAME=${DATABASE_NAME}
+    volumes:
+      - wtb_backups:/backups
+
   wingtech-bot-frontend:
     build:
       context: ./Frontend
@@ -88,4 +103,5 @@ services:
 
 volumes:
   postgres_data:
+  wtb_backups:
 
