@@ -3,7 +3,7 @@
 public sealed record Config
 {
 	[JsonConverter(typeof(JsonStringEnumConverter))]
-	public LogSeverity LogLevel { get; init; }
+	public LogSeverity LogLevel { get; set; }
 
 	public string LoginToken { get; init; }
 	
