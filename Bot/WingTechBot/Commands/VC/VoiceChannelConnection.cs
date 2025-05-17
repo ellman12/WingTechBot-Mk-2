@@ -141,7 +141,7 @@ public sealed class VoiceChannelConnection
 			Logger.LogLine("Opening FFmpeg stream", LogSeverity.Debug);
 			await using var stdin = process.StandardInput.BaseStream;
 
-			Logger.LogLine("Opening FFmpeg stream", LogSeverity.Debug);
+			Logger.LogLine("Begin writing to ffmpeg stdin", LogSeverity.Debug);
 			await stdin.WriteAsync(audio, 0, audio.Length, SoundCancelToken.Token);
 
 			Logger.LogLine("Closing FFmpeg stream", LogSeverity.Debug);
